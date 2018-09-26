@@ -1,0 +1,7 @@
+config.yaml
+shortcut.lnk
+.vscode
+.pyc
+__pycache__/
+/images
+/tmp
