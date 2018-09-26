@@ -122,8 +122,7 @@ async def on_message(message):
     # Show a help/about dialog
     if (message.content.lower().startswith("!wtf") or message.content.lower().startswith("!help")) :
         log.info("[{0}] Requested information about us".format(member.name))
-        msg = "Fuck you, I'm a god damn robot. Which means I have to automate various roles & features on the server so you lazy bags of meat don't have to.\n\n" \
-            "Currently, I understand the following commands:\n" \
+        msg = "Fuck you, I'm a god damn robot. Which means I have to automate various roles & features on the server so you lazy bags of meat don't have to.\n" \
             "\n**Help Menus**\n" \
             "`!wtf` or `!help` - That's this menu, dummy. #2meta4me.\n" \
             "`!superwtf` - Show commands available only to mods.\n" \
@@ -140,19 +139,18 @@ async def on_message(message):
             "`.pause` - s/e.\n" \
             "`.resume` - s/e.\n" \
             "`.stop` - s/e.\n" \
-            "\nI'm not working correctly, go fuck yourself! You aren't my boss!!\n\nNow hurry up and do what you gotta do cuz I aint got all day!..\n\nJust kidding, I'll totally out-live you puny meatsacks."
+            "\nIf I'm not working correctly, go fuck yourself! You aren't my boss!!\n\nNow hurry up and do what you gotta do cuz I aint got all day!.. Just kidding, I'll totally out-live you puny meatsacks."
         await client.send_message(message.channel, msg)
         return
 
     elif message.content.lower().startswith("!superwtf"):
         if is_mod(member):
             msg = "Oh shit, it's a mod! Everyone pretend like you aren't fucking shit up.\n\n" \
-                "Currently, I understand the following commands:\n" \
                 "`!superwtf` - This meta shit right here.\n" \
                 "`!say [#channel] [message]` - Make me say shit.\n" \
-                "`!stfu' - I'll take a nap.\n" \
+                "`!stfu` - I'll take a nap.\n" \
                 "`!die` - I don't want to die!!..." \
-                "\nI'm not working correctly, go fuck yourself! You aren't my boss!!\n\nNow hurry up and do what you gotta do cuz I aint got all day!.. Just kidding, I'll totally out-live you puny meatsacks."
+                "\n\nNow hurry up and do what you gotta do cuz I aint got all day!.. Just kidding, I'll totally out-live you puny meatsacks."
         else:
             msg = "{user}, you ain't a badass in the slightest. Access denied!".format(user=member.mention)
         await client.send_message(message.channel, msg)
