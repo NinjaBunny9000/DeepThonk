@@ -160,7 +160,7 @@ async def on_message(message):
 
 # ─── TOOLS ──────────────────────────────────────────────────────────────────────
 
-    #Post a message as WaifuBot
+    #Post a message as bunBot9000 - borrowed (very gratefully) from WaifuBot
     if message.content.lower().startswith("!say"):
         if not message.channel.is_private and is_mod(member):
             message_parts = message.content.split(' ', 2)
