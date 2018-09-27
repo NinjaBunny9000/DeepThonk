@@ -1,2 +1,2 @@
-# bunBot9000
-Discord bot inspired by Waifus4Lifu's WaifuBot. (Now with added sass!)
+# BunBot9000
+A Python bot and web interface for Streamers using Discord, Twitch, & StreamElements. (Now with added sass!)
