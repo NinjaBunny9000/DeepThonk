@@ -49,9 +49,9 @@ log.info("bunBot9000 is booting up...")
 # ─── INITIALIZATION ─────────────────────────────────────────────────────────────
 
 # client = discord.Client()
-client = commands.Bot(command_prefix = '.')
+client = commands.Bot(command_prefix='.')
 
-players = {} # setup youtube player
+players = {}  # setup youtube player
 
 @client.event
 async def on_ready():
@@ -208,7 +208,7 @@ async def on_message(message):
 
         await client.edit_message(tmp, 'You have {} messages.'.format(counter))
 
-    # SLEEPbot9000????    
+    # SLEEPbot9000????
     elif message.content.startswith('!stfu'):
         await asyncio.sleep(1)
         await client.send_message(message.channel, 'Done sleeping')
@@ -218,21 +218,21 @@ async def on_message(message):
 # ─── COMMANDS ───────────────────────────────────────────────────────────────────
 
     # Kills the bot (or pisses it off)
-    elif message.content.lower().startswith("!die"):  #TODO : needs @mods mention working
+    elif message.content.lower().startswith("!die"):  # TODO : needs @mods mention working
         if is_admin(member):
             log.info('{} killed me.'.format(message.author))
             msg = "I've seen things you people wouldn't believe. Attack ships on fire off the shoulder of Orion. I watched C-beams glitter in the dark near the Tannhäuser Gate. All those moments will be lost in time, like tears in rain. Time to die."
             await client.send_message(message.channel, msg.format(user=member.mention))
             sys.exit(1)
-        else: 
+        else:
             log.info('{} TRIED TO KILL ME!!!'.format(message.author))
             msg = "Nice try, {user}.. But only @mods are allowed to break Rule #3. You can't kill me, you fucking scrub. "
             await client.send_message(message.channel, msg.format(user=member.mention))
         return
 
     # Checks if user is a subscriber
-    elif message.content.lower().startswith("!subcheck") : 
-        if is_subscriber(member) : 
+    elif message.content.lower().startswith("!subcheck"):
+        if is_subscriber(member):
             passed = "Yup."
             await client.send_message(message.channel, passed)
         else:
@@ -241,17 +241,17 @@ async def on_message(message):
         return
 
     # Checks if user is a moderator
-    elif message.content.lower().startswith("!modcheck") : 
-        if is_mod(member) : 
+    elif message.content.lower().startswith("!modcheck"):
+        if is_mod(member):
             passed = "Yup."
             await client.send_message(message.channel, passed)
         else:
             failed = "Nope."
             await client.send_message(message.channel, failed)
         return
-    
+
     # Does "magic". (don't ask..)
-    elif message.content.lower().startswith("!magic") : 
+    elif message.content.lower().startswith("!magic"):
         msg = "Congrats, {user}. You did... \"magic\"."
         await client.send_message(message.channel, msg.format(user=member.mention))
         return
@@ -263,23 +263,23 @@ async def on_message(message):
 
 # ─── CLIENT COMMANDS ────────────────────────────────────────────────────────────
 
+
 @client.command(pass_context=True)
-async def _bot() :
+async def _bot():
     """Is the bot cool?"""
     await client.send_message('Yes, the bot is cool.')
+
 
 @client.command()
 async def wth():
     await client.say('Somethin\'s fucky...')
 
-@client.command()
-async def ping():
-    await client.say('pong!')
+
 
 @client.command()
-async def echo(*args) : 
+async def echo(*args):
     output = ""
-    for word in args : 
+    for word in args:
         output += word
         output += ' '
     await client.say(output)
@@ -289,19 +289,19 @@ async def echo(*args) :
 # ─── VOICE BOT ──────────────────────────────────────────────────────────────────
 
 @client.command(pass_context=True)
-async def join(ctx) : 
+async def join(ctx):
     log.info('Joining voice channel.')
     channel = ctx.message.author.voice.voice_channel
     await client.join_voice_channel(channel)
 
 @client.command(pass_context=True)
-async def leave(ctx) : 
+async def leave(ctx):
     server = ctx.message.server
     voice_client = client.voice_client_in(server)
     await voice_client.disconnect()
 
 @client.command(pass_context=True)
-async def play(ctx, url) : 
+async def play(ctx, url):
     server = ctx.message.server
     voice_client = client.voice_client_in(server)
     player = await voice_client.create_ytdl_player(url)
@@ -309,19 +309,19 @@ async def play(ctx, url) :
     player.start()
 
 @client.command(pass_context=True)
-async def pause(ctx) : 
+async def pause(ctx):
     id = ctx.message.server.id
     players[id].pause()
 
 @client.command(pass_context=True)
-async def stop(ctx) : 
+async def stop(ctx):
     id = ctx.message.server.id
-    players[id].stop() 
+    players[id].stop()
 
 @client.command(pass_context=True)
-async def resume(ctx) : 
+async def resume(ctx):
     id = ctx.message.server.id
-    players[id].resume() 
+    players[id].resume()
 
 
 # ─── RUN ────────────────────────────────────────────────────────────────────────
