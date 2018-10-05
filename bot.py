@@ -4,6 +4,7 @@ import logging as log
 import asyncio
 import sys
 import os
+import random
 import yaml
 import textwrap
 import aiofiles
@@ -274,6 +275,19 @@ async def _bot():
 async def wth():
     await client.say('Somethin\'s fucky...')
 
+
+@client.command(pass_context=True)
+async def spoop(ctx, target: discord.Member = None):
+    if target:
+        spoopString = 0
+        spoopList = os.listdir("./spoop")  # List of filenames
+        spoopString = random.choice(spoopList) # Select random file from the list
+
+        path = "./spoop/" + spoopString # Creates a string for the path to the file
+        await client.say('_dials up the Spook-O-Meter.._\n\nAhh yes...🧐  ' + target.mention +'\'s rating is..')
+        await client.send_file(ctx.message.channel, path) # , filename=None, tts=False
+    else:
+        await client.say('You need to provide a user to rate!')
 
 
 @client.command()
