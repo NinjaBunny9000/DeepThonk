@@ -1,6 +1,0 @@
-asyncio
-pyyaml
-aiofiles
-aiohttp
-youtube_dl
-discord

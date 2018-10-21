@@ -1,3 +1,8 @@
 discord:
-    token: MzQ1ODUxNTE0NTQ5Njk4NTYx.DZKPNg.zh4mVQL5wVyUAXg86hqmlxpe4Fo
-    server_id: '159879125341962240'
+    token: paste_token_here
+    server_id: 'server_id_goes_here'
+twitch:
+    user: 'username'
+    oauth: 'oauth:paste_token_here'
+    channel: 'twitch_user_name'
+    prefix: '!'  # defaults to !
