@@ -1,7 +1,63 @@
 import conf
+# import winsound
+from playsound import playsound
 
 # config ze bot!
 twitch_bot = conf.twitch_instance
+
+band_names = []
+
+def parse_commands(message, parts): 
+    message_parts = message.content.split(' ', parts)
+    return message_parts
+
+
+def is_mod(message):
+    if (message.author.mod or message.author.name.lower() == 'ninjabunny9000'):
+        return True
+    else:
+        return False
+
+
+@twitch_bot.command('slideup')
+async def slideup(message):
+    await playsound('sfx/slideup.mp3')
+
+
+@twitch_bot.command('bands')
+async def bands(message):
+    message_parts = parse_commands(message, 2)
+
+    if len(message_parts) >= 2:
+        subcmd = message_parts[1]
+
+        if subcmd == 'add' and is_mod(message):
+            band_names.append(message_parts[2])
+            msg = '{} added to the list of TOTALLY AWESOME band names.'.format(message_parts[2])
+            await twitch_bot.say(message.channel, msg)
+
+        elif subcmd == 'oops' and is_mod(message):
+            band_names.pop()
+            await twitch_bot.say(message.channel, 'Last band name removed. Who dun fucked up this time?!???')
+        
+        elif subcmd == 'clear' and is_mod(message):
+            band_names.clear()
+            await twitch_bot.say(message.channel, 'No clue why you did this, but all the band names are GONE!.. Jerk! D:')
+        
+        elif not is_mod(message):
+            await twitch_bot.say(message.channel, 'Y u do dat?! Where\'s your sword, pal?')
+
+        else:
+            await twitch_bot.say(message.channel, 'Syntax tip: !bands add/list/clear')
+
+    else:
+        if len(band_names) == 0:
+            await twitch_bot.say(message.channel, 'No bands in the list!')
+        else:
+            bands = '[%s]' % ', '.join(map(str, band_names))
+            bands = bands.strip('[]')
+            msg = 'Here\'s some totally awesome band names: {}'.format(bands)
+            await twitch_bot.say(message.channel, msg)
 
 
 # stops the bot from Twitch chat command !die
@@ -21,6 +77,7 @@ async def quit(message):
         # debug_log(message, "tried to kill me!!")
         await twitch_bot.say(message.channel, msg)
 
+
 @twitch_bot.override
 async def event_message(message):
     # your handling here
@@ -34,4 +91,23 @@ async def event_message(message):
     if message.content.lower().startswith("!easteregg"):
         msg = "There was nothing clever about what you just did."
         # debug_log(message, str(msg))
+        await twitch_bot.say(message.channel, msg)
+
+    # ─── CALL + RESPONSES ───────────────────────────────────────────────────────
+
+    # responses to random words and shit
+    if 'pal' in message.content:
+        msg = "@{} - I ain't your pal, buddy!".format(message.content.author.name)
+        await twitch_bot.say(message.channel, msg)
+
+    if 'buddy' in message.content:
+        msg = "@{} - I ain't your buddy, pal!!".format(message.content.author.name)
+        await twitch_bot.say(message.channel, msg)
+
+    if 'chili party' in message.content:
+        msg = "gross.."
+        await twitch_bot.say(message.channel, msg)
+
+    if 'dick' in message.content:
+        msg = "🍆"
         await twitch_bot.say(message.channel, msg)
