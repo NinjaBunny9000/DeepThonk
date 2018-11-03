@@ -1,11 +1,17 @@
 import conf
-# import winsound
+import cah
+from cah import play_hand
 from playsound import playsound
+import haveyouever
+from haveyouever import have_you_tho
 
 # config ze bot!
 twitch_bot = conf.twitch_instance
 
 band_names = []
+current_task = 'None.'
+
+print('Twitch bot imported...')
 
 def parse_commands(message, parts): 
     message_parts = message.content.split(' ', parts)
@@ -60,6 +66,21 @@ async def bands(message):
             await twitch_bot.say(message.channel, msg)
 
 
+@twitch_bot.command('task')
+async def task(message):
+    message_parts = parse_commands(message, 1)
+
+    global current_task
+
+    if len(message_parts) >= 2 and is_mod(message):
+        current_task = str(message_parts[1])  # update the current task
+        await twitch_bot.say(message.channel, 'Task updated')
+    
+    else:
+        msg = 'Current task: {}'.format(current_task)
+        await twitch_bot.say(message.channel, msg) # print the current task
+
+
 # stops the bot from Twitch chat command !die
 @twitch_bot.command('quit')
 async def quit(message):
@@ -76,6 +97,15 @@ async def quit(message):
         msg = "@{user} tried to kill me! D:".format(user=message.author.name)
         # debug_log(message, "tried to kill me!!")
         await twitch_bot.say(message.channel, msg)
+
+@twitch_bot.command('cah')
+async def cah(message):
+    # msg = cah.play_hand()
+    await twitch_bot.say(message.channel, play_hand())
+
+@twitch_bot.command('haveyou')
+async def haveyou(message):
+    await twitch_bot.say(message.channel, have_you_tho())
 
 
 @twitch_bot.override
