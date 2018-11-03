@@ -1,12 +1,11 @@
 import asynctwitch
-# import discord
 import conf
 import cmd
-# import discord_chat
 import twitch_chat
-# import asyncio
+import signal
+import sys
+import os
 
-# from discord.ext import commands
 
 def start_twitch():
     # pull in the config var for ze bot!
@@ -14,5 +13,16 @@ def start_twitch():
     bot = conf.twitch_instance
     bot.start()
 
-start_twitch()
-# discord_chat.start_discord()
+
+def main():
+    start_twitch()
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Terminal-Interrupted')
+        bot = conf.twitch_instance
+        bot.stop(exit=True)
+        os._exit(0)   

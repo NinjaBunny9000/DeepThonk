@@ -4,12 +4,18 @@ from cah import play_hand
 from playsound import playsound
 import haveyouever
 from haveyouever import have_you_tho
+import sys
+import os
 
 # config ze bot!
 twitch_bot = conf.twitch_instance
 
 band_names = []
 current_task = 'None.'
+
+@twitch_bot.override
+async def event_ready(message):
+    twitch_bot.say('ninjabunny9000', 'Hello, y\'all!')
 
 print('Twitch bot imported...')
 
@@ -92,20 +98,32 @@ async def quit(message):
         # await bot.say(message.channel, msg) # DEBUG uncomment later (used for debug)
         await twitch_bot.say(message.channel, '!disabled')  # DEBUG comment later (used for debug)
 
-        exit()
+        bot = conf.twitch_instance
+        print('Chat-Interrupted')
+        print('Stopping the bot..')
+        bot.stop(exit=True)
+       
     else:
         msg = "@{user} tried to kill me! D:".format(user=message.author.name)
         # debug_log(message, "tried to kill me!!")
         await twitch_bot.say(message.channel, msg)
+
 
 @twitch_bot.command('cah')
 async def cah(message):
     # msg = cah.play_hand()
     await twitch_bot.say(message.channel, play_hand())
 
+
 @twitch_bot.command('haveyou')
 async def haveyou(message):
     await twitch_bot.say(message.channel, have_you_tho())
+
+
+@twitch_bot.raw_event
+async def event_private_message(message):
+    print('pm recv\'d')
+    await twitch_bot.say('ninjabunny9000', 'pm recv\'d')
 
 
 @twitch_bot.override
