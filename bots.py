@@ -6,7 +6,6 @@ import signal
 import sys
 import os
 
-
 def start_twitch():
     # pull in the config var for ze bot!
     print('Starting Twitchbot..')

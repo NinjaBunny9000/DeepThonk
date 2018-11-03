@@ -4,7 +4,8 @@ posits = (
 			"tossed something with your fists",
 			"held an 8-dick capacitor in your hands",
 			"aggressively does the macarena",
-			"pants'd loudly"
+			"pants'd loudly",
+            "murdered ynneL in a waterin' hole?"
             )
 
 
