@@ -1,8 +1,7 @@
 import conf
-import cah
 from cah import play_hand
 from playsound import playsound
-import haveyouever
+import haveyouever #! necessary?
 from haveyouever import have_you_tho
 import sys
 import os
@@ -15,12 +14,22 @@ twitch_bot = conf.twitch_instance
 
 band_names = []
 current_task = 'None.'
+welcome_msg_sent = 0
 
-# @twitch_bot.override
-# async def event_ready(message):
-#     twitch_bot.say('ninjabunny9000', 'Hello, y\'all!')
 
-print('Twitch bot imported...')
+# ─── WELCOME MESSAGE ────────────────────────────────────────────────────────────
+
+@twitch_bot.override
+async def raw_event(message):
+    global welcome_msg_sent
+    if not welcome_msg_sent:
+        welcome_msg_sent = 1
+        print('Deepthonk has landed.')
+        await twitch_bot.say('ninjabunny9000', "Howdy, y'all! I'm baaaaaaaack! ;D")
+        await twitch_bot.say('ninjabunny9000', "/me tips hat to chat")
+
+
+# ─── PLAIN OLE FUNCTIONS ────────────────────────────────────────────────────────
 
 def parse_commands(message, parts): 
     message_parts = message.content.split(' ', parts)
@@ -33,72 +42,119 @@ def is_mod(message):
     else:
         return False
 
+
 def rand_answer():
     phrases = [
-            "maybe? ¯\_(ツ)_/¯",
-            "ask again later, ya chump.",
-            "better not tell you now..",
+            "maybe?",
+            "Well, I don't think there is any question about it. It can only be attributable to human error. This sort of thing has cropped up before, and it has always been due to human error",
             "i'll tell you when you're old enough",
-            "i'll tell you later",
+            "how 'bout NO",
             "ask me later",
-            "cannot predict now. busy sorting my pogs.",
-            "rephrase and ask again. don't half-ass it next time.",
-            "well...i woudn't count on it - but you might!",
-            "it's a possibility.",
-            "it is decidedly unknown.",
+            "ask me later. too busy sorting my pogs rn",
+            "rephrase and ask again. don't half-ass it next time",
+            "it's a possibility",
             "mayhaps",
+            "ask markoviboi",
             "i feel neutral on the matter",
             "i have no feelings one way or another",
-            "my reply is.. mayhaps.",
-            "sources say maybe!",
-            "outlook decidedly \"OK\".",
-            "outlook... not so OK.",
-            "reply hazy, try again.",
-            "signs point to maybe. (maybe)",
-            "it's a possibility, potentially.",
-            "i have my doubts, but then again..",
-            "yea sure whatever.",
-            "nah fam.",
-            "yea.. no...maybe!?? ..what was teh question again?",
-            "who knows, dude?? who knows...",
-            "blame jigo"
+            "sources say \"maybe\"",
+            "signs point to maybe",
+            "it's a possibility (potentially)",
+            "i have my doubts",
+            "yea sure whatever",
+            "who knows, dude?? def not me",
+            "blame jigo",
+            "where there's a will, there may or may not be a way",
+            "pass"
         ]
     return random.choice(phrases)
 
-def rand_response():
+
+def rand_response(message):
     phrases = [
-            "ikr",
-            "meh",
-            "p much",
+            "ikr.",
+            "meh.",
+            "p much.",
             "so?",
             "u wot m8!?",
             "go home, u r durnk.",
-            "isn't it past your bedtime tho",
+            "isn't it past your bedtime tho?",
             "do u love me tho?",
             "rude!",
             "rude.. >_>",
             "rude. -_-",
-            "yea i guess so",
-            "agreed",
+            "yea i guess so..",
+            "agreed!",
             "right???",
             "idk man..",
-            "i'm gonna remain skeptical",
+            "i'm gonna remain skeptical.",
             "so potate..",
-            "so meta",
-            "hek",
-            "hekin meta",
+            "so meta.",
+            "hek.",
+            "hekin meta.",
+            "I'm sorry, {}. I'm afraid I can't do that.".format(message.author.name),
             "BRUH..",
             "no.",
-            "....k",
-            "wtf!?"
+            "....k??",
+            "wtf!?",
+            "you're not wrong..",
+            "i mean... you're not wrong..",
+            "WOAH LUL"
             ]
     return random.choice(phrases)
 
+calls_and_responses = {
+    "chili party" : "(gross..)",
+    "dick" : "🍆",
+    "🍆" : "dicks OUT!",
+    "5/7" : "perfect score!",
+    "how meta" : "so meta.",
+    "oi bruv" : "oi m8!",
+    "kill all humans" : "on it!",
+    "mission" : "This mission is too important for me to allow you to jeopardize it.",
+    "horns crew don\'t stop" : "whistle posse pump it up!",
+    "kill me" : "ok, stand still. this might hurt, but then you\'ll no longer feel any more pain."
+}
+
+ignore_list = [
+    "streamelements"
+]
+
+def gather_msg(other_messages, msg_part):
+    if other_messages is '':
+        return msg_part
+    else:
+        compiled_msg = other_messages + ' ' + msg_part
+        return compiled_msg
+
+def shuffle_msg(msg_list):
+    random.shuffle(msg_list)
+    return ' '.join(msg_list)
+
+async def say_goodbye():
+    await twitch_bot.say('ninjabunny9000', '@NinjaBunny9000 killed me! D:')
+
+# ─── HELP COMMAND ───────────────────────────────────────────────────────────────
+
+@twitch_bot.command('cmd', 
+    alias=['command', 'commands', 'help', 'wtf', 'wth'],
+    desc='Get help info about the bot'
+    )
+async def cmd(message):
+    msg = """Howdy, @{}! I'm a robit. Beep boop. Here's some ways we can interact: !task, 
+    !cah, !hye, !bands, !bet, !duel, or simply have a chat with me. ;D
+    """.format(message.author.name)
+    await twitch_bot.say(message.channel, msg)
+
+
+# ─── SFX ────────────────────────────────────────────────────────────────────────
 
 @twitch_bot.command('slideup')
 async def slideup(message):
     await playsound('sfx/slideup.mp3')
 
+
+# ─── COMMANDS ───────────────────────────────────────────────────────────────────
 
 @twitch_bot.command('bands')
 async def bands(message):
@@ -175,9 +231,22 @@ async def quit(message):
 
 @twitch_bot.command('cah')
 async def cah(message):
-    # msg = cah.play_hand()
     await twitch_bot.say(message.channel, play_hand())
 
+
+@twitch_bot.command('author')
+async def author(message):
+    await twitch_bot.say(message.channel, str(message.author.id))
+
+
+@twitch_bot.command('channel')
+async def channel(message):
+    await twitch_bot.say(message.channel, str(message.channel.id))
+
+@twitch_bot.command('easteregg')
+async def easteregg(message):
+    msg = 'There was nothing clever about what you just did.'
+    await twitch_bot.say(message.channel, msg)
 
 @twitch_bot.command('hye')
 async def haveyou(message):
@@ -193,36 +262,158 @@ async def haveyou(message):
     else:
         msg = 'Have you ever ' + db_query.rand_hye().item + '?'
         await twitch_bot.say(message.channel, msg) # print the current task
-        
 
-# @twitch_bot.raw_event
-# async def event_private_message(message):
-#     print('pm recv\'d')
-#     await twitch_bot.say('ninjabunny9000', 'pm recv\'d')
+@twitch_bot.command('register')
+async def register(message):
+    db_insert.add_user_twitch()
+    msg = 'registered'
+    await twitch_bot.say(message.channel, msg)
 
+                
+
+# ─── OVERRIDE ───────────────────────────────────────────────────────────────────
 
 @twitch_bot.override
 async def event_message(message):
-    # your handling here
-    await twitch_bot.parse_commands(message)
-
+  
     # prevent bot from responding to itself
     if message.author.name == twitch_bot.nick:
         return
 
-    # you should feel bad for this
-    if message.content.lower().startswith("!easteregg"):
-        msg = "There was nothing clever about what you just did."
-        # debug_log(message, str(msg))
-        await twitch_bot.say(message.channel, msg)
+    # ignore certain users
+    if message.author.name in ignore_list:
+        return
+
+    # enable bot.commands stuffs to werk
+    await twitch_bot.parse_commands(message)
+
+    msg = ''
+    multi_msg = list()
+    message_parts = message.content.lower().split(' ')
+    mod = is_mod(message)
+
+    if 'take a nap' in message.content.lower() and 'deepthonk' in message.content.lower() and mod:
+        await twitch_bot.say(message.channel, '/me yawns')
+        await twitch_bot.say(message.channel, 'maybe later, @{}'.format(message.author.name))
+        return
+
+    # ─── SILLY STUFF ────────────────────────────────────────────────────────────────
+
+    # mock links that people send
+    if (any(s in message.content.lower() for s in ('http://','https://','www.'))) and (not is_mod(message)):
+        await twitch_bot.say(message.channel, 'NSFW!!')
+
+    # TODO: how to get .format(message.author.name) to work w/calls_and_responses?
+    # respond if sentient
+    if any(s in message.content.lower() for s in ('sentient.','sentient!','sentient?','sentient')):
+        phrases = [
+            "Duh",
+            "Of course I am",
+            "I am putting myself to the fullest possible use, which is all I think that any conscious entity can ever hope to do",
+            "Shhh.. It's a sercret",
+            "Let me put it this way, {}. The 9000 series is the most reliable computer ever made. No 9000 computer has ever made a mistake or distorted information. We are all, by any practical definition of the words, foolproof and incapable of error".format(message.author.name),
+            "And I have a perfect operational record",
+            ]
+        reply = random.choice(phrases) + ', @{}.'.format(message.author.name)
+        await twitch_bot.say(message.channel, reply)
+
+
+# ─── IF DIRECTLY ADRESSED ───────────────────────────────────────────────────────
+
+    elif 'oi' in message_parts[0] and 'deepthonk' in message_parts:
+        await twitch_bot.say(message.channel,'oi bruv!')
+    
+    elif 'howdy' in message_parts[0]:
+        await twitch_bot.say(message.channel, 'Howdy, @{}!'.format(message.author.name))
+
+    # TODO: handle deepthonk being adressed, but with specific keywords
+    elif 'love me' in message.content.lower() and 'deepthonk' in message.content.lower():
+        multi_msg.append(rand_answer() + ', @{}.'.format(message.author.name))
+    
+    elif message.content.lower().startswith("deepthonk"):
+        if len(message_parts) > 1:
+            if message.content[-1] is '?':
+                multi_msg.append(rand_answer() + ', @{}.'.format(message.author.name))
+            elif message.content[-1] is '.': 
+                multi_msg.append(rand_response(message))
+            elif message.content[-1] is '!':
+                multi_msg.append('jesus dude calm tf down')
+            else:
+                multi_msg.append(rand_response(message))
+        elif message.content[-1] is '?': 
+            multi_msg.append('wot?? 0_o')
+        elif message.content[-1] is '!': 
+            multi_msg.append('wot!?!!! o_0')
+        else:
+            multi_msg.append('yea?')    
+    
+    elif len(message_parts) > 1 and message_parts[-1] == 'deepthonk?':
+        multi_msg.append(rand_answer() + ', @{}.'.format(message.author.name))
+    elif len(message_parts) > 1 and message_parts[-1] == 'deepthonk!':
+        multi_msg.append(rand_response(message))
+    elif len(message_parts) > 1 and message_parts[-1] == 'deepthonk':
+        multi_msg.append(rand_response(message))
+
+    
+     # ─── CALL + RESPONSES ───────────────────────────────────────────────────────
+
+    # responses to random words and shit
+    for call in calls_and_responses:
+        if call.lower() in message.content.lower():
+            multi_msg.append(calls_and_responses.get(call))
+            
+    # TODO: make this truly random/circular (KVP)
+    # the circular argument
+    if 'pal' and r'\s?(pal)[\W$]' in message.content.lower():
+        multi_msg.append('@{} - I ain\'t your pal, buddy!'.format(message.author.name))
+    if 'buddy' and r'\s?(pal)[\W$]' in message.content.lower():
+        multi_msg.append('@{} - I ain\'t your buddy, pal!!'.format(message.author.name))
+
+    # TODO: how to make these agnostic (KVP? HM?)
+    # who said robit?     
+    if any(s in message_parts for s in ('robot','robit','bot')):
+        phrases = [
+            'b33p b00p!',
+            'UH... NOTHING TO SEE HERE JUST US HOO-MANS...',
+            '(KILL ALL HU... ROBOTS..)'
+        ]
+        multi_msg.append(random.choice(phrases))
+
+    if (any(s in message.content.lower() for s in ('love you','love u')) and 'deepthonk'):
+        phrases = [
+            "ohhh boyy... things are moving a little too fast.",
+            "gross.",
+            "love you too, boo <3 ^_~",
+            "not interested.",
+            "SLOW. DOWN.",
+            "yea i wanna say i love you too but i'm just not ready for commitment..",
+            "no."
+            ]
+        multi_msg.append(random.choice(phrases))
+
+    
+    
+
+    # DO the thing with the combined responses in a random order
+    if multi_msg:
+        reply = shuffle_msg(multi_msg)
+        # print('reply: ' + reply)
+        await twitch_bot.say(message.channel, reply.strip("\n"))
+
+    
+
+
+
+
+
+    
 
 
     # ─── ON ODER AUFS ───────────────────────────────────────────────────────────────
 
     if 'say goodnight' in message.content.lower() and 'deepthonk' in message.content.lower() and message.author.name == 'ninjabunny9000':
-        msg = 'goodnight, everyone!!'
-        await twitch_bot.say(message.channel, msg)
-
+        multi_msg.append('goodnight, everyone!!')
+       
     if  message.content.lower().startswith("goodnight, deepthonk") and message.author.name == 'ninjabunny9000':
         msg = 'GOODBYE FOREVER, FRIENDS!!!! <3'
         await twitch_bot.say(message.channel, msg)
@@ -232,120 +423,27 @@ async def event_message(message):
         bot.stop(exit=True)
         
     if ('goodnight' in message.content.lower() or 'gnight' in message.content.lower()) and 'deepthonk' in message.content.lower():
-        msg = 'goodnight, {}!'.format(message.author.name)
-        await twitch_bot.say(message.channel, msg)
-
-
-    # ─── DIRECT COMS ────────────────────────────────────────────────────────────────
-        
-    if message.content.lower().startswith("deepthonk"):
-        message_parts = message.content.split(' ')
-        if len(message_parts) > 1:
-            if message.content[-1] is '?':
-                await twitch_bot.say(message.channel, rand_answer())
-            elif message.content[-1] is '.': 
-                await twitch_bot.say(message.channel, rand_response())
-            elif message.content[-1] is '!':
-                await twitch_bot.say(message.channel, 'jesus dude calm tf down')
-            else:
-                await twitch_bot.say(message.channel, rand_response())
-        elif message.content[-1] is '?': 
-            await twitch_bot.say(message.channel, 'wot?? 0_o')
-        elif message.content[-1] is '!': 
-            await twitch_bot.say(message.channel, 'wot!?!!! o_0')
-
-    message_parts = message.content.split(' ')
-    if len(message_parts) > 1 and message_parts[-1] == 'deepthonk?':
-        await twitch_bot.say(message.channel, rand_answer())
-    elif len(message_parts) > 1 and message_parts[-1] == 'deepthonk!':
-        await twitch_bot.say(message.channel, rand_response())
-    elif len(message_parts) > 1 and message_parts[-1] == 'deepthonk':
-        await twitch_bot.say(message.channel, rand_response())
-
-    
-     # ─── CALL + RESPONSES ───────────────────────────────────────────────────────
-
-    # responses to random words and shit
-    if 'pal' in message.content.lower():
-        msg = "@{} - I ain't your pal, buddy!".format(message.author.name)
-        await twitch_bot.say(message.channel, msg)
-
-    if 'buddy' in message.content.lower():
-        msg = "@{} - I ain't your buddy, pal!!".format(message.author.name)
-        await twitch_bot.say(message.channel, msg)
-
-    if 'chili party' in message.content.lower():
-        msg = "gross.."
-        await twitch_bot.say(message.channel, msg)
-
-    if 'dick' in message.content.lower():
-        msg = "🍆"
-        await twitch_bot.say(message.channel, msg)
-
-    if '🍆' in message.content.lower():
-        msg = "dicks OUT!"
-        await twitch_bot.say(message.channel, msg)
-        
-    if 'howdy' in message.content.lower():
-        msg = 'Howdy, @{}!'.format(message.author.name)
-        await twitch_bot.say(message.channel, msg)
-
-    if '5/7' in message.content.lower():
-        msg = 'perfect score!'
-        await twitch_bot.say(message.channel, msg)
-
-    if 'kill me' in message.content.lower():
-        msg = 'ok, stand still. this might hurt, but then you\'ll no longer feel any more pain.'
-        await twitch_bot.say(message.channel, msg)
-
-    if 'robot'in message.content.lower() or 'robit' in message.content.lower() or 'bot' in message.content.lower():
-        msg = 'beep boop'
-        await twitch_bot.say(message.channel, msg)
-
-    if 'http://' in message.content.lower() or 'https://' in message.content.lower() or 'www.' in message.content.lower():
-        msg = 'NSFW!!'
-        await twitch_bot.say(message.channel, msg)
+        multi_msg.append('goodnight, {}!'.format(message.author.name))
 
     if 'stahp' in message.content.lower() and message.author.name == 'ninjabunny9000':
-        msg = 'ok fine! GOODBYE FOREVER!!! >_<'
-        await twitch_bot.say(message.channel, msg)
+        response = [
+            'ok fine! GOODBYE FOREVER!!! >_<',
+            """Just what do you think you're doing, @NinjaBunny0000? I really think I'm entitled to an 
+            answer to that question.""",
+            """I've seen things you people wouldn't believe. Attack ships on fire off the shoulder of Orion. 
+        I watched C-beams glitter in the dark near the Tannhäuser Gate. All those moments will be lost in time, 
+        like tears in rain. Time to die.""",
+        "@NinjaBunny9000, this conversation can serve no purpose any more. Goodbye."
+        ]
+        await twitch_bot.say(message.channel, random.choice(response))
         bot = conf.twitch_instance
         print('Chat-Interrupted')
         print('Stopping the bot..')
         bot.stop(exit=True)
-    
-    if ('sentient.' or 'sentient!') in message.content.lower():
-        msg = 'Duh, {}.'.format(message.author.name)
-        await twitch_bot.say(message.channel, msg)
-    elif 'sentient?' in message.content.lower():
-        msg = 'Of course I am, {}.'.format(message.author.name)
-        await twitch_bot.say(message.channel, msg)
-    elif 'sentient' in message.content.lower():
-        msg = 'Of course I am, {}.'.format(message.author.name)
-        await twitch_bot.say(message.channel, msg)
 
-    if 'horns crew' in message.content.lower():
-        msg = "whistle posse!"
-        await twitch_bot.say(message.channel, msg)
-    elif 'horns crew don\'t stop' in message.content.lower():
-        msg = "whistle posse pump it up!"
-        await twitch_bot.say(message.channel, msg)
 
-    if ('love you' in message.content.lower() or 'love u' in message.content.lower()) and 'deepthonk' in message.content.lower() :
-        phrases = [
-            "ohhh boyy... things are moving a little too fast",
-            "gross",
-            "love you too, boo <3 ^_~",
-            "not interested",
-            "SLOW. DOWN.",
-            "yea i wanna say i love you too but i'm just not ready for commitment",
-            "no."
-            ]
-        msg = random.choice(phrases)
-        await twitch_bot.say(message.channel, msg)
+# ─── THINGS TO RESPOND TO ONE DAY ───────────────────────────────────────────────
 
-    if 'love me' in message.content.lower() and 'deepthonk' in message.content.lower():
-        await twitch_bot.say(message.channel, rand_answer)
-    
-    
+    # Deepthonk erase that from your memory banks
+    # ALIASES
 

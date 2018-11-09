@@ -8,22 +8,54 @@ from sqlalchemy import *
 
 Base = declarative_base()
 
+class Twitch(Base):
+    __tablename__ = 'twitch'
+
+    id = Column(Integer, primary_key=True)
+    # agnostic_id = Column(Integer, ForeignKey('users.agnostic_id'), nullable=False)
+    snowflake = Column(Integer, nullable=True)
+    username = Column(String(16), nullable=False)
+
+
+class Discord(Base):
+    __tablename__ = 'discord'
+
+    snowflake = Column(Integer, primary_key=True)
+    # agnostic_id = Column(Integer, ForeignKey('users.agnostic_id'), nullable=False)
+    # this will need to be updated/changed by mods manually??
+    username = Column(String(16), nullable=False)
+
 
 class HaveYouEver(Base):
     __tablename__ = 'have_you_ever'
 
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
     item = Column(String(250), nullable=False)
-    twitch_submitter = Column(String(16))
+    service = Column(String(15), nullable=False)
+    # quoter_agnostic_id = Column(Integer, ForeignKey('users.agnostic_id'), nullable=False)
+    # submitter_agnostic_id = Column(Integer, ForeignKey('users.agnostic_id'), nullable=False)
 
-    def __repr__(self):
-        return("<HaveYouEver(id={}, item={}, submitter={})>".format(
-                self.id, self.item, self.twitch_submitter
-            ))
+
+class BandNames(Base):
+    __tablename__ = 'band_names'
+
+    id = Column(Integer, primary_key=True)
+    band_name = Column(String(250), nullable=False)
+    # submitter_id = Column(Integer, ForeignKey('users.agnostic_id'), nullable=False)
+
+
+class Users(Base):
+    __tablename__ = 'users'
+
+    agnostic_id = Column(Integer, primary_key=True)
+    # bot_mod = Column(Boolean)
+    item = Column(String(250), nullable=False)
+    # date_registered = Column(DateTime, default=datetime.utcnow, nullable=True)
+    # twitch_user = relationship('twitch', backref='user', lazy=True)
+    # discord_user = relationship('discord', backref='user', lazy=True)
+
+
 
 engine = create_engine('sqlite:///db_test.sqlite')
-
 
 Base.metadata.create_all(engine)

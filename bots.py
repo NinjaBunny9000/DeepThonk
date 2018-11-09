@@ -16,12 +16,15 @@ def start_twitch():
 def main():
     start_twitch()
 
+twitch_bot = conf.twitch_instance
 
 if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
         print('Terminal-Interrupted')
+        # twitch_chat.say_goodbye()
+        twitch_bot.say('ninjabunny9000', '@NinjaBunny9000 killed me! D:')
         bot = conf.twitch_instance
         bot.stop(exit=True)
         os._exit(0)   
