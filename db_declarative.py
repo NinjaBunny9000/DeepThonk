@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy import *
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -12,9 +13,10 @@ class Twitch(Base):
     __tablename__ = 'twitch'
 
     id = Column(Integer, primary_key=True)
-    # agnostic_id = Column(Integer, ForeignKey('users.agnostic_id'), nullable=False)
+    agnostic_id = Column(Integer, ForeignKey('users.agnostic_id'), nullable=False)
     snowflake = Column(Integer, nullable=True)
     username = Column(String(16), nullable=False)
+    user = relationship("Users", back_populates="twitch")
 
 
 class Discord(Base):
@@ -49,12 +51,12 @@ class Users(Base):
 
     agnostic_id = Column(Integer, primary_key=True)
     # bot_mod = Column(Boolean)
-    item = Column(String(250), nullable=False)
-    # date_registered = Column(DateTime, default=datetime.utcnow, nullable=True)
+    date_registered = Column(DateTime, default=datetime.utcnow, nullable=True)
     # twitch_user = relationship('twitch', backref='user', lazy=True)
     # discord_user = relationship('discord', backref='user', lazy=True)
 
 
+Users.twitch = relationship("Twitch", order_by=Twitch.agnostic_id, back_populates="user")
 
 engine = create_engine('sqlite:///db_test.sqlite')
 

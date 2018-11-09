@@ -18,30 +18,35 @@ session = DBSession()
 # session = Session()
 
 
-def add_user_twitch():
+def add_user_twitch(message):
     '''Insert an agnostic user id into the User table'''
     # new_agnostic_user = Users(
     #     bot_mod=False
-    # )
+    # )message.author.id
     # session.add(new_agnostic_user)
-
+    temp_holder = session.query(Twitch).filter_by(snowflake=message.author.id).first()
+    if temp_holder is not None:
+        return False
+    # if (len(session.query(Twitch).filter(Twitch.snowflake == message.author.id)).all() > 0):
+    #     return
 
     session.add(Users(
         # bot_mod=False,
-        item="test"
+        
         ))
     session.commit()
 
 
-    # new_twitch_user = Twitch(
-    #     agnostic_id=db_query.get_latest_id(),
-    #     snowflake=message.author.id,
-    #     username=message.author.name
-    # )
-    # print(new_twitch_user)
+    new_twitch_user = Twitch(
+        agnostic_id=db_query.get_latest_id(),
+        snowflake=message.author.id,
+        username=message.author.name
+    )
+    print(new_twitch_user)
    
-    # session.add(new_twitch_user)
-    # session.commit()
+    session.add(new_twitch_user)
+    session.commit()
+    return True
 
 
 def add_hye(list_item, submitter):

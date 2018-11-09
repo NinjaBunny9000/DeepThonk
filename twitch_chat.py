@@ -265,8 +265,10 @@ async def haveyou(message):
 
 @twitch_bot.command('register')
 async def register(message):
-    db_insert.add_user_twitch()
-    msg = 'registered'
+    if db_insert.add_user_twitch(message):
+        msg = 'Registered!'
+    else:
+        msg = 'You already registered!'
     await twitch_bot.say(message.channel, msg)
 
                 
@@ -425,7 +427,7 @@ async def event_message(message):
     if ('goodnight' in message.content.lower() or 'gnight' in message.content.lower()) and 'deepthonk' in message.content.lower():
         multi_msg.append('goodnight, {}!'.format(message.author.name))
 
-    if 'stahp' in message.content.lower() and message.author.name == 'ninjabunny9000':
+    if 'stahp' in message.content.lower() and (message.author.name == 'ninjabunny9000' or message.author.name == 'jigokuniku') :
         response = [
             'ok fine! GOODBYE FOREVER!!! >_<',
             """Just what do you think you're doing, @NinjaBunny0000? I really think I'm entitled to an 

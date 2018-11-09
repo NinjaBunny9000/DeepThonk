@@ -5,3 +5,4 @@ shortcut.lnk
 __pycache__/
 /images
 /tmp
+*.sqlite
