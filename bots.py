@@ -6,25 +6,22 @@ import signal
 import sys
 import os
 
+twitch_bot = conf.twitch_instance
+
 def start_twitch():
     # pull in the config var for ze bot!
-    print('Starting Twitchbot..')
-    bot = conf.twitch_instance
-    bot.start()
+    print('Starting the Twitch bot...')
+    twitch_bot.start()
 
 
 def main():
     start_twitch()
 
-twitch_bot = conf.twitch_instance
 
 if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print('Terminal-Interrupted')
-        # twitch_chat.say_goodbye()
-        twitch_bot.say('ninjabunny9000', '@NinjaBunny9000 killed me! D:')
-        bot = conf.twitch_instance
-        bot.stop(exit=True)
+        print('\nInterrupted via terminal. Shutting down...')
+        twitch_bot.stop(exit=True)
         os._exit(0)   
