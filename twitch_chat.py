@@ -267,12 +267,13 @@ async def event_message(message):
     if msg is not None:
         multi_msg.append(msg)
             
-    # TODO: make this truly random/circular (KVP)
     # the circular argument
-    if 'pal' and r'\s?(pal)[\W$]' in message.content.lower():
-        multi_msg.append('@{} - I ain\'t your pal, buddy!'.format(message.author.name))
-    if 'buddy' and r'\s?(pal)[\W$]' in message.content.lower():
-        multi_msg.append('@{} - I ain\'t your buddy, pal!!'.format(message.author.name))
+    if 'buddy' and r'\s?(buddy)[\W$]' in message.content.lower():
+        multi_msg.append('@{} - I ain\'t your buddy, friend!'.format(message.author.name))
+    elif 'friend' and r'\s?(friend)[\W$]' in message.content.lower():
+        multi_msg.append('@{} - I ain\'t your friend, guy!!'.format(message.author.name))
+    elif 'guy' and r'\s?(guy)[\W$]' in message.content.lower():
+        multi_msg.append('@{} - I ain\'t your guy, buddy!!'.format(message.author.name))
 
     # who said robit?     
     if any(s in message_parts for s in ('robot','robit','bot')):
@@ -369,3 +370,31 @@ async def register(message):
     else:
         msg = 'You already registered!'
     await twitch_bot.say(message.channel, msg)
+
+@twitch_bot.command('botmod')
+async def botmod(message):
+    """
+    Checks if user calling is a bot mod or not.
+    """
+    msg = 'Usage: !botmod, !botmod [user], or !botmod [user] [true/false]'
+    message_parts = message.content.lower().split(' ')  # TOKENIZE™
+    arg_count = len(message_parts)
+    if arg_count == 1:
+        if db_query.is_bot_mod_twitch(message.author.name):
+            msg = 'You are a Bot Mod!'
+        else:
+            msg = 'You are NOT a Bot Mod!'
+    elif arg_count == 2:
+        if db_query.is_bot_mod_twitch(message_parts[1]):
+            msg = '{} is a Bot Mod!'.format((message_parts[1]))
+        else:
+            msg = '{} is a NOT Bot Mod!'.format((message_parts[1]))
+    elif arg_count == 3:
+        # TODO: Verify user calling is a bot mod, themselves
+        if message_parts[2] =='true':
+            msg = db_query.set_bot_mod_twitch(message_parts[1], True)
+        elif message_parts[2] =='false':
+            msg = db_query.set_bot_mod_twitch(message_parts[1], False)
+    
+    await twitch_bot.say(message.channel, msg)
+    

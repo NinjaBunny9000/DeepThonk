@@ -26,3 +26,25 @@ def get_latest_id():
 def get_user():
     return session.query(Twitch).get(1)
 
+def is_bot_mod(queried_agnostic_id):
+    user_queried = session.query(Users).filter_by(agnostic_id=queried_agnostic_id).first()
+    return user_queried.bot_mod
+
+def is_bot_mod_twitch(name):
+    user_queried = session.query(Twitch).filter_by(username=name).first()
+    if user_queried is None:
+        return False
+
+    return is_bot_mod(user_queried.agnostic_id)
+
+def set_bot_mod_twitch(name, value):
+    twitch_user = session.query(Twitch).filter_by(username=name).first()
+    if twitch_user is None:
+        return '{} must register first!'.format(name)
+    twitch_user.user.bot_mod = value
+    session.commit() 
+    if value:
+        return '{} is now a Bot Mod.'.format(name)
+    else:
+        return '{} is no longer a Bot Mod.'.format(name)
+        
