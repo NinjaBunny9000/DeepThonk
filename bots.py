@@ -6,6 +6,13 @@ import signal
 import sys
 import os
 
+"""
+DEBUG/DEV/WIP NOTES:
+
+Currently the Discord module is *not* being called right now. You can still run it separately
+by just doing "python discord_chat.py" or whatever. WIP <3
+"""
+
 twitch_bot = conf.twitch_instance
 
 def start_twitch():

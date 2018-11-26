@@ -4,5 +4,6 @@ shortcut.lnk
 .pyc
 __pycache__/
 /images
-/tmp
 *.sqlite
+discord/**
+tmp/**
