@@ -9,19 +9,7 @@ import db_insert
 import db_query
 import random
 import content
-
-
-# ─── NOTES AND TODOS ────────────────────────────────────────────────────────────
-
-# Things to respond to: (ideas!)
-    # Deepthonk erase that from your memory banks
-    # ALIASES
-
-# comment basic commenty stuffs (technical term)
-# upload to dev then PR master branch
-# write the readme md stuffs
-# handle is_mod stuff a lot better, to include twitch mods as well as bot admins (or sep bot_admin func)
-# move SFX to their own module
+import asyncio
 
 
 # config ze bot!
@@ -57,6 +45,14 @@ def is_mod(message):
     else:
         return False
 
+ 
+def is_bot(message):
+    if (message.author.name.lower() in str(conf.bot_list).lower()):
+        return True
+    else:
+        return False
+
+
 def shuffle_msg(msg_list):
     """
     Takes a list of responses (if more than one) and shuffles them and combines them
@@ -64,6 +60,27 @@ def shuffle_msg(msg_list):
     """
     random.shuffle(msg_list)
     return ' '.join(msg_list)
+
+
+def change_scene(scene):
+    """
+    **Requires 'Advance Scene Switcher' plug-in**
+    Swap scenes in OBS studio by writing the scene name to a file.
+    """
+    f = open('scene_next.txt', 'w+')
+    f.write(scene)
+    f.close()
+
+def get_scene():
+    """
+    **Requires 'Advance Scene Switcher' plug-in**
+    Read current scene from OBS studio, which is writing scene names 
+    to a .txt file.
+    """
+    f = open('scene_current.txt', 'r+')
+    scene = f.readline()
+    f.close()
+    return scene
 
 
 # ─── HELP MENU ──────────────────────────────────────────────────────────────────
@@ -145,7 +162,6 @@ async def cah(message):
     await twitch_bot.say(message.channel, play_hand())
 
 
-
 @twitch_bot.command('easteregg')
 async def easteregg(message):
     """
@@ -173,6 +189,26 @@ async def haveyou(message):
     #     msg = 'Have you ever ' + db_query.rand_hye().item + '?'
     #     await twitch_bot.say(message.channel, msg) # print the current task
 
+@twitch_bot.command('theme')
+async def theme(message):
+    msg = "The theme Bun uses is Material Ocean High Contrast, with some modifications: https://imgur.com/a/ivJByy2"
+    await twitch_bot.say (message.channel, msg)
+
+@twitch_bot.command('editor')
+async def editor(message):
+    msg = "The editor Bun uses is VSCode: https://code.visualstudio.com/"
+    await twitch_bot.say (message.channel, msg)
+
+@twitch_bot.command('shoutout')
+async def shoutout(message):
+    if is_mod(message):
+        msg_parts = parse_commands(message, 2)
+        try:
+            msg = "Big ups to @{}! They're a friend of the stream and worth a follow, if you have the time!".format(msg_parts[1])
+            await twitch_bot.say(message.channel, msg)
+        except:
+            msg = "You didn't include a streamer to shout out to, {}.".format(message.author.name)
+            await twitch_bot.say(message.channel, msg)
 
 # ─── OVERRIDE ───────────────────────────────────────────────────────────────────
 
@@ -209,10 +245,10 @@ async def event_message(message):
         return
 
 
-    # ─── SILLY STUFF ────────────────────────────────────────────────────────────────
+# ─── SILLY STUFF ────────────────────────────────────────────────────────────────
 
     # mock links that people send
-    if (any(s in message.content.lower() for s in ('http://','https://','www.'))) and (not is_mod(message)):
+    if (any(s in message.content.lower() for s in ('http://','https://','www.'))) and (not is_mod(message) or not is_bot(message)):
         await twitch_bot.say(message.channel, 'NSFW!!')
 
     # respond if sentient
@@ -220,7 +256,7 @@ async def event_message(message):
         await twitch_bot.say(message.channel, content.sentient(message))
 
 
-    # ─── WHEN BOT IS DIRECTLY ADDRESSED ─────────────────────────────────────────────
+# ─── WHEN BOT IS DIRECTLY ADDRESSED ─────────────────────────────────────────────
 
     # don't be a wanker
     elif 'oi' in message_parts[0] and bot in message_parts:
@@ -260,7 +296,7 @@ async def event_message(message):
         multi_msg.append(content.generic_responses(message))
 
     
-     # ─── CALL + RESPONSES ───────────────────────────────────────────────────────
+# ─── CALL + RESPONSES ───────────────────────────────────────────────────────
 
     # responses to random words and shit. customize in content.py
     msg = content.get_response_to_call(message)
@@ -291,7 +327,7 @@ async def event_message(message):
         await twitch_bot.say(message.channel, reply.strip("\n"))
 
 
-    # ─── AUF ODER AUS ───────────────────────────────────────────────────────────────
+# ─── AUF ODER AUS ───────────────────────────────────────────────────────────────
 
     # when it's past the bot's bed time
     if 'say goodnight' in message.content.lower() and bot in message.content.lower() and is_bot_admin:
@@ -315,6 +351,7 @@ async def event_message(message):
         print('Stopping the bot..')
         bot.stop(exit=True)
 
+
 # stops the bot from Twitch chat command !die
 @twitch_bot.command('quit')
 async def quit(message):
@@ -337,6 +374,61 @@ async def quit(message):
 async def slideup(message):
     await playsound('sfx/slideup.mp3')
 
+
+# ─── SCENE SWITCHER ─────────────────────────────────────────────────────────────
+
+@twitch_bot.command('scene')
+async def scene(message):
+    if is_mod(message):
+        scene = get_scene()
+        msg = '@{}, the current scene is {}'.format(message.author.name, scene)
+        await twitch_bot.say(message.channel, msg)
+
+    
+@twitch_bot.command('raid')
+async def raid(message):
+    if is_mod(message):
+        await asyncio.sleep(4)
+        await twitch_bot.say(message.channel, "!redalert")  # RED LIGHTS
+
+        await asyncio.sleep(5)  # 9s BSOD
+        change_scene('TECHNICAL DIFFICULTIES')
+        
+        await asyncio.sleep(6)  # 15s
+        msg = 'ATTENTION, NINJAS! We\'ve been RAIDED! Our networks are vulnerable!!'
+        await twitch_bot.say(message.channel, msg)
+        
+        await asyncio.sleep(10)  # 25s Switch to HackerTyper
+        change_scene('RAID')    
+        
+        await asyncio.sleep(4) 
+        msg = 'Type defendNetwork(); to harness avilable blockchains and boost our firewall\'s signal.'
+        await twitch_bot.say(message.channel, msg)
+
+        await asyncio.sleep(10) 
+        msg = 'Network defenses are failing. Initiate all protocols! Pizza! Donuts! Bacon!! THROW ALL WE\'VE GOT AT THEM!!'
+        await twitch_bot.say(message.channel, msg)
+
+        await asyncio.sleep(5) # 40s Pizza
+        await twitch_bot.say(message.channel, "pizzaProtocol();")
+
+                
+@twitch_bot.command('raidover')
+async def raidover(message):
+    if is_mod(message):
+        change_scene('RAID2')
+        await twitch_bot.say(message.channel, "Keepo")
+        await asyncio.sleep(2) #
+        msg = "!disabled3"
+        await twitch_bot.say(message.channel, msg)
+        change_scene('GAMES')
+
+
+@twitch_bot.command('bsod')
+async def bsod(message):
+    if is_mod(message):
+        change_scene('BSOD')
+   
 
 # ─── DEBUG COMMANDS ─────────────────────────────────────────────────────────────
 
@@ -371,6 +463,7 @@ async def register(message):
         msg = 'You already registered!'
     await twitch_bot.say(message.channel, msg)
 
+
 @twitch_bot.command('botmod')
 async def botmod(message):
     """
@@ -397,4 +490,20 @@ async def botmod(message):
             msg = db_query.set_bot_mod_twitch(message_parts[1], False)
     
     await twitch_bot.say(message.channel, msg)
+
+
+# list commands registered with the async library
+@twitch_bot.command('listcommands')
+async def listcommands(message):
+    commands = list(twitch_bot.commands.keys())
+    print(commands)
+    # await twitch_bot.say(message.channel, twitch_bot.commands)
     
+
+# switch scene to GAMES    
+@twitch_bot.command('main')
+async def main(message):
+    if is_mod(message):
+        change_scene('MAIN')
+        msg = "Switching scene back to MAIN."
+        await twitch_bot.say(message.channel, msg) 

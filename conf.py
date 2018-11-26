@@ -5,6 +5,10 @@ import sys
 
 
 ignore_list = [
+    "nobodyYET"
+]
+
+bot_list = [
     "streamelements"
 ]
 
