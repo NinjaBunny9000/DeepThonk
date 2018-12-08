@@ -138,31 +138,46 @@ async def strike(message):
 
     user = token[1] 
 
+    # check if user is still in room
+        # report if they aren't & return
+
     # handle incorrect usages/token-lengths ????????
 
     try:
         # if they have 2 stikes or were still on probation
-        if time.time() - probation_timer[user] >= 20 or strike_table[user] == 2:
+        if time.time() - probation_timer[user] <= 20 or strike_table[user] == 2:
             # ban dem
             # remove from dictionaries
             # add to list of banned pplz or something
-            msg = 'bannededed'
-            await twitch_bot.say(message.channel, msg)
+            if strike_table[user] == 2:
+                msg = 'Strike #3, @{}. Hasta la vista, chump.'.format(user)
+                await twitch_bot.say(message.channel, msg)
+            else:
+                msg = 'Ya dun goof\'d, @{}. Hasta la vista, chump.'.format(user)
+                await twitch_bot.say(message.channel, msg)
+
+            await twitch_bot.say(message.channel, '/timeout {} 5'.format(user))
 
         # else add or increment an strike count
         else:
             if user in strike_table:
                 # increment
                 strike_table.update({user : 2})
-                await twitch_bot.say(message.channel, 'strike #2')
+                msg = """Strike #2, @{}. Your next strike will result in a ban.
+                Please review the Chat Rules, ToS (https://www.twitch.tv/p/legal/terms-of-service/) 
+                and Community Guidelines (https://www.twitch.tv/p/legal/community-guidelines/)
+                """.format(user)
+                await twitch_bot.say(message.channel, msg)
     except KeyError:
         # add them to the list
         strike_table.update({user : 1})
         # start timer
         probation_timer.update({user : time.time()})
-        users_on_probation = ", ".join(strike_table.keys())
-        print(users_on_probation)
-        msg = 'not on striked. put on striked nao. current stroktders = {}'.format(users_on_probation)
+        msg = """Strike #1, @{}.  You're on a 10m probationary period. Another strike during this 
+                period will result in an immediate and irreversable ban. Please review the 
+                Chat Rules, ToS (https://www.twitch.tv/p/legal/terms-of-service/) and 
+                Community Guidelines (https://www.twitch.tv/p/legal/community-guidelines/)
+            """.format(user)
         await twitch_bot.say(message.channel, msg)
 
 
@@ -176,9 +191,44 @@ async def timer(message):
 
     # tokenize™
     token = tokenize(message, 2)
-    
-    user = token[1] 
+    user = token[1]
 
+    try:
+        if time.time() - probation_timer[user] <= 20:
+            msg = '@{} still gittin probed'.format(user)
+            await twitch_bot.say(message.channel, msg)
+        else:
+            msg = '@{} not gittin probed (ANYMORE), but has {} strikes.'.format(user, strike_table[user])
+            await twitch_bot.say(message.channel, msg)
+            await asyncio.sleep(4) # dramatic pause
+            await twitch_bot.say(message.channel, '!dundun')
+    except KeyError:
+        msg = '@{} not gittin probed (YET)'.format(user)
+        await twitch_bot.say(message.channel, msg)
+        await asyncio.sleep(4) # dramatic pause
+        await twitch_bot.say(message.channel, '!dundun')
+
+
+
+@twitch_bot.command('strikes')
+async def strikes(message):
+    global strike_table
+    
+    # check for permissions
+    if not is_mod(message):
+        return
+
+    # tokenize™
+    token = tokenize(message, 1)
+    
+    user = token[1]
+
+    try:
+        msg = '@{} has {} strikes'.format(user, strike_table[user])
+    except KeyError:
+        msg = 'nope'
+        
+    await twitch_bot.say(message.channel, msg)
 
 
 @twitch_bot.command('mybad')
@@ -195,58 +245,8 @@ async def stroken(message):
     if strike_table:
         users = '[%s]' % ', '.join(map(str, strike_table.keys()))
         users = users.strip('[]')
-        msg = 'dis who dun ben stroken: ' + str(users)
+        msg = 'Users with 1 or more strikeouts: ' + str(users)
         await twitch_bot.say(message.channel, msg)
     else:
         await twitch_bot.say(message.channel, 'nun be stroked rn fam')
-
-
-
-# @twitch_bot.command('stroke')
-# async def stroke(message):
-
-#     # tokenize™
-#     token = tokenize(message, 2)
-
-#     badder = Probed(token[1], 1)
-    
-#     msg = 'dis who dun bad: ' + badder.user
-#     await twitch_bot.say(message.channel, msg)
-
-
-# @twitch_bot.command('stroken')
-# async def stroken(message):
-#     global stroken_users
-    
-#     if stroken_users:
-#         users = '[%s]' % ', '.join(map(str, stroken_users))
-#         users = users.strip('[]')
-#         msg = 'dis who dun ben stroken: ' + str(users)
-#         await twitch_bot.say(message.channel, msg)
-#     else:
-#         await twitch_bot.say(message.channel, 'nun be stroked rn fam')
-
-# class Probed:
-#     '*** Banned, not abducted. ***'
-    
-#     def __init__(self, twitch_username, strikes):
-#         self.user = twitch_username
-#         self.strikes = strikes
-#         self.timer = time.time()
-
-#         probate(self.user)
-
-#     def __repr__(self):
-#         return 'user={} strikes={} timer={}'.format(
-#             self.user, self.strikes, self.timer
-#         )
-   
-
-
-
-
-
-    
-
-
 
