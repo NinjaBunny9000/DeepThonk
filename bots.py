@@ -3,6 +3,7 @@ import conf
 import twitch_chat
 import cmd
 import reacts
+import moderation
 import sfx
 import signal
 import sys
@@ -24,7 +25,6 @@ def start_twitch():
     # twitch_bot.loop.run_until_complete(twitch_bot._tcp_echo_client())
     
     
-
 def main():
     start_twitch()
 
