@@ -23,6 +23,7 @@ def get_twitch_config():
         oauth=cfg['twitch']['oauth'],
         channel=cfg['twitch']['channel'],         
         prefix=cfg['twitch']['prefix'],
+        client_id=cfg['twitch']['client-id']
     )
     return bot_config
 

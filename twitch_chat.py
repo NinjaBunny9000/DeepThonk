@@ -1,7 +1,6 @@
 import conf
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_admin
 from cah import play_hand
-from playsound import playsound
 from haveyouever import have_you_tho
 import sys
 import os
@@ -10,6 +9,8 @@ import db_query
 import random
 import content
 import asyncio
+from twitch_permissions import is_bot, is_mod
+from reacts import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count
 
 
 # config ze bot!
@@ -18,6 +19,11 @@ twitch_bot = twitch_instance
 band_names = []
 current_task = 'None.'
 welcome_msg_sent = 0
+raid_status = False
+squad_count = 0
+troll_count = 0
+troll_bans = 0
+
 
 
 # ─── WELCOME MESSAGE ────────────────────────────────────────────────────────────
@@ -39,18 +45,7 @@ def parse_commands(message, parts):
     return message_parts
 
  
-def is_mod(message):
-    if (message.author.mod or message.author.name.lower() == streamer().lower()):
-        return True
-    else:
-        return False
 
- 
-def is_bot(message):
-    if (message.author.name.lower() in str(conf.bot_list).lower()):
-        return True
-    else:
-        return False
 
 
 def shuffle_msg(msg_list):
@@ -61,26 +56,8 @@ def shuffle_msg(msg_list):
     random.shuffle(msg_list)
     return ' '.join(msg_list)
 
-
-def change_scene(scene):
-    """
-    **Requires 'Advance Scene Switcher' plug-in**
-    Swap scenes in OBS studio by writing the scene name to a file.
-    """
-    f = open('scene_next.txt', 'w+')
-    f.write(scene)
-    f.close()
-
-def get_scene():
-    """
-    **Requires 'Advance Scene Switcher' plug-in**
-    Read current scene from OBS studio, which is writing scene names 
-    to a .txt file.
-    """
-    f = open('scene_current.txt', 'r+')
-    scene = f.readline()
-    f.close()
-    return scene
+def tokenize(message, parts):
+        return message.content.lower().split(' ', parts) # TOKENIZE™
 
 
 # ─── HELP MENU ──────────────────────────────────────────────────────────────────
@@ -219,6 +196,8 @@ async def event_message(message):
     add a conditional or two, and make all sorts of fun stuff happen!
     """
   
+    global raid_status
+
     # prevent bot from responding to itself
     if message.author.name == twitch_bot.nick:
         return
@@ -243,6 +222,20 @@ async def event_message(message):
         await twitch_bot.say(message.channel, '/me yawns')
         await twitch_bot.say(message.channel, 'maybe later, @{}'.format(message.author.name))
         return
+
+# ─── REACTS ─────────────────────────────────────────────────────────────────────
+
+    if "end raid" in message.content.lower():
+        raid_status = False
+        reset_emote_count()
+        print("raid ended")
+
+        if raid_in_progress(message):
+            raid_status = True
+
+        if raid_status:
+            keep_score(message)
+
 
 
 # ─── SILLY STUFF ────────────────────────────────────────────────────────────────
@@ -368,68 +361,6 @@ async def quit(message):
         await twitch_bot.say(message.channel, msg)
 
 
-# ─── SFX ────────────────────────────────────────────────────────────────────────
-
-@twitch_bot.command('slideup')
-async def slideup(message):
-    await playsound('sfx/slideup.mp3')
-
-
-# ─── SCENE SWITCHER ─────────────────────────────────────────────────────────────
-
-@twitch_bot.command('scene')
-async def scene(message):
-    if is_mod(message):
-        scene = get_scene()
-        msg = '@{}, the current scene is {}'.format(message.author.name, scene)
-        await twitch_bot.say(message.channel, msg)
-
-    
-@twitch_bot.command('raid')
-async def raid(message):
-    if is_mod(message):
-        await asyncio.sleep(4)
-        await twitch_bot.say(message.channel, "!redalert")  # RED LIGHTS
-
-        await asyncio.sleep(5)  # 9s BSOD
-        change_scene('TECHNICAL DIFFICULTIES')
-        
-        await asyncio.sleep(6)  # 15s
-        msg = 'ATTENTION, NINJAS! We\'ve been RAIDED! Our networks are vulnerable!!'
-        await twitch_bot.say(message.channel, msg)
-        
-        await asyncio.sleep(10)  # 25s Switch to HackerTyper
-        change_scene('RAID')    
-        
-        await asyncio.sleep(4) 
-        msg = 'Type defendNetwork(); to harness avilable blockchains and boost our firewall\'s signal.'
-        await twitch_bot.say(message.channel, msg)
-
-        await asyncio.sleep(10) 
-        msg = 'Network defenses are failing. Initiate all protocols! Pizza! Donuts! Bacon!! THROW ALL WE\'VE GOT AT THEM!!'
-        await twitch_bot.say(message.channel, msg)
-
-        await asyncio.sleep(5) # 40s Pizza
-        await twitch_bot.say(message.channel, "pizzaProtocol();")
-
-                
-@twitch_bot.command('raidover')
-async def raidover(message):
-    if is_mod(message):
-        change_scene('RAID2')
-        await twitch_bot.say(message.channel, "Keepo")
-        await asyncio.sleep(2) #
-        msg = "!disabled3"
-        await twitch_bot.say(message.channel, msg)
-        change_scene('GAMES')
-
-
-@twitch_bot.command('bsod')
-async def bsod(message):
-    if is_mod(message):
-        change_scene('BSOD')
-   
-
 # ─── DEBUG COMMANDS ─────────────────────────────────────────────────────────────
 
 @twitch_bot.command('debug')
@@ -450,6 +381,14 @@ async def author(message):
 async def channel(message):
     await twitch_bot.say(message.channel, str(message.channel.id))
 
+
+@twitch_bot.command('viewers')
+async def viewers(message):
+    print(twitch_bot.viewers)
+    print(twitch_bot.viewers["#" + message.channel])
+    print(twitch_bot.channel_stats)
+    print(twitch_bot.hosts)
+    print(twitch_bot.host_count)
 
 @twitch_bot.command('register')
 async def register(message):
@@ -492,18 +431,84 @@ async def botmod(message):
     await twitch_bot.say(message.channel, msg)
 
 
+
+
+
 # list commands registered with the async library
 @twitch_bot.command('listcommands')
 async def listcommands(message):
     commands = list(twitch_bot.commands.keys())
     print(commands)
     # await twitch_bot.say(message.channel, twitch_bot.commands)
-    
 
-# switch scene to GAMES    
-@twitch_bot.command('main')
-async def main(message):
-    if is_mod(message):
-        change_scene('MAIN')
-        msg = "Switching scene back to MAIN."
-        await twitch_bot.say(message.channel, msg) 
+
+@twitch_bot.command('trolls')
+async def trolls(message):
+    troll_status = "We've seen {} squads, {} shit-tier trolls, and have banned {} lame trolls tonight".format(
+        squad_count, troll_count, troll_bans
+    )
+    await twitch_bot.say(message.channel, troll_status)
+
+@twitch_bot.command('troll')
+async def troll(message):
+    global squad_count
+    global troll_count
+    global troll_bans
+    
+    token = tokenize(message, 3)
+    print(token)
+
+    doin_it_wrong = 'Usage: !troll pban/squad/shitlord. '
+
+    if len(token) == 1:
+        await twitch_bot.say(message.channel, doin_it_wrong)
+        await asyncio.sleep(3)
+        await twitch_bot.say(message.channel, 'Mods, be sure to ban trolls before giving them any \"attention\"')
+        return
+
+    if token[1] == 'squad':
+        squad_count += 1
+        response = 'Shitsquad registered. Whelp. Color-me surprised, we\'ve seen {} tonight.'.format(squad_count)
+        await twitch_bot.say(message.channel, response)
+
+    elif token[1] == 'shitlords':
+        try:
+            troll_count += int(token[2])
+            response = 'Shit-tier troll(s) registered. {} so far this stream. We are unimpressed.'.format(troll_count)
+            await twitch_bot.say(message.channel, response)
+            return
+        except:
+            usage = '!troll shitlord [qty] when u witnerss sub-par trolling. Git gudder, scrubs.'
+            await twitch_bot.say(message.channel, doin_it_wrong + usage)
+            return
+
+    elif token[1] == 'ban':
+        if is_mod(message):
+            try:
+                user = token[2]
+                ban_command = '/timeout {} 10'.format(user)
+                confirm = 'No problemo, @{}.'.format(message.author.name)
+                troll_bans += 1
+                await twitch_bot.say(message.channel, confirm)
+                if len(token) == 4:
+                    ban_reason = token[3]
+                    ban_warning = 'Banning @{} in 10s. Cuz {}. Say your last words, chump.'.format(user, ban_reason)
+                else:
+                    ban_warning = 'Banning @{} in 10s. Say your last words, chump.'.format(user)
+                await twitch_bot.say(message.channel, ban_warning)
+                await asyncio.sleep(10)
+                await twitch_bot.say(message.channel, ban_command)
+                rest_in_pepperonis = 'The problem has been taken care of, m\'lady. {} bans so far.'.format(troll_bans)
+                await twitch_bot.say(message.channel, rest_in_pepperonis)
+                await asyncio.sleep(4)
+                memes = '/me tips fedora'
+                await twitch_bot.say(message.channel, memes)
+                return
+            except:
+                usage = 'ie, !troll ban [username]. Mods only, meatbags.'
+                await twitch_bot.say(message.channel, doin_it_wrong + usage)
+                return
+        else:
+            msg = 'Nice try, chump.'
+            await twitch_bot.say(message.channel, msg)
+
