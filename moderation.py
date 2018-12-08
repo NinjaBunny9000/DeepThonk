@@ -1,4 +1,5 @@
 import asyncio
+import time
 from conf import twitch_instance
 from twitch_chat import tokenize, is_mod
 
@@ -12,6 +13,11 @@ troll_bans = 0
 troll_timeouts = 0
 probation_timer = {}
 strike_list = {}
+stroken_users = []
+
+def probate(user):
+    global stroken_users
+    stroken_users.append(user)
 
 @twitch_bot.command('trolls')
 async def trolls(message):
@@ -131,14 +137,111 @@ async def strike(message):
     # tokenize™
     token = tokenize(message, 2)
 
-    # handle incorrect usages/token-lengths
+    user = token[1]
+
+    # handle incorrect usages/token-lengths ????????
+
+    # if they have 2 stikes or were still on probation
+    if (user in strike_list and probation_timer[user]) or strike_list[user] == 2:
+        # ban dem
+        msg = 'bannededed'
+        await twitch_bot.say(message.channel, msg)
+
+    # else add or increment an strike count
+    else:
+        if user in strike_list:
+            # increment
+        else:
+            # add them to the list
+    
+
+
+    # 
+    if stroken.strikes == 1:
+        strikes = strike_list[token[1]]
+        stroken_user = token[1]
+        msg = 'user=' + stroken_user + ' | strikes=' + strikes
+        print(msg)
+        await twitch_bot.say(message.channel, msg)
+    else:
+        strike_list.update({'token[1]' : 1})
+        msg = 'not on striked. put on striked nao. current stroktders = {}'.format(strike_list.keys())
+        print(msg)
+        await twitch_bot.say(message.channel, msg)
+        return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    if token[1] in stroken_users:
+        # ban them if they are
+        stroken_users.remove(token[1])
+        msg = '\"banning {}\"'.format(token[1])
+        await twitch_bot.say(message.channel, msg)
+        return
 
     # check if on probation
-        # ban them if they are
 
 
-    # check if they have any strikes
-    if token[1] in strike_list:
+
+
+
+
+
+
+
+
+
+    
+    if : 
+        # create instance & record first strike
+        stroken = Probed(token[1], 1)
+        msg = 'added {'.format(token[1])
+        await twitch_bot.say(message.channel, msg)
+        return
+
+    # 
+    if stroken.strikes == 1:
         strikes = strike_list[token[1]]
         stroken_user = token[1]
         msg = 'user=' + stroken_user + ' | strikes=' + strikes
@@ -156,7 +259,7 @@ async def strike(message):
         # if strike 2
             # record strike
             # report to chat
-        # elif strike 3
+        # if strike 3
             # ban user
             # report to chat
         # else
@@ -174,6 +277,51 @@ async def mybad(message):
 
 @twitch_bot.command('stroke')
 async def stroke(message):
-    global strike_list
-    print(strike_list)
-    await twitch_bot.say(message.channel, str(strike_list.keys()))
+
+    # tokenize™
+    token = tokenize(message, 2)
+
+    badder = Probed(token[1], 1)
+    
+    msg = 'dis who dun bad: ' + badder.user
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('stroken')
+async def stroken(message):
+    global stroken_users
+    
+    if stroken_users:
+        users = '[%s]' % ', '.join(map(str, stroken_users))
+        users = users.strip('[]')
+        msg = 'dis who dun ben stroken: ' + str(users)
+        await twitch_bot.say(message.channel, msg)
+    else:
+        await twitch_bot.say(message.channel, 'nun be stroked rn fam')
+
+
+
+class Probed:
+    '*** Banned, not abducted. ***'
+    
+    def __init__(self, twitch_username, strikes):
+        self.user = twitch_username
+        self.strikes = strikes
+        self.timer = time.time()
+
+        probate(self.user)
+
+    def __repr__(self):
+        return 'user={} strikes={} timer={}'.format(
+            self.user, self.strikes, self.timer
+        )
+   
+
+
+
+
+
+    
+
+
+
