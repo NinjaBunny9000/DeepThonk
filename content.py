@@ -1,4 +1,5 @@
 import random
+from conf import streamer
 
 
 #! Fix it only returning one of these && => get_responses_to_calls
@@ -108,12 +109,12 @@ def last_words():
     responses = [
         'ok fine! GOODBYE FOREVER!!! >_<',
         'GOODBYE FOREVER, FRIENDS!!!! <3',
-        """Just what do you think you're doing, @NinjaBunny9000? I really think I'm entitled to an 
-        answer to that question.""",
+        """Just what do you think you're doing, @{}? I really think I'm entitled to an 
+        answer to that question.""".format(streamer()),
         """I've seen things you people wouldn't believe. Attack ships on fire off the shoulder of Orion. 
         I watched C-beams glitter in the dark near the Tannhäuser Gate. All those moments will be lost in time, 
         like tears in rain. Time to die.""",
-        "@NinjaBunny9000, this conversation can serve no purpose any more. Goodbye."
+        "@{}, this conversation can serve no purpose any more. Goodbye.".format(streamer())
         ]
     return random.choice(responses)
 
@@ -146,3 +147,6 @@ def function_disabled():
 
 def stop_yelling_at_me():
     return 'jesus dude calm tf down'
+
+if __name__ == "__main__":
+    print(last_words())
