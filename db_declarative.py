@@ -26,7 +26,17 @@ class Discord(Base):
     agnostic_id = Column(Integer, ForeignKey('users.agnostic_id'), nullable=False)
     # this will need to be updated/changed by mods manually??
     # username = Column(String(16), nullable=False)
+    user = relationship("Users", back_populates="discord")
 
+class Task(Base):
+    __tablename__ = 'task'
+
+    id = Column(Integer, primary_key=True)
+    description = Column(String(250), nullable=False)
+    date_registered = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    def __str__(self):
+        return "{} - {}/{}/{}".format(self.description, self.date_registered.day, self.date_registered.month, self.date_registered.year)
 
 class HaveYouEver(Base):
     __tablename__ = 'have_you_ever'
@@ -52,11 +62,9 @@ class Users(Base):
     agnostic_id = Column(Integer, primary_key=True)
     bot_mod = Column(Boolean, default=0)
     date_registered = Column(DateTime, default=datetime.utcnow, nullable=True)
+    twitch = relationship("Twitch", order_by=Twitch.agnostic_id, back_populates="user")
+    discord = relationship("Discord", order_by=Discord.agnostic_id, back_populates="user")
 
-
-
-Users.twitch = relationship("Twitsch", order_by=Twitch.agnostic_id, back_populates="user")
-Users.discord = relationship("Discord", order_by=Discord.agnostic_id, back_populates="user")
 
 engine = create_engine('sqlite:///db_test.sqlite')
 

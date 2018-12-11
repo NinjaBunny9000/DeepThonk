@@ -4,7 +4,7 @@ import db_query
 from datetime import datetime
  
 # DON'T FORGET to add new tables to this import..
-from db_declarative import HaveYouEver, Users, Twitch, Discord, Base
+from db_declarative import HaveYouEver, Users, Twitch, Discord, Task, Base
 
 engine = create_engine('sqlite:///db_test.sqlite')
 
@@ -54,6 +54,14 @@ def add_hye(list_item, submitter):
     new_item = HaveYouEver(
         item=list_item, 
         twitch_submitter=submitter
+        )
+    session.add(new_item)
+    session.commit()
+
+def add_task(description):
+    '''Insert an item in the Task table'''
+    new_item = Task(
+        description=description
         )
     session.add(new_item)
     session.commit()

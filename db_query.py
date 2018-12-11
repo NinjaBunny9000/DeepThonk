@@ -1,4 +1,4 @@
-from db_declarative import HaveYouEver, Users, Twitch, Base
+from db_declarative import HaveYouEver, Users, Twitch, Task, Base
 from sqlalchemy import create_engine, desc
 
 import random
@@ -19,12 +19,28 @@ def rand_hye():
     rand_item = session.query(HaveYouEver).get(rand_num)
     return rand_item
 
+def rand_task():    #TODO - Currently copy/pased HYE code
+    rows = session.query(Task).count()
+    rand_num = random.randrange(1, rows+1)
+    rand_item = session.query(Task).get(rand_num)
+    return rand_item
+    
+def get_latest_task():
+    return session.query(Task).order_by(desc(Task.date_registered)).first()
+
 def get_latest_id():
     last_id = session.query(Users).order_by(desc(Users.agnostic_id)).first()
     return last_id.agnostic_id
 
 def get_user():
     return session.query(Twitch).get(1)
+
+def get_agnostic_id_twitch(snowflake):
+    temp_holder = session.query(Twitch).filter_by(snowflake=snowflake).first()
+    if temp_holder is not None:
+        return temp_holder.agnostic_id
+    else:
+        return None
 
 def is_bot_mod(queried_agnostic_id):
     user_queried = session.query(Users).filter_by(agnostic_id=queried_agnostic_id).first()

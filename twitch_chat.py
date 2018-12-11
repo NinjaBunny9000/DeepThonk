@@ -17,7 +17,6 @@ from reacts import raid_start, raid_event, raid_in_progress, keep_score, reset_e
 twitch_bot = twitch_instance
 
 band_names = []
-current_task = 'None.'
 welcome_msg_sent = 0
 raid_status = False
 
@@ -118,16 +117,18 @@ async def task(message):
     """
     message_parts = parse_commands(message, 1)
 
-    global current_task
-
     if len(message_parts) >= 2 and is_mod(message):
-        current_task = str(message_parts[1])  # update the current task
+        current_task = str(message_parts[1])[:250]  # update the current task
+        db_insert.add_task(current_task)
         await twitch_bot.say(message.channel, 'Task updated')
     
     else:
-        msg = 'Current task: {}'.format(current_task)
+        msg = 'Current task: {}'.format(db_query.get_latest_task())
         await twitch_bot.say(message.channel, msg) # print the current task
 
+@twitch_bot.command('randomtask')
+async def randomtask(message):
+    await twitch_bot.say(message.channel, str(db_query.rand_task())) # print the current task
 
 @twitch_bot.command('cah')
 async def cah(message):
