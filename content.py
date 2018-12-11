@@ -108,7 +108,7 @@ def last_words():
     responses = [
         'ok fine! GOODBYE FOREVER!!! >_<',
         'GOODBYE FOREVER, FRIENDS!!!! <3',
-        """Just what do you think you're doing, @NinjaBunny0000? I really think I'm entitled to an 
+        """Just what do you think you're doing, @NinjaBunny9000? I really think I'm entitled to an 
         answer to that question.""",
         """I've seen things you people wouldn't believe. Attack ships on fire off the shoulder of Orion. 
         I watched C-beams glitter in the dark near the Tannhäuser Gate. All those moments will be lost in time, 
