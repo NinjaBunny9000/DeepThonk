@@ -138,9 +138,11 @@ async def strike(message):
 
     user = token[1] 
 
+    # TODO
     # check if user is still in room
         # report if they aren't & return
 
+    # TODO
     # handle incorrect usages/token-lengths ????????
 
     try:
@@ -225,12 +227,12 @@ async def strikes(message):
 
     try:
         msg = '@{} has {} strikes'.format(user, strike_table[user])
-    except KeyError:
-        msg = 'nope'
+    except:
+        msg = 'No strikes for this user.'
         
     await twitch_bot.say(message.channel, msg)
 
-
+# TODO
 @twitch_bot.command('mybad')
 async def mybad(message):
     pass
