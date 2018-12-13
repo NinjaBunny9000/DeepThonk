@@ -20,8 +20,13 @@ band_names = []
 welcome_msg_sent = 0
 raid_status = False
 
+def update_task_at_launch():
+    task = db_query.get_latest_task()
+    f = open('data\\task.txt', 'w+')
+    f.write(task.description)
+    f.close()
 
-
+update_task_at_launch()
 
 # ─── WELCOME MESSAGE ────────────────────────────────────────────────────────────
 
@@ -42,7 +47,10 @@ def parse_commands(message, parts):
     return message_parts
 
  
-
+def display_task_on_obs(task):
+    f = open('data\\task.txt', 'w+')
+    f.write(task)
+    f.close()
 
 
 def shuffle_msg(msg_list):
@@ -120,6 +128,8 @@ async def task(message):
     if len(message_parts) >= 2 and is_mod(message):
         current_task = str(message_parts[1])[:250]  # update the current task
         db_insert.add_task(current_task)
+        # TODO call this at launch, too
+        display_task_on_obs(current_task)
         await twitch_bot.say(message.channel, 'Task updated')
     
     else:

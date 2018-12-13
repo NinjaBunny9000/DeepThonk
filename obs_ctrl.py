@@ -12,7 +12,7 @@ def change_scene(scene):
     **Requires 'Advance Scene Switcher' plug-in**
     Swap scenes in OBS studio by writing the scene name to a file.
     """
-    f = open('scene_next.txt', 'w+')
+    f = open('data\\scene_next.txt', 'w+')
     f.write(scene)
     f.close()
 
@@ -22,7 +22,7 @@ def get_scene():
     Read current scene from OBS studio, which is writing scene names 
     to a .txt file.
     """
-    f = open('scene_current.txt', 'r+')
+    f = open('data\\scene_current.txt', 'r+')
     scene = f.readline()
     f.close()
     return scene
