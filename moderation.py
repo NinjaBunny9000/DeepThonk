@@ -157,7 +157,7 @@ async def strike(message):
                 msg = 'Ya dun goof\'d, @{}. Hasta la vista, chump.'.format(user)
                 await twitch_bot.say(message.channel, msg)
             # ban dem
-            await twitch_bot.say(message.channel, '/timeout {} 5'.format(user))
+            await twitch_bot.say(message.channel, '/ban {}'.format(user))
             # TODO remove from dictionaries
             await playsound('sfx/nogud.mp3')
 
