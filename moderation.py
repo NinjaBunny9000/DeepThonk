@@ -2,6 +2,7 @@ import asyncio
 import time
 from conf import twitch_instance
 from twitch_chat import tokenize, is_mod
+from playsound import playsound
 
 # config ze bot!
 twitch_bot = twitch_instance
@@ -148,17 +149,17 @@ async def strike(message):
     try:
         # if they have 2 stikes or were still on probation
         if time.time() - probation_timer[user] <= 20 or strike_table[user] == 2:
-            # ban dem
-            # remove from dictionaries
-            # add to list of banned pplz or something
+            
             if strike_table[user] == 2:
                 msg = 'Strike #3, @{}. Hasta la vista, chump.'.format(user)
                 await twitch_bot.say(message.channel, msg)
             else:
                 msg = 'Ya dun goof\'d, @{}. Hasta la vista, chump.'.format(user)
                 await twitch_bot.say(message.channel, msg)
-
+            # ban dem
             await twitch_bot.say(message.channel, '/timeout {} 5'.format(user))
+            # TODO remove from dictionaries
+            await playsound('sfx/nogud.mp3')
 
         # else add or increment an strike count
         else:
