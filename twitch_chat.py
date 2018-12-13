@@ -10,6 +10,7 @@ import random
 import content
 import asyncio
 from twitch_permissions import is_bot, is_mod
+import reacts
 from reacts import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count
 
 
@@ -18,7 +19,8 @@ twitch_bot = twitch_instance
 
 band_names = []
 welcome_msg_sent = 0
-raid_status = False
+
+raid_state = reacts.raid_status
 
 def update_task_at_launch():
     task = db_query.get_latest_task()
@@ -67,7 +69,8 @@ def tokenize(message, parts):
 
 # ─── HELP MENU ──────────────────────────────────────────────────────────────────
 
-@twitch_bot.command('cmd', 
+@twitch_bot.command(
+    'cmd', 
     alias=['command', 'commands', 'help', 'wtf', 'wth'],
     desc='Get help info about the bot'
     )
@@ -136,9 +139,11 @@ async def task(message):
         msg = 'Current task: {}'.format(db_query.get_latest_task())
         await twitch_bot.say(message.channel, msg) # print the current task
 
+
 @twitch_bot.command('randomtask')
 async def randomtask(message):
     await twitch_bot.say(message.channel, str(db_query.rand_task())) # print the current task
+
 
 @twitch_bot.command('cah')
 async def cah(message):
@@ -154,6 +159,7 @@ async def easteregg(message):
     Just an easter egg.
     """
     await twitch_bot.say(message.channel, content.easter_egg(message))
+
 
 @twitch_bot.command('hye')
 async def haveyou(message):
@@ -175,15 +181,18 @@ async def haveyou(message):
     #     msg = 'Have you ever ' + db_query.rand_hye().item + '?'
     #     await twitch_bot.say(message.channel, msg) # print the current task
 
+
 @twitch_bot.command('theme')
 async def theme(message):
     msg = "The theme Bun uses is Material Ocean High Contrast, with some modifications: https://imgur.com/a/ivJByy2"
-    await twitch_bot.say (message.channel, msg)
+    await twitch_bot.say(message.channel, msg)
+
 
 @twitch_bot.command('editor')
 async def editor(message):
     msg = "The editor Bun uses is VSCode: https://code.visualstudio.com/"
-    await twitch_bot.say (message.channel, msg)
+    await twitch_bot.say(message.channel, msg)
+
 
 @twitch_bot.command('shoutout')
 async def shoutout(message):
@@ -196,6 +205,13 @@ async def shoutout(message):
             msg = "You didn't include a streamer to shout out to, {}.".format(message.author.name)
             await twitch_bot.say(message.channel, msg)
 
+
+@twitch_bot.command('kanban')
+async def kanban(message):
+    msg = "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs"
+    await twitch_bot.say(message.channel, msg)
+
+
 # ─── OVERRIDE ───────────────────────────────────────────────────────────────────
 
 @twitch_bot.override
@@ -204,9 +220,6 @@ async def event_message(message):
     Each message in chat is sent through this command. Parse teh data (into tokens, ofc),
     add a conditional or two, and make all sorts of fun stuff happen!
     """
-  
-    global raid_status
-
     # prevent bot from responding to itself
     if message.author.name == twitch_bot.nick:
         return
@@ -232,18 +245,27 @@ async def event_message(message):
         await twitch_bot.say(message.channel, 'maybe later, @{}'.format(message.author.name))
         return
 
-# ─── REACTS ─────────────────────────────────────────────────────────────────────
 
-    if "end raid" in message.content.lower():
-        raid_status = False
-        reset_emote_count()
-        print("raid ended")
+# ─── RAID REACT ─────────────────────────────────────────────────────────────────
 
-        if raid_in_progress(message):
-            raid_status = True
+    global raid_state
 
-        if raid_status:
-            keep_score(message)
+    if raid_state:
+        # count emotes
+        keep_score(message)
+
+
+
+    # if "end raid" in message.content.lower():
+    #     raid_state = False
+    #     reset_emote_count()
+    #     print("raid ended")
+
+    #     if raid_in_progress(message):
+    #         raid_state = True
+
+    #     if raid_state:
+    #         keep_score(message)
 
 
 
@@ -446,6 +468,8 @@ async def listcommands(message):
     commands = list(twitch_bot.commands.keys())
     print(commands)
     # await twitch_bot.say(message.channel, twitch_bot.commands)
+
+
 
 
 

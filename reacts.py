@@ -2,6 +2,7 @@ from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_
 import asyncio
 from obs_ctrl import change_scene, get_scene
 from twitch_permissions import is_bot, is_mod
+import time
 
 
 # config ze bot!
@@ -9,6 +10,49 @@ twitch_bot = twitch_instance
 
 # global vars
 emote_count = 0
+emotes_this_raid = 0
+raid_status = False
+
+# ─── CLASSES ────────────────────────────────────────────────────────────────────
+
+# defenders = RaidDefenders(current_members)
+# attackers = RaidAttackers(raid_members)
+# new_raid = Raid(current_members, raid_members)
+
+
+class Raid:
+    'Keeps track of the status and history of raids'
+
+    raiders = {}
+
+    def __init__(self, attackers, defenders):
+        self.status = True
+        self.time = time.time() # TODO format this better kthx
+        self.attackers = attackers
+        self.defenders = defenders
+
+
+class RaidDefenders:
+    'Class desc CHANGE ME'
+
+    def __init__(self, defenders):
+        self.members = defenders
+        self.hp = 100
+        self.emotes = 0
+        # healing vs attacking emotes?
+        # emote dmg/weight??
+
+
+class RaidAttackers:
+    'Class desc CHANGE ME'
+
+    def __init__(self, attackers):
+        self.members = attackers
+        self.hp = 100
+        self.emotes = 0
+        # healing vs attacking emotes?
+        # emote dmg/weight??
+
 
 # ─── PLAIN OLE FUNCTIONS ────────────────────────────────────────────────────────
 
@@ -42,17 +86,12 @@ def raid_event(message):
     # say who won last raid
     # start counting emotes
 
-def raid_in_progress(message):
-    # chk the message or webhooks for raid triggers
-    if "trigger raid" in message.content.lower():
-        print("raid in progress")
-        
-        return True
+
 
 def keep_score(message):
-    emotes = count_emotes(message)
-    print("emotes = " + str(emotes))
-    return emotes
+    global emotes_this_raid
+    emote_this_raid = count_emotes(message)
+
 
 def reset_emote_count():
     global emote_count
@@ -103,8 +142,6 @@ async def raidover(message):
         await asyncio.sleep(2) #
         change_scene('MAIN')
 
-
-
    
 
 # ─── DEBUG COMMANDS ─────────────────────────────────────────────────────────────
@@ -117,7 +154,11 @@ async def debugreacts(message):
     msg = bot_name().lower()   
     await twitch_bot.say(message.channel, msg)
 
-    
+def raid_in_progress(message):
+    # chk the message or webhooks for raid triggers
+    if "trigger raid" in message.content.lower():
+        print("raid in progress")
+        return True
 
 # switch scene to GAMES    
 @twitch_bot.command('emote')
@@ -131,3 +172,29 @@ async def emote(message):
     # except:
     #     msg = "no emotes"
     #     await twitch_bot.say(message.channel, msg) 
+
+
+@twitch_bot.command('testraid')
+async def testraid(message):
+    pass
+    # flip the bool bit thing
+    raid_status = True
+    # on message is going to keep track of emotes at this point
+
+@twitch_bot.command('endraidtest')
+async def endraidtest(message):
+    # flip the bool bit thing again
+    raid_status = False
+    # spit out the count of emotes that were dropped during the raid
+
+# command registers that it needs to start counting emotes
+    # do the bool thing
+
+# count emotes every message
+    """
+    This is going to have to happen in a "on message" (twitch_chat.py) and somehow have
+    access to the bool in *this* script. 0_o
+    """
+
+# command that stops counting 
+    # report & of emotes during period
