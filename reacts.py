@@ -69,9 +69,8 @@ def raid_is_happening():
     return raid_status
 
 def count_emotes(message):
-    for emote in message.emotes:
-        global emote_count
-        emote_count = emote_count + 1
+    global emote_count
+    emote_count += len(message.emotes)
     return emote_count
 
 
@@ -98,7 +97,7 @@ def emotes_spammed():
 
 def keep_score(message):
     global emotes_this_raid
-    emotes_this_raid += count_emotes(message)
+    emotes_this_raid += len(message.emotes)
 
 
 def reset_emote_count():
@@ -204,12 +203,12 @@ async def endraidtest(message):
     global raid_status
     global emotes_this_raid
     raid_status = False
-    reset_raid_score()
     # spit out the count of emotes that were dropped during the raid
     msg = 'raid ended. {} emotes were spammeded.'.format(emotes_this_raid)
     await twitch_bot.say(message.channel, msg) 
     msg = 'state={}'.format(raid_status)
     await twitch_bot.say(message.channel, msg) 
+    reset_raid_score()
 
 @twitch_bot.command('raidstate')
 async def raidstate(message):
