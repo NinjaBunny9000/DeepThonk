@@ -20,7 +20,7 @@ twitch_bot = twitch_instance
 band_names = []
 welcome_msg_sent = 0
 
-raid_state = reacts.raid_status
+
 
 def update_task_at_launch():
     task = db_query.get_latest_task()
@@ -248,11 +248,14 @@ async def event_message(message):
 
 # ─── RAID REACT ─────────────────────────────────────────────────────────────────
 
-    global raid_state
+    
 
-    if raid_state:
+    if reacts.raid_is_happening():
         # count emotes
-        keep_score(message)
+        if message.emotes:   
+            keep_score(message)
+        # report count
+        print('emotes_this_raid={}'.format(reacts.emotes_spammed()))
 
 
 

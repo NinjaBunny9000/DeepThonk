@@ -64,6 +64,10 @@ class RaidAttackers:
 
 # ─── RAID SEQUENCE ──────────────────────────────────────────────────────────────
  
+def raid_is_happening():
+    global raid_status
+    return raid_status
+
 def count_emotes(message):
     for emote in message.emotes:
         global emote_count
@@ -87,15 +91,24 @@ def raid_event(message):
     # start counting emotes
 
 
+def emotes_spammed():
+    global emotes_this_raid
+    return emotes_this_raid
+
 
 def keep_score(message):
     global emotes_this_raid
-    emote_this_raid = count_emotes(message)
+    emotes_this_raid += count_emotes(message)
 
 
 def reset_emote_count():
     global emote_count
     emote_count = 0
+
+
+def reset_raid_score():
+    global emotes_this_raid
+    emotes_this_raid = 0
 
         
 
@@ -176,16 +189,38 @@ async def emote(message):
 
 @twitch_bot.command('testraid')
 async def testraid(message):
-    pass
     # flip the bool bit thing
+    global raid_status
     raid_status = True
+    msg = 'raid in progress. spam a few emotes for teh test! kthx <3'
+    await twitch_bot.say(message.channel, msg)
+    msg = 'state={}'.format(raid_status)
+    await twitch_bot.say(message.channel, msg) 
     # on message is going to keep track of emotes at this point
 
 @twitch_bot.command('endraidtest')
 async def endraidtest(message):
     # flip the bool bit thing again
+    global raid_status
+    global emotes_this_raid
     raid_status = False
+    reset_raid_score()
     # spit out the count of emotes that were dropped during the raid
+    msg = 'raid ended. {} emotes were spammeded.'.format(emotes_this_raid)
+    await twitch_bot.say(message.channel, msg) 
+    msg = 'state={}'.format(raid_status)
+    await twitch_bot.say(message.channel, msg) 
+
+@twitch_bot.command('raidstate')
+async def raidstate(message):
+    # flip the bool bit thing
+    global raid_status
+    if raid_status:
+        msg = 'raid in progress.'
+        await twitch_bot.say(message.channel, msg)
+    else:
+        msg = 'not in a raid rn'
+        await twitch_bot.say(message.channel, msg)
 
 # command registers that it needs to start counting emotes
     # do the bool thing
