@@ -129,10 +129,10 @@ def deal_damage(message):
     global defending
 
     if message.author.name.lower() in raiding.members:
-        raiding.hp -= len(message.emotes)
+        defending.hp -= len(message.emotes)
         
     if message.author.name.lower() in defending.members:
-        defending.hp -= len(message.emotes)
+        raiding.hp -= len(message.emotes)
 
 
 def split_chatters(chatters):
