@@ -10,8 +10,8 @@ import random
 import content
 import asyncio
 from twitch_permissions import is_bot, is_mod
-import reacts
-from reacts import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count
+import games
+from games import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count
 
 
 # config ze bot!
@@ -190,11 +190,20 @@ async def theme(message):
     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('editor')
+@twitch_bot.command('editor', alias=['ide'])
 async def editor(message):
     msg = "The editor Bun uses is VSCode: https://code.visualstudio.com/"
     await twitch_bot.say(message.channel, msg)
 
+@twitch_bot.command('git', alias=['versioning', 'github'])
+async def git(message):
+    msg = "Bun's github is: https://github.com/NinjaBunny9000"
+    await twitch_bot.say(message.channel, msg)
+
+@twitch_bot.command('branch', alias=['current'])
+async def branch(message):
+    msg = "The branch Bun's working in rn is: https://github.com/NinjaBunny9000/BunBot9000/tree/raid-game"
+    await twitch_bot.say(message.channel, msg)
 
 @twitch_bot.command('shoutout')
 async def shoutout(message):
@@ -250,12 +259,14 @@ async def event_message(message):
 
 # ─── RAID REACT ─────────────────────────────────────────────────────────────────
 
-    if reacts.raid_is_happening():
+    if games.raid_is_happening():
         # count emotes
         if message.emotes:   
             keep_score(message)
         # report count
-        print('emotes_this_raid={}'.format(reacts.emotes_spammed()))
+        print('attackers={} || defenders={}'.format(
+            games.get_attacker_score(), games.get_defender_score()
+            ))
 
 
 

@@ -1,11 +1,12 @@
 import asynctwitch
 import conf
-import twitch_chat
 import cmd
 import reacts
+import games
 import moderation
 import sfx
 import signal
+import twitch_chat
 import sys
 import os
 
