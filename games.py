@@ -120,6 +120,18 @@ def keep_oop_score(message):
     if message.author.name.lower() in defending.members:
         defender_score += len(message.emotes)
 
+def deal_damage(message):
+    global attacker_score
+    global defender_score
+    global raiding
+    global defending
+
+    if message.author.name.lower() in raiding.members:
+        raiding.hp -= len(message.emotes)
+        
+    if message.author.name.lower() in defending.members:
+        defending.hp -= len(message.emotes)
+
 
 def split_chatters(chatters):
     # random.shuffle(chatters)
@@ -327,8 +339,8 @@ async def endraidtest(message):
     raid_status = False
 
     # report the score
-    msg = 'raid ended. {} emotes were spammeded. Attackers: {}, Defenders: {}'.format(
-        attacker_score + defender_score, attacker_score, defender_score
+    msg = '!airhorn RAID OVER!. {} emotes were spammeded. Attackers: {}, Defenders: {}'.format(
+        (100-raiding.hp) + (100-defending.hp), raiding.hp, defending.hp
         )
     await twitch_bot.say(message.channel, msg) 
 

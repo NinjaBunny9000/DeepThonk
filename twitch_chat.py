@@ -11,7 +11,7 @@ import content
 import asyncio
 from twitch_permissions import is_bot, is_mod
 import games
-from games import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score
+from games import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score, deal_damage
 
 
 # config ze bot!
@@ -263,10 +263,16 @@ async def event_message(message):
         # count emotes
         if message.emotes:   
             # keep_score(message)
-            keep_oop_score(message)
-        # report count
-        print('attackers={} || defenders={}'.format(
-            games.get_attacker_score(), games.get_defender_score()
+            # keep_oop_score(message)
+            deal_damage(message)
+        # # report count
+        # print('attackers={} || defenders={}'.format(
+        #     games.get_attacker_score(), games.get_defender_score()
+        #     ))
+
+        # report hp
+        print('raiding.hp={} || defending.hp={}'.format(
+            games.raiding.hp, games.defending.hp
             ))
 
 
