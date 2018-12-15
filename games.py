@@ -108,6 +108,18 @@ def keep_score(message):
     if message.author.name.lower() in raid_defender_members:
         defender_score += len(message.emotes)
 
+def keep_oop_score(message):
+    global attacker_score
+    global defender_score
+    global raiding
+    global defending
+
+    if message.author.name.lower() in raiding.members:
+        attacker_score += len(message.emotes)
+        
+    if message.author.name.lower() in defending.members:
+        defender_score += len(message.emotes)
+
 
 def split_chatters(chatters):
     # random.shuffle(chatters)
@@ -292,8 +304,12 @@ async def emote(message):
 async def testraid(message):
     global raid_status
 
-    assign_teams()
-    print_teams()
+    # assign_teams()
+    # print_teams()
+
+    # oop test
+    create_oop_teams()  
+    print_teams(raiding.members, defending.members)
 
     # flip the bool bit thing so on_message can process emotes
     raid_status = True
