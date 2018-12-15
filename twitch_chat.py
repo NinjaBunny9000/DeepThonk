@@ -30,6 +30,7 @@ def update_task_at_launch():
 
 update_task_at_launch()
 
+
 # ─── WELCOME MESSAGE ────────────────────────────────────────────────────────────
 
 @twitch_bot.override
@@ -62,6 +63,7 @@ def shuffle_msg(msg_list):
     """
     random.shuffle(msg_list)
     return ' '.join(msg_list)
+
 
 def tokenize(message, parts):
         return message.content.lower().split(' ', parts) # TOKENIZE™
@@ -247,8 +249,6 @@ async def event_message(message):
 
 
 # ─── RAID REACT ─────────────────────────────────────────────────────────────────
-
-    
 
     if reacts.raid_is_happening():
         # count emotes

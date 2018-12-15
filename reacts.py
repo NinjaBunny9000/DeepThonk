@@ -33,7 +33,7 @@ class Raid:
 
 
 class RaidDefenders:
-    'Class desc CHANGE ME'
+    'Everyone that was in the channel before the raid started.'
 
     def __init__(self, defenders):
         self.members = defenders
@@ -44,7 +44,7 @@ class RaidDefenders:
 
 
 class RaidAttackers:
-    'Class desc CHANGE ME'
+    'Everyone that entered the channel after the raid started.'
 
     def __init__(self, attackers):
         self.members = attackers
@@ -58,8 +58,8 @@ class RaidAttackers:
 
 
 
-
 # ─── TRADITIONAL COMMANDS - VIA @COMMANDS ───────────────────────────────────────
+
 
 
 # ─── RAID SEQUENCE ──────────────────────────────────────────────────────────────
