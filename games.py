@@ -45,6 +45,7 @@ class RaidDefenders:
     'Everyone that was in the channel before the raid started.'
 
     def __init__(self, defenders):
+        self.id = 'DEFENDERS' # debug
         self.members = defenders
         self.hp = 100
         self.emotes = 0
@@ -56,6 +57,7 @@ class RaidAttackers:
     'Everyone that entered the channel after the raid started.'
 
     def __init__(self, attackers):
+        self.id = 'RAIDERS' # TODO change later to be raiding channel
         self.members = attackers
         self.hp = 100
         self.emotes = 0
@@ -235,6 +237,28 @@ def print_teams(
     print('attackers: {} \n'.format(attackers_printable))
     print('defenders: {}'.format(defenders_printable))
 
+def report_ko():
+    global raiding
+    global defending
+
+    if raiding.hp <= 0 or defending.hp <= 0:
+        print('[RETURNED TRUE]')
+        return True
+    else:
+        return False
+
+def end_raid():
+    global raid_status
+    raid_status = False
+
+def get_winner():
+    global raiding
+    global defending
+
+    if raiding.hp <= 0:
+        return defending.id
+    elif defending.hp <= 0:
+        return raiding.id
 
 #start counting emotes & keep score
 

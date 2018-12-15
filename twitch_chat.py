@@ -265,15 +265,24 @@ async def event_message(message):
             # keep_score(message)
             # keep_oop_score(message)
             deal_damage(message)
-        # # report count
-        # print('attackers={} || defenders={}'.format(
-        #     games.get_attacker_score(), games.get_defender_score()
-        #     ))
 
-        # report hp
-        print('raiding.hp={} || defending.hp={}'.format(
-            games.raiding.hp, games.defending.hp
-            ))
+            # report hp
+            print('raiding.hp={} || defending.hp={}'.format(
+                games.raiding.hp, games.defending.hp
+                ))
+
+            # if anyone goes negative, report the KO
+            if games.report_ko():
+                raid_winner = games.get_winner() 
+
+
+                # end raid & flip the bool thing
+                games.end_raid()
+
+                # report the victor
+                msg = 'Raid over! The winner is {}'.format(raid_winner)
+                await twitch_bot.say(message.channel, msg)
+
 
 
     # if "end raid" in message.content.lower():
