@@ -269,7 +269,6 @@ async def event_message(message):
             ))
 
 
-
     # if "end raid" in message.content.lower():
     #     raid_state = False
     #     reset_emote_count()

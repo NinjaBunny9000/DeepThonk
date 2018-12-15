@@ -16,8 +16,12 @@ emotes_this_raid = 0
 attacker_score = 0
 defender_score = 0
 raid_status = False
-raid_defenders = []
-raid_attackers = []
+raid_defender_members = []
+raid_attacker_members = []
+
+raiding = None
+defending = None
+
 
 # ─── CLASSES ────────────────────────────────────────────────────────────────────
 
@@ -30,10 +34,10 @@ class Raid:
 
     raiders = {}
 
-    def __init__(self, attackers, defenders):
+    def __init__(self, raiders, defenders):
         self.status = True
         self.time = time.time() # TODO format this better kthx
-        self.attackers = attackers
+        self.raiders = raiders
         self.defenders = defenders
 
 
@@ -95,13 +99,13 @@ def emotes_spammed():
 def keep_score(message):
     global attacker_score
     global defender_score
-    global raid_attackers
-    global raid_defenders
+    global raid_attacker_members
+    global raid_defender_members
 
-    if message.author.name.lower() in raid_attackers:
+    if message.author.name.lower() in raid_attacker_members:
         attacker_score += len(message.emotes)
         
-    if message.author.name.lower() in raid_defenders:
+    if message.author.name.lower() in raid_defender_members:
         defender_score += len(message.emotes)
 
 
@@ -119,15 +123,15 @@ def who_raided():
     Eventually, this will be a difference of who was in the room before the raid,
     and who was in the room after the raid webhook dropped.
     """
-    global raid_defenders
-    global raid_attackers 
+    global raid_defender_members
+    global raid_attacker_members 
 
     # DEBUG: shuffle the list & split the chatters in two
-    attackers = split_chatters(raid_defenders) # returns half of a shuffled list
+    attackers = split_chatters(raid_defender_members) # returns half of a shuffled list
     
     # take a diff of the list (attackers)
     for member in attackers:
-        raid_defenders.remove(member)
+        raid_defender_members.remove(member)
 
     return attackers
 
@@ -135,25 +139,25 @@ def who_raided():
 def assign_teams(): 
     'Determines attackers & defenders for the raid'
 
-    global raid_attackers
-    global raid_defenders
+    global raid_attacker_members
+    global raid_defender_members
   
-    raid_defenders = api_integrations.get_chatters()    # TODO: eventually this will happen periodically
-    raid_attackers = who_raided() # DEBUG
-
-    # make the lits legible
-    attackers_printable = raid_attackers
-    attackers_printable = '[%s]' % ', '.join(map(str, attackers_printable))
-    attackers_printable = attackers_printable.strip('[]')
-    defenders_printable = raid_defenders
-    defenders_printable = '[%s]' % ', '.join(map(str, defenders_printable))
-    defenders_printable = defenders_printable.strip('[]')
-
-    # print out who we gots
-    print('attackers: {} \n'.format(attackers_printable))
-    print('defenders: {}'.format(defenders_printable))
+    raid_defender_members = api_integrations.get_chatters()    # TODO: eventually this will happen periodically
+    raid_attacker_members = who_raided() # DEBUG
 
 
+def create_oop_teams(): 
+    'Creates instances of attackers & defenders.'
+
+    assign_teams()  # debug
+    global raid_attacker_members    # debug
+    global raid_defender_members    # debug
+
+    # create lists of attackers and defenders & make dem instances n wotnot
+    global defending
+    global raiding
+    defending = RaidDefenders(raid_defender_members)
+    raiding = RaidAttackers(raid_attacker_members)
 
 # def keep_score(message):
     # global emotes_this_raid
@@ -168,13 +172,13 @@ def reset_emote_count():
 def reset_raid_score():
     global attacker_score
     global defender_score
-    global raid_attackers
-    global raid_defenders
+    global raid_attacker_members
+    global raid_defender_members
 
     attacker_score = 0
     defender_score = 0
-    raid_attackers[:] = []
-    raid_defenders[:] = []
+    raid_attacker_members[:] = []
+    raid_defender_members[:] = []
 
 # def reset_raid_score():
 #     global emotes_this_raid
@@ -188,6 +192,25 @@ def get_attacker_score():
 def get_defender_score():
     return defender_score
         
+
+# debug
+def print_teams(
+    raiders=raid_attacker_members, 
+    defenders=raid_defender_members
+    ):
+    # report list of memebrs to console
+    # make the lits legible
+    attackers_printable = raiders
+    attackers_printable = '[%s]' % ', '.join(map(str, attackers_printable))
+    attackers_printable = attackers_printable.strip('[]')
+    defenders_printable = defenders
+    defenders_printable = '[%s]' % ', '.join(map(str, defenders_printable))
+    defenders_printable = defenders_printable.strip('[]')
+
+    # print out who we gots
+    print('attackers: {} \n'.format(attackers_printable))
+    print('defenders: {}'.format(defenders_printable))
+
 
 #start counting emotes & keep score
 
@@ -270,6 +293,7 @@ async def testraid(message):
     global raid_status
 
     assign_teams()
+    print_teams()
 
     # flip the bool bit thing so on_message can process emotes
     raid_status = True
@@ -295,6 +319,36 @@ async def endraidtest(message):
     reset_raid_score()
 
 
+@twitch_bot.command('raidstate')
+async def raidstate(message):
+    # flip the bool bit thing
+    global raid_status
+    if raid_status:
+        msg = 'raid in progress.'
+        await twitch_bot.say(message.channel, msg)
+    else:
+        msg = 'not in a raid rn'
+        await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('setupraid')
+async def setupraid(message):
+    
+    # assign OOP teams/instances & print to console for debugging
+    create_oop_teams()
+
+    global raiding
+    global defending
+
+    # print 'em out in console
+    print_teams(raiding.members, defending.members)
+
+
+
+
+
+
+
 # @twitch_bot.command('endraidtest')
 # async def endraidtest(message):
 #     # flip the bool bit thing again
@@ -308,17 +362,6 @@ async def endraidtest(message):
 #     await twitch_bot.say(message.channel, msg) 
 #     reset_raid_score()
 
-
-@twitch_bot.command('raidstate')
-async def raidstate(message):
-    # flip the bool bit thing
-    global raid_status
-    if raid_status:
-        msg = 'raid in progress.'
-        await twitch_bot.say(message.channel, msg)
-    else:
-        msg = 'not in a raid rn'
-        await twitch_bot.say(message.channel, msg)
 
 # command registers that it needs to start counting emotes
     # do the bool thing
