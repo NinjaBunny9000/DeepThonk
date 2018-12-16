@@ -19,6 +19,7 @@ twitch_bot = twitch_instance
 
 band_names = []
 welcome_msg_sent = 0
+branch_url = 'https://github.com/NinjaBunny9000/BunBot9000/tree/raid-game' # TODO move to db
 
 
 def update_task_at_launch():
@@ -209,8 +210,17 @@ async def toolset(message):
 
 @twitch_bot.command('branch', alias=['current'])
 async def branch(message):
-    msg = "The branch Bun's working in rn is: https://github.com/NinjaBunny9000/BunBot9000/tree/raid-game"
-    await twitch_bot.say(message.channel, msg)
+    token = tokenize(message, 1)
+    global branch_url
+    
+    if is_mod(message) and len(token) == 2:
+        # !branch <url> ==> token[0] token[1]
+        branch_url = token[1]
+        msg = 'New branch set to \"{}\"'.format(branch_url)
+        await twitch_bot.say(message.channel, msg)
+    else:
+        msg = "The branch Bun's working in rn is: {}".format(branch_url)
+        await twitch_bot.say(message.channel, msg)
 
 
 @twitch_bot.command('shoutout')
