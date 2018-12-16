@@ -21,7 +21,6 @@ band_names = []
 welcome_msg_sent = 0
 
 
-
 def update_task_at_launch():
     task = db_query.get_latest_task()
     f = open('data\\task.txt', 'w+')
@@ -195,15 +194,24 @@ async def editor(message):
     msg = "The editor Bun uses is VSCode: https://code.visualstudio.com/"
     await twitch_bot.say(message.channel, msg)
 
+
 @twitch_bot.command('git', alias=['versioning', 'github'])
 async def git(message):
     msg = "Bun's github is: https://github.com/NinjaBunny9000"
     await twitch_bot.say(message.channel, msg)
 
+
+@twitch_bot.command('toolset')
+async def toolset(message):
+    msg = "Bun's using VSCode on Windows right now. !theme !git !branch for more info."
+    await twitch_bot.say(message.channel, msg)
+
+
 @twitch_bot.command('branch', alias=['current'])
 async def branch(message):
     msg = "The branch Bun's working in rn is: https://github.com/NinjaBunny9000/BunBot9000/tree/raid-game"
     await twitch_bot.say(message.channel, msg)
+
 
 @twitch_bot.command('shoutout')
 async def shoutout(message):
@@ -220,6 +228,12 @@ async def shoutout(message):
 @twitch_bot.command('kanban')
 async def kanban(message):
     msg = "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('portfolio')
+async def portfolio(message):
+    msg = "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)"
     await twitch_bot.say(message.channel, msg)
 
 
@@ -262,11 +276,30 @@ async def event_message(message):
     if games.raid_is_happening():
         # count emotes
         if message.emotes:   
-            # keep_score(message)
-            # keep_oop_score(message)
+
             deal_damage(message)
 
-            # report hp
+            # # hp report conditions met?
+            # if games.hp_condition():
+            #     # report hp
+            #     msg = '{} is below 50% health!'.format(games.hp_condition())
+            #     await twitch_bot.say(message.channel, msg)
+            
+            """
+            Considerations:
+            - on_message loop happens every message
+            - Can't talk to twitch chat (use await) within function called here.
+
+            IDEA 1: Report hp ever x-hp. Would require using the on_message loop
+            and some logic and/or conditionals to report only losing team, etc.
+
+            IDEA 2: Incorporate into timed-out raid react. This happens in games.py
+            and includes async sleep functions (timeouts). Could be not fun, but 
+            would have control over reporting health ever x-seconds.
+
+            """
+            
+
             print('raiding.hp={} || defending.hp={}'.format(
                 games.raiding.hp, games.defending.hp
                 ))

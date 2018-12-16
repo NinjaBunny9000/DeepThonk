@@ -234,8 +234,9 @@ def print_teams(
     defenders_printable = defenders_printable.strip('[]')
 
     # print out who we gots
-    print('attackers: {} \n'.format(attackers_printable))
-    print('defenders: {}'.format(defenders_printable))
+    print('\n[A RAID HAS BEGUN]\n')
+    print('ATTACKERS: {} \n'.format(attackers_printable))
+    print('DEFENDERS: {}\n'.format(defenders_printable))
 
 def report_ko():
     global raiding
@@ -259,6 +260,24 @@ def get_winner():
         return defending.id
     elif defending.hp <= 0:
         return raiding.id
+
+def hp_condition():
+    global raiding
+    global defending
+
+    # checks if hp is worth reporting
+    if raiding.hp <= 50:
+        return raiding.id
+    elif defending.hp <= 50:
+        return defending.id
+    else:
+        return False
+   
+def report_hp():
+    # if hp is worth reporting, report it.
+    if hp_condition():
+        return hp_condition()
+
 
 #start counting emotes & keep score
 
@@ -334,6 +353,64 @@ async def emote(message):
     # except:
     #     msg = "no emotes"
     #     await twitch_bot.say(message.channel, msg) 
+
+
+@twitch_bot.command('rabetest')
+async def rabetest(message):
+
+    if is_mod(message) or message.author.name == "streamelements":
+
+        global raid_status
+        global raiding
+        global defending
+
+        # oop test
+        create_oop_teams()
+        print_teams(raiding.members, defending.members)
+
+        # flip the bool bit thing so on_message can process emotes
+        raid_status = True
+
+        await asyncio.sleep(4)
+        await twitch_bot.say(message.channel, "!redalert")  # RED LIGHTS
+
+        await asyncio.sleep(5)  # 9s BSOD
+        change_scene('BSOD')
+        
+        await asyncio.sleep(6)  # 15s
+        msg = 'ATTENTION, NINJAS! We\'ve been RAIDED! Our networks are vulnerable!!'
+        await twitch_bot.say(message.channel, msg)
+
+        # report hp
+        msg = """Raiders & Defenders both start with 100 hp. Spam emotes to deal damage!
+         First team to drop to 0 hp loses teh raid!
+        """
+        await twitch_bot.say(message.channel, msg)
+        
+        # flip the bool bit thing so on_message can process emotes
+        raid_status = True
+        
+        await asyncio.sleep(10)  # 25s Switch to HackerTyper
+        change_scene('RAID')
+        
+        await asyncio.sleep(4)
+        msg = 'Type defendNetwork(); to harness avilable blockchains and boost our firewall\'s signal.'
+        await twitch_bot.say(message.channel, msg)
+        
+        # report hp
+        msg = 'KEEP IT UP! Raiders have {}hp left, and we have {}hp.'.format(raiding.hp, defending.hp)
+        await twitch_bot.say(message.channel, msg)
+        
+        await asyncio.sleep(10) 
+        msg = 'Network defenses are failing. Initiate all protocols! Pizza! Donuts! Bacon!! THROW ALL WE\'VE GOT AT THEM!!'
+        await twitch_bot.say(message.channel, msg)
+
+        await asyncio.sleep(5) # 40s Pizza
+        await twitch_bot.say(message.channel, "pizzaProtocol();")
+
+        # report hp
+        msg = 'KEEP IT UP! Raiders have {}hp left, and we have {}hp.'.format(raiding.hp, defending.hp)
+        await twitch_bot.say(message.channel, msg)
 
 
 @twitch_bot.command('testraid')
