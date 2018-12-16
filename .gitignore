@@ -8,6 +8,7 @@ __pycache__/
 discord/**
 tmp/**
 data/**
+sfx/**
 
 config_backup\.yaml
 
@@ -20,3 +21,5 @@ tasks\.md
 scene_next\.txt
 
 scene_current\.txt
+
+sfx/futurama/
