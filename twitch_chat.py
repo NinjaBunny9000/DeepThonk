@@ -246,6 +246,11 @@ async def portfolio(message):
     msg = "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)"
     await twitch_bot.say(message.channel, msg)
 
+@twitch_bot.command('bmo')
+async def bmo(message):
+    msg = "https://imgur.com/gallery/LhPlY"
+    await twitch_bot.say(message.channel, msg)
+
 
 # ─── OVERRIDE ───────────────────────────────────────────────────────────────────
 
