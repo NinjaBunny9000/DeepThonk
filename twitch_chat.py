@@ -10,8 +10,8 @@ import random
 import content
 import asyncio
 from twitch_permissions import is_bot, is_mod
-import reacts
-from reacts import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count
+import games
+from games import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score, deal_damage
 
 
 # config ze bot!
@@ -19,7 +19,7 @@ twitch_bot = twitch_instance
 
 band_names = []
 welcome_msg_sent = 0
-
+branch_url = 'https://github.com/NinjaBunny9000/BunBot9000/tree/raid-game' # TODO move to db
 
 
 def update_task_at_launch():
@@ -190,10 +190,37 @@ async def theme(message):
     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('editor')
+@twitch_bot.command('editor', alias=['ide'])
 async def editor(message):
     msg = "The editor Bun uses is VSCode: https://code.visualstudio.com/"
     await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('git', alias=['versioning', 'github'])
+async def git(message):
+    msg = "Bun's github is: https://github.com/NinjaBunny9000"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('toolset')
+async def toolset(message):
+    msg = "Bun's using VSCode on Windows right now. !theme !git !branch for more info."
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('branch', alias=['current'])
+async def branch(message):
+    token = tokenize(message, 1)
+    global branch_url
+    
+    if is_mod(message) and len(token) == 2:
+        # !branch <url> ==> token[0] token[1]
+        branch_url = token[1]
+        msg = 'New branch set to \"{}\"'.format(branch_url)
+        await twitch_bot.say(message.channel, msg)
+    else:
+        msg = "The branch Bun's working in rn is: {}".format(branch_url)
+        await twitch_bot.say(message.channel, msg)
 
 
 @twitch_bot.command('shoutout')
@@ -211,6 +238,17 @@ async def shoutout(message):
 @twitch_bot.command('kanban')
 async def kanban(message):
     msg = "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('portfolio')
+async def portfolio(message):
+    msg = "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)"
+    await twitch_bot.say(message.channel, msg)
+
+@twitch_bot.command('bmo')
+async def bmo(message):
+    msg = "https://imgur.com/gallery/LhPlY"
     await twitch_bot.say(message.channel, msg)
 
 
@@ -250,12 +288,48 @@ async def event_message(message):
 
 # ─── RAID REACT ─────────────────────────────────────────────────────────────────
 
-    if reacts.raid_is_happening():
+    if games.raid_is_happening():
         # count emotes
         if message.emotes:   
-            keep_score(message)
-        # report count
-        print('emotes_this_raid={}'.format(reacts.emotes_spammed()))
+
+            deal_damage(message)
+
+            # # hp report conditions met?
+            # if games.hp_condition():
+            #     # report hp
+            #     msg = '{} is below 50% health!'.format(games.hp_condition())
+            #     await twitch_bot.say(message.channel, msg)
+            
+            """
+            Considerations:
+            - on_message loop happens every message
+            - Can't talk to twitch chat (use await) within function called here.
+
+            IDEA 1: Report hp ever x-hp. Would require using the on_message loop
+            and some logic and/or conditionals to report only losing team, etc.
+
+            IDEA 2: Incorporate into timed-out raid react. This happens in games.py
+            and includes async sleep functions (timeouts). Could be not fun, but 
+            would have control over reporting health ever x-seconds.
+
+            """
+            
+
+            print('raiding.hp={} || defending.hp={}'.format(
+                games.raiding.hp, games.defending.hp
+                ))
+
+            # if anyone goes negative, report the KO
+            if games.report_ko():
+                raid_winner = games.get_winner() 
+
+
+                # end raid & flip the bool thing
+                games.end_raid()
+
+                # report the victor
+                msg = 'Raid over! The winner is {}'.format(raid_winner)
+                await twitch_bot.say(message.channel, msg)
 
 
 
