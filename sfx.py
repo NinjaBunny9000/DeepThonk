@@ -15,7 +15,7 @@ twitch_bot = twitch_instance
 class SoundEffect(object):
     """
     Base class for all sound effects.
-    
+
     Eventually looks like ==> SoundEffect(file_name, permission_level, cost, cooldown).
     """
 
@@ -59,7 +59,7 @@ async def sfx(message):
 
     # TODO https://github.com/NinjaBunny9000/DeepThonk/issues/26
     
-    msg = ''
+    msg = 'SFX can be used freely by subscribers! :D '
 
     # for every item in an enumerated list of commands
     for cmd in SoundEffect.commands:
@@ -100,23 +100,6 @@ async def futurama(message):
 ###################################################################
 # SECTION Debug commands (remove in refactor, etc)
 ###################################################################
-
-
-@twitch_bot.command('testsfx')
-async def testsfx(message):
-
-    # for every file in directory (os.listdir(path))
-    path = 'sfx/hooks/'
-    for file in os.listdir(path):
-
-        # create instance with attributes
-        if file.endswith('.mp3'):
-            cmd_name = file[:-4]
-            cmd_path = path + file
-            debug_msg = 'cmd_name={} path={}'.format(cmd_name, cmd_path)
-            print(debug_msg)
-            # SoundEffect(cmd_name, path)
-
         
 @twitch_bot.command('testwaifu')
 async def testwaifu(message):
