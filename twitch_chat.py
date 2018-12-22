@@ -19,7 +19,7 @@ twitch_bot = twitch_instance
 
 band_names = []
 welcome_msg_sent = 0
-branch_url = 'https://github.com/NinjaBunny9000/BunBot9000/tree/raid-game' # TODO move to db
+branch_url = 'https://github.com/NinjaBunny9000/DeepThonk/tree/sfx' # TODO move to db
 repo_url = 'https://github.com/NinjaBunny9000/DeepThonk'
 
 def update_task_at_launch():
@@ -67,6 +67,11 @@ def shuffle_msg(msg_list):
 
 def tokenize(message, parts):
         return message.content.lower().split(' ', parts) # TOKENIZE™
+
+
+def stringify_list(list):
+    stringificated_list = '[%s]' % ', '.join(map(str, list))
+    return stringificated_list.strip('[]')
 
 
 # ─── HELP MENU ──────────────────────────────────────────────────────────────────
@@ -207,6 +212,17 @@ async def toolset(message):
     msg = "Bun's using VSCode on Windows right now. !theme !git !branch for more info."
     await twitch_bot.say(message.channel, msg)
 
+@twitch_bot.command('steam')
+async def steam(message):
+    msg = "Add Bun on Steam! https://steamcommunity.com/id/ninjabunny9000/"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('font')
+async def font(message):
+    msg = "Bun uses Fira Code with font ligatures. https://github.com/tonsky/FiraCode"
+    await twitch_bot.say(message.channel, msg)
+
 
 @twitch_bot.command('branch', alias=['current'])
 async def branch(message):
@@ -224,7 +240,7 @@ async def branch(message):
 
 
 @twitch_bot.command('repo', alias=['repository', 'suppository'])
-async def branch(message):
+async def repo(message):
     token = tokenize(message, 1)
     global repo_url
     
@@ -243,7 +259,7 @@ async def shoutout(message):
     if is_mod(message):
         msg_parts = parse_commands(message, 2)
         try:
-            msg = "Big ups to @{}! They're a friend of the stream and worth a follow, if you have the time!".format(msg_parts[1])
+            msg = "Big ups to @{}! They're a friend of the stream and worth a follow, if you have the time! https://twitch.tv/{}".format(msg_parts[1], msg_parts[1])
             await twitch_bot.say(message.channel, msg)
         except:
             msg = "You didn't include a streamer to shout out to, {}.".format(message.author.name)
@@ -499,6 +515,11 @@ async def debug(message):
 @twitch_bot.command('author')
 async def author(message):
     await twitch_bot.say(message.channel, str(message.author.id))
+
+
+@twitch_bot.command('subornah')
+async def subornah(message):
+    await twitch_bot.say(message.channel, str(message.author.subscriber))
 
 
 @twitch_bot.command('channel')
