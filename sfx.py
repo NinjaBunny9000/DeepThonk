@@ -1,5 +1,4 @@
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_admin
-from pygame import mixer
 import os, random
 from playsound import playsound 
 
@@ -7,12 +6,13 @@ from playsound import playsound
 # config ze bot!
 twitch_bot = twitch_instance
 
-mixer.init()
 
 class SoundEffect(object):
     """
     Base class for all sound effects. Eventually looks like ==> SoundEffect(file_name, permission_level, cost, cooldown).
     """
+
+    commands = []
 
     # constructor
     def __init__(self, cmd_name, cmd_path):
@@ -20,12 +20,17 @@ class SoundEffect(object):
         self.path = cmd_path
 
         # TODO: Check and see if pre-existing command
+        # create/register file as command in event-loop
         @twitch_bot.command(self.cmd)
         async def sfx_func(message):
             if message.author.subscriber:
                 playsound(self.path)
+        
+        # add the command name to a list to be used later for spreadsheet generation
+        SoundEffect.commands.append(cmd_name)
 
 
+# TODO move into a function later during refactor
 # for every file in directory (os.listdir(path))
 path = 'sfx/hooks/'
 for file in os.listdir(path):
@@ -36,6 +41,9 @@ for file in os.listdir(path):
         cmd_path = path + file
         debug_msg = 'cmd_name={} cmd_path={}'.format(cmd_name, cmd_path)
         SoundEffect(cmd_name, cmd_path)
+
+# DEBUG : prints out a list of commands to make sure we have the syntax correct
+print(SoundEffect.commands)
 
 
 
@@ -60,13 +68,9 @@ async def testwaifu(message):
     playsound('sfx/hooks/waifu.mp3')
 
 
-# ─── SFX ────────────────────────────────────────────────────────────────────────
-
-@twitch_bot.command('slideup')
-async def slideup(message):
-    mixer.music.load('sfx\\slideup.mp3')
-    mixer.music.play()
-
+"""
+RANDOMIZED SOUND EFFECTS
+"""
 
 @twitch_bot.command('wow')
 async def wow(message):
