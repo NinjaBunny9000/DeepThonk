@@ -87,13 +87,13 @@ async def sfx(message):
 
 @twitch_bot.command('wow')
 async def wow(message):
-    random_mp3 = 'sfx\\wow\\' + random.choice(os.listdir('C:\\Users\\spunk\\Documents\\repos\\BunBot9000\\sfx\\wow'))
+    random_mp3 = 'sfx/wow/' + random.choice(os.listdir('sfx/wow/'))
     playsound(random_mp3)
 
 
 @twitch_bot.command('futurama')
 async def futurama(message):
-    random_mp3 = 'sfx/futurama/' + random.choice(os.listdir('C:/Users/spunk/Documents/repos/BunBot9000/sfx/futurama/'))
+    random_mp3 = 'sfx/futurama/' + random.choice(os.listdir('sfx/futurama/'))
     playsound(random_mp3)
 
 
