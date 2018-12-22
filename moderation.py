@@ -15,9 +15,6 @@ troll_timeouts = 0
 probation_timer = {}
 strike_table = {}
 
-# def probate(user):
-#     global stroken_users
-#     stroken_users.append(user)
 
 @twitch_bot.command('trolls')
 async def trolls(message):
@@ -139,16 +136,14 @@ async def strike(message):
 
     user = token[1] 
 
-    # TODO
-    # check if user is still in room
-        # report if they aren't & return
+    # TODO check if user is still in room
+        # TODO report if they aren't & return
 
-    # TODO
-    # handle incorrect usages/token-lengths ????????
+    # TODO handle incorrect usages/token-lengths ????????
 
     try:
         # if they have 2 stikes or were still on probation
-        if time.time() - probation_timer[user] <= 20 or strike_table[user] == 2:
+        if time.time() - probation_timer[user] <= 600 or strike_table[user] == 2:
             
             if strike_table[user] == 2:
                 msg = 'Strike #3, @{}. Hasta la vista, chump.'.format(user)
@@ -157,7 +152,7 @@ async def strike(message):
                 msg = 'Ya dun goof\'d, @{}. Hasta la vista, chump.'.format(user)
                 await twitch_bot.say(message.channel, msg)
             # ban dem
-            await twitch_bot.say(message.channel, '/ban {}'.format(user))
+            await twitch_bot.say(message.channel, '/timeout {} 10'.format(user))
             # TODO remove from dictionaries
             await playsound('sfx/nogud.mp3')
 
