@@ -12,7 +12,7 @@ twitch_bot = twitch_instance
 # SECTION Strike System
 ###################################################################
 
-# look at all these globals
+# look at all these Globals™
 probation_timer = {}    # TODO Move to db
 strike_table = {}   # TODO Move to db
 
