@@ -79,7 +79,9 @@ async def sfx(message):
     
     # then send the rest
     await twitch_bot.say(message.channel, msg) # TODO add final page number
-            
+
+# !SECTION             
+ 
  
 ###################################################################
 # SECTION Randomized SFX
@@ -96,6 +98,8 @@ async def futurama(message):
     random_mp3 = 'sfx/futurama/' + random.choice(os.listdir('sfx/futurama/'))
     playsound(random_mp3)
 
+# !SECTION 
+
 
 ###################################################################
 # SECTION Debug commands (remove in refactor, etc)
@@ -104,3 +108,6 @@ async def futurama(message):
 @twitch_bot.command('testwaifu')
 async def testwaifu(message):
     playsound('sfx/hooks/waifu.mp3')
+
+
+# !SECTION 
