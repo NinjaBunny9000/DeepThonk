@@ -155,14 +155,14 @@ async def mybad(message):
         msg = '@{} isn\'t stoked rn, @{}.'.format(user, message.author.name)
 
 
-@twitch_bot.command('stroken')
+@twitch_bot.command('stroken', alias=('yoted', 'yuted', 'yoten'))
 async def stroken(message):
     global strike_table
     
     if strike_table:
         users = '[%s]' % ', '.join(map(str, strike_table.keys()))
         users = users.strip('[]')
-        msg = 'Users with 1 or more strikeouts: ' + str(users)
+        msg = 'Yuted users: ' + str(users)
         await twitch_bot.say(message.channel, msg)
     else:
         await twitch_bot.say(message.channel, 'nun be stroked rn fam')
