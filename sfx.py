@@ -49,6 +49,65 @@ for file in os.listdir(path):
         debug_msg = 'cmd_name={} cmd_path={}'.format(cmd_name, cmd_path)
         SoundEffect(cmd_name, cmd_path)
 
+# !SECTION             
+ 
+
+###################################################################
+# SECTION Randomized SFX
+###################################################################
+
+@twitch_bot.command('wow')
+async def wow(message):
+    random_mp3 = 'sfx/randoms/wow/' + random.choice(os.listdir('sfx/randoms/wow/'))
+    playsound(random_mp3)
+
+
+@twitch_bot.command('hi', alias=(
+    'hey', 
+    'hello', 
+    'hullo', 
+    'henlo', 
+    'hai',
+    'howdy'
+    ))
+async def hi(message):
+    random_mp3 = 'sfx/randoms/hi/' + random.choice(os.listdir('sfx/randoms/hi/'))
+    playsound(random_mp3)
+
+@twitch_bot.command('rood', alias=('rude', 'r00d', 'roood', 'rooood', 'ruuude'))
+async def rood(message):
+    random_mp3 = 'sfx/randoms/rood/' + random.choice(os.listdir('sfx/randoms/rood/'))
+    playsound(random_mp3)
+
+@twitch_bot.command('bye', alias=(
+    'later',
+    'l8',
+    'l8s', 
+    'gnight', 
+    'nite', 
+    'gnight', 
+    'bai',
+    'cya',
+    'peace',
+    'adios',
+    'byebye'
+    ))
+async def bye(message):
+    random_mp3 = 'sfx/randoms/bye/' + random.choice(os.listdir('sfx/randoms/bye/'))
+    playsound(random_mp3)
+
+
+@twitch_bot.command('futurama')
+async def futurama(message):
+    random_mp3 = 'sfx/randoms/futurama/' + random.choice(os.listdir('sfx/randoms/futurama/'))
+    playsound(random_mp3)
+
+# !SECTION 
+
+
+###################################################################
+# SECTION HELP Function
+###################################################################
 
 # REVIEW function these out in a refactor
 @twitch_bot.command('sfx')
@@ -80,25 +139,7 @@ async def sfx(message):
     # then send the rest
     await twitch_bot.say(message.channel, msg) # TODO add final page number
 
-# !SECTION             
- 
- 
-###################################################################
-# SECTION Randomized SFX
-###################################################################
-
-@twitch_bot.command('wow')
-async def wow(message):
-    random_mp3 = 'sfx/wow/' + random.choice(os.listdir('sfx/wow/'))
-    playsound(random_mp3)
-
-
-@twitch_bot.command('futurama')
-async def futurama(message):
-    random_mp3 = 'sfx/futurama/' + random.choice(os.listdir('sfx/futurama/'))
-    playsound(random_mp3)
-
-# !SECTION 
+!SECTION 
 
 
 ###################################################################
