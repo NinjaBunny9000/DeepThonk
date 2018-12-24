@@ -7,122 +7,25 @@ from playsound import playsound
 # config ze bot!
 twitch_bot = twitch_instance
  
-# ze globals
-squad_count = 0
-troll_count = 0
-troll_bans = 0
-troll_timeouts = 0
-probation_timer = {}
-strike_table = {}
 
+###################################################################
+# SECTION Strike System
+###################################################################
 
-@twitch_bot.command('trolls')
-async def trolls(message):
-    troll_status = "We've seen {} squads, {} shit-tier trolls, and have banned {} lame trolls tonight".format(
-        squad_count, troll_count, troll_bans
-    )
-    await twitch_bot.say(message.channel, troll_status)
-
-@twitch_bot.command('troll')
-async def troll(message):
-    global squad_count
-    global troll_count
-    global troll_bans
-    global troll_timeouts
-    
-    token = tokenize(message, 3)
-    print(token)
-
-    doin_it_wrong = 'Usage: !troll pban/squad/shitlord. '
-
-    if len(token) == 1:
-        await twitch_bot.say(message.channel, doin_it_wrong)
-        await asyncio.sleep(3)
-        await twitch_bot.say(message.channel, 'Mods, be sure to ban trolls before giving them any \"attention\"')
-        return
-
-    if token[1] == 'squad':
-        squad_count += 1
-        response = 'Shitsquad registered. Whelp. Color-me surprised, we\'ve seen {} tonight.'.format(squad_count)
-        await twitch_bot.say(message.channel, response)
-
-    elif token[1] == 'shitlords':
-        try:
-            troll_count += int(token[2])
-            response = 'Shit-tier troll(s) registered. {} so far this stream. We are unimpressed.'.format(troll_count)
-            await twitch_bot.say(message.channel, response)
-            return
-        except:
-            usage = '!troll shitlord [qty] when u witnerss sub-par trolling. Git gudder, scrubs.'
-            await twitch_bot.say(message.channel, doin_it_wrong + usage)
-            return
-
-    elif token[1] == 'timeout':
-        if is_mod(message):
-            try:
-                user = token[2]
-                ban_command = '/timeout {} 60'.format(user)
-                confirm = 'No problemo, @{}.'.format(message.author.name)
-                troll_bans += 1
-                await twitch_bot.say(message.channel, confirm)
-                if len(token) == 4:
-                    ban_reason = token[3]
-                    ban_warning = 'Timing out @{} for 1 min. Cuz {}. Say your last words, chump.'.format(user, ban_reason)
-                else:
-                    ban_warning = 'Timing out @{} in 10s. Say your last words, chump.'.format(user)
-                await twitch_bot.say(message.channel, ban_warning)
-                await asyncio.sleep(10)
-                await twitch_bot.say(message.channel, ban_command)
-                rest_in_pepperonis = 'The problem has been taken care of, m\'lady. {} bans so far.'.format(troll_bans)
-                await twitch_bot.say(message.channel, rest_in_pepperonis)
-                await asyncio.sleep(4)
-                memes = '/me tips fedora'
-                await twitch_bot.say(message.channel, memes)
-                return
-            except:
-                usage = 'ie, !troll ban [username]. Mods only, meatbags.'
-                await twitch_bot.say(message.channel, doin_it_wrong + usage)
-                return
-        else:
-            msg = 'Nice try, chump.'
-            await twitch_bot.say(message.channel, msg)
-            
-    elif token[1] == 'ban':
-        if is_mod(message):
-            try:
-                user = token[2]
-                ban_command = '/ban {}'.format(user)
-                confirm = 'No problemo, @{}.'.format(message.author.name)
-                troll_bans += 1
-                await twitch_bot.say(message.channel, confirm)
-                if len(token) == 4:
-                    ban_reason = token[3]
-                    ban_warning = 'Banning @{} in 10s. Cuz {}. Say your last words, chump.'.format(user, ban_reason)
-                else:
-                    ban_warning = 'Banning @{} in 10s. Say your last words, chump.'.format(user)
-                await twitch_bot.say(message.channel, ban_warning)
-                await asyncio.sleep(10)
-                await twitch_bot.say(message.channel, ban_command)
-                rest_in_pepperonis = 'The problem has been taken care of, m\'lady. {} bans so far.'.format(troll_bans)
-                await twitch_bot.say(message.channel, rest_in_pepperonis)
-                await asyncio.sleep(4)
-                memes = '/me tips fedora'
-                await twitch_bot.say(message.channel, memes)
-                return
-            except:
-                usage = 'ie, !troll ban [username]. Mods only, meatbags.'
-                await twitch_bot.say(message.channel, doin_it_wrong + usage)
-                return
-        else:
-            msg = 'Nice try, chump.'
-            await twitch_bot.say(message.channel, msg)
-
+# look at all these Globals™
+probation_timer = {}    # TODO Move to db
+strike_table = {}   # TODO Move to db
 
 @twitch_bot.command('strike')
 async def strike(message):
     """
     Command looks like..??? ==> !strike <user> <reason>
     """
+
+    # TODO make a probation timer configurable var in the yaml or content or something
+    # TODO check if user is still in room
+    # TODO report if they aren't & return
+    # TODO handle incorrect usages/token-lengths ????????
 
     global probation_timer
     global strike_table
@@ -133,13 +36,16 @@ async def strike(message):
 
     # tokenize™
     token = tokenize(message, 2)
+    user = token[1]
 
-    user = token[1] 
 
-    # TODO check if user is still in room
-        # TODO report if they aren't & return
+    # TODO prevent striking mods
+    # can't strike themselves
+    if user.lower() == message.author.name.lower():
+        msg = 'Ur doin it rong. You can\'t strike mods (or yourself)'
+        await twitch_bot.say(message.channel, msg)
+        return
 
-    # TODO handle incorrect usages/token-lengths ????????
 
     try:
         # if they have 2 stikes or were still on probation
@@ -151,25 +57,28 @@ async def strike(message):
             else:
                 msg = 'Ya dun goof\'d, @{}. Hasta la vista, chump.'.format(user)
                 await twitch_bot.say(message.channel, msg)
-            # ban dem
+
+            # then ban dem
             await twitch_bot.say(message.channel, '/ban {}'.format(user))
-            # TODO remove from dictionaries
+
+            del strike_table[user]
             await playsound('sfx/nogud.mp3')
 
-        # else add or increment an strike count
+        # otherwise this is strike #2
         else:
             if user in strike_table:
-                # increment
                 strike_table.update({user : 2})
                 msg = """Strike #2, @{}. Your next strike will result in a ban.
                 Please review the Chat Rules, ToS (https://www.twitch.tv/p/legal/terms-of-service/) 
                 and Community Guidelines (https://www.twitch.tv/p/legal/community-guidelines/)
                 """.format(user)
                 await twitch_bot.say(message.channel, msg)
+    
+    # if this is their first strike, add them to the list
     except KeyError:
-        # add them to the list
         strike_table.update({user : 1})
-        # start timer
+
+        # register the time for probation timer
         probation_timer.update({user : time.time()})
         msg = """Strike #1, @{}.  You're on a 10m probationary period. Another strike during this 
                 period will result in an immediate and irreversable ban. Please review the 
@@ -179,37 +88,15 @@ async def strike(message):
         await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('timer')
-async def timer(message):
-    global probation_timer
-    
-    # check for permissions
-    if not is_mod(message):
-        return
-
-    # tokenize™
-    token = tokenize(message, 2)
-    user = token[1]
-
-    try:
-        if time.time() - probation_timer[user] <= 20:
-            msg = '@{} still gittin probed'.format(user)
-            await twitch_bot.say(message.channel, msg)
-        else:
-            msg = '@{} not gittin probed (ANYMORE), but has {} strikes.'.format(user, strike_table[user])
-            await twitch_bot.say(message.channel, msg)
-            await asyncio.sleep(4) # dramatic pause
-            await twitch_bot.say(message.channel, '!dundun')
-    except KeyError:
-        msg = '@{} not gittin probed (YET)'.format(user)
-        await twitch_bot.say(message.channel, msg)
-        await asyncio.sleep(4) # dramatic pause
-        await twitch_bot.say(message.channel, '!dundun')
-
-
-
 @twitch_bot.command('strikes')
 async def strikes(message):
+    """
+    !Strike <user>
+
+    1st = 10m probationary period
+    2nd = Instaban if still in prob period
+    3rd = Immediate ban
+    """
     global strike_table
     
     # check for permissions
@@ -218,7 +105,6 @@ async def strikes(message):
 
     # tokenize™
     token = tokenize(message, 1)
-    
     user = token[1]
 
     try:
@@ -228,23 +114,65 @@ async def strikes(message):
         
     await twitch_bot.say(message.channel, msg)
 
-# TODO
+
 @twitch_bot.command('mybad')
 async def mybad(message):
-    pass
+    '!mybad <user> removes a strike for the user.'
     # check for permissions
-    # tokenize™
-    # undo
+    if not is_mod(message):
+        return
 
-@twitch_bot.command('stroken')
+    token = tokenize(message, 1)    # tokenize™
+
+    # return fyi if no user provided
+    if len(token) == 1:
+        msg = 'Ur doin it rong. Try !mybad <user>.'
+        await twitch_bot.say(message.channel, msg)
+        return
+    
+    user = token[1]
+
+    # TODO prevent striking mods
+    # can't strike themselves
+    if user.lower() == message.author.name.lower():
+        msg = 'Ur doin it rong. You can\'t strike mods (or yourself)'
+        await twitch_bot.say(message.channel, msg)
+        return
+
+    try:
+        # if they've got 2 strikes, remove 1
+        if user in strike_table and strike_table[user] == 2:
+            strike_table[user] = 1
+
+        # if they only have 1, then delete them
+        else:
+            del strike_table[user]
+
+        msg = 'dun'
+        await twitch_bot.say(message.channel, msg)
+
+    except KeyError:
+        msg = '@{} isn\'t stoked rn, @{}.'.format(user, message.author.name)
+
+
+@twitch_bot.command('stroken', alias=('yoted', 'yuted', 'yoten'))
 async def stroken(message):
     global strike_table
     
     if strike_table:
         users = '[%s]' % ', '.join(map(str, strike_table.keys()))
         users = users.strip('[]')
-        msg = 'Users with 1 or more strikeouts: ' + str(users)
+        msg = 'Yuted users: ' + str(users)
         await twitch_bot.say(message.channel, msg)
     else:
         await twitch_bot.say(message.channel, 'nun be stroked rn fam')
 
+# !SECTION 
+
+###################################################################
+# SECTION Debug commands (remove in refactor, etc)
+###################################################################
+
+
+
+# !SECTION 

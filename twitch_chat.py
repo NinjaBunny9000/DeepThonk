@@ -189,99 +189,6 @@ async def haveyou(message):
     #     await twitch_bot.say(message.channel, msg) # print the current task
 
 
-@twitch_bot.command('theme')
-async def theme(message):
-    msg = "The theme Bun uses is Material Ocean High Contrast, with some modifications: https://imgur.com/a/ivJByy2"
-    await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('editor', alias=['ide'])
-async def editor(message):
-    msg = "The editor Bun uses is VSCode: https://code.visualstudio.com/"
-    await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('git', alias=['versioning', 'github'])
-async def git(message):
-    msg = "Bun's github is: https://github.com/NinjaBunny9000"
-    await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('toolset')
-async def toolset(message):
-    msg = "Bun's using VSCode on Windows right now. !theme !git !branch for more info."
-    await twitch_bot.say(message.channel, msg)
-
-@twitch_bot.command('steam')
-async def steam(message):
-    msg = "Add Bun on Steam! https://steamcommunity.com/id/ninjabunny9000/"
-    await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('font')
-async def font(message):
-    msg = "Bun uses Fira Code with font ligatures. https://github.com/tonsky/FiraCode"
-    await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('branch', alias=['current'])
-async def branch(message):
-    token = tokenize(message, 1)
-    global branch_url
-    
-    if is_mod(message) and len(token) == 2:
-        # !branch <url> ==> token[0] token[1]
-        branch_url = token[1]
-        msg = 'New branch set to \"{}\"'.format(branch_url)
-        await twitch_bot.say(message.channel, msg)
-    else:
-        msg = "The branch Bun's working in rn is: {}".format(branch_url)
-        await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('repo', alias=['repository', 'suppository'])
-async def repo(message):
-    token = tokenize(message, 1)
-    global repo_url
-    
-    if is_mod(message) and len(token) == 2:
-        # !repo <url> ==> token[0] token[1]
-        repo_url = token[1]
-        msg = 'New project repo set to \"{}\"'.format(repo_url)
-        await twitch_bot.say(message.channel, msg)
-    else:
-        msg = "The repo Bun's working with rn is: {}".format(repo_url)
-        await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('shoutout')
-async def shoutout(message):
-    if is_mod(message):
-        msg_parts = parse_commands(message, 2)
-        try:
-            msg = "Big ups to @{}! They're a friend of the stream and worth a follow, if you have the time! https://twitch.tv/{}".format(msg_parts[1], msg_parts[1])
-            await twitch_bot.say(message.channel, msg)
-        except:
-            msg = "You didn't include a streamer to shout out to, {}.".format(message.author.name)
-            await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('kanban')
-async def kanban(message):
-    msg = "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs"
-    await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('portfolio')
-async def portfolio(message):
-    msg = "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)"
-    await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('bmo')
-async def bmo(message):
-    msg = "https://imgur.com/gallery/LhPlY"
-    await twitch_bot.say(message.channel, msg)
 
 
 # ─── OVERRIDE ───────────────────────────────────────────────────────────────────
@@ -499,6 +406,109 @@ async def quit(message):
         msg = "@{user} tried to kill me! D:".format(user=message.author.name)
         print(msg)
         await twitch_bot.say(message.channel, msg)
+
+
+###################################################################
+# SECTION MENUS & Other Useful Info
+###################################################################
+
+@twitch_bot.command('theme')
+async def theme(message):
+    msg = "The theme Bun uses is Material Ocean High Contrast, with some modifications: https://imgur.com/a/ivJByy2"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('editor', alias=['ide'])
+async def editor(message):
+    msg = "The editor Bun uses is VSCode: https://code.visualstudio.com/"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('git', alias=['versioning', 'github'])
+async def git(message):
+    msg = "Bun's github is: https://github.com/NinjaBunny9000"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('toolset')
+async def toolset(message):
+    msg = "Bun's using VSCode on Windows right now. !theme !git !branch !font for more info."
+    await twitch_bot.say(message.channel, msg)
+
+@twitch_bot.command('steam')
+async def steam(message):
+    msg = "Add Bun on Steam! https://steamcommunity.com/id/ninjabunny9000/"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('font')
+async def font(message):
+    msg = "Bun uses Fira Code with font ligatures. https://github.com/tonsky/FiraCode"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('branch', alias=['current'])
+async def branch(message):
+    token = tokenize(message, 1)
+    global branch_url
+    
+    if is_mod(message) and len(token) == 2:
+        # !branch <url> ==> token[0] token[1]
+        branch_url = token[1]
+        msg = 'New branch set to \"{}\"'.format(branch_url)
+        await twitch_bot.say(message.channel, msg)
+    else:
+        msg = "The branch Bun's working in rn is: {}".format(branch_url)
+        await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('repo', alias=['repository', 'suppository'])
+async def repo(message):
+    token = tokenize(message, 1)
+    global repo_url
+    
+    if is_mod(message) and len(token) == 2:
+        # !repo <url> ==> token[0] token[1]
+        repo_url = token[1]
+        msg = 'New project repo set to \"{}\"'.format(repo_url)
+        await twitch_bot.say(message.channel, msg)
+    else:
+        msg = "The repo Bun's working with rn is: {}".format(repo_url)
+        await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('shoutout')
+async def shoutout(message):
+    if is_mod(message):
+        msg_parts = parse_commands(message, 2)
+        try:
+            msg = "Big ups to @{}! They're a friend of the stream and worth a follow, if you have the time! https://twitch.tv/{}".format(msg_parts[1], msg_parts[1])
+            await twitch_bot.say(message.channel, msg)
+        except:
+            msg = "You didn't include a streamer to shout out to, {}.".format(message.author.name)
+            await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('kanban')
+async def kanban(message):
+    msg = "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('portfolio')
+async def portfolio(message):
+    msg = "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)"
+    await twitch_bot.say(message.channel, msg)
+
+
+@twitch_bot.command('bmo')
+async def bmo(message):
+    msg = "https://imgur.com/gallery/LhPlY"
+    await twitch_bot.say(message.channel, msg)
+
+
+
+# !SECTION 
 
 
 # ─── DEBUG COMMANDS ─────────────────────────────────────────────────────────────
