@@ -79,17 +79,21 @@ class RandomSoundEffect(object):
     # TODO Put 'hi' and 'bye' in their own thing? So they can work w/o '!' preface once that's func again
     # TODO Attributes: permissions level, cost
 
-@twitch_bot.command('hi', alias=(
-    'hey', 
-    'hello', 
-    'hullo', 
-    'henlo', 
-    'hai',
-    'howdy'
-    ))
-async def hi(message):
-    random_mp3 = 'sfx/randoms/hi/' + random.choice(os.listdir('sfx/randoms/hi/'))
-    playsound(random_mp3)
+    commands = []
+
+    def generate_csv(self, cmds):
+        # REVIEW  what it shoudl REALLY do is just be called from the constructor 
+        # and add the command to the next empty line
+        
+        # TODO check if the command is already in the csv & make it if it doesn't exist (r+)
+        # TODO if it isn't, add it
+
+        with open('data/test.csv', 'w+', newline='') as csv_file:
+            for cmd in cmds:
+                csv_writer = csv.writer(csv_file)
+                print('writing {}'.format(cmd.name))
+                csv_writer.writerow([cmd.name, cmd.timeout])
+
 
     # constructor
     def __init__(self, folder, files:list, aliases=(), cmd_timeout=10):
@@ -111,10 +115,10 @@ async def hi(message):
                 # update the last_used thing
                 self.last_used = time.time()
 
-@twitch_bot.command('bye', alias=(
-    'later',
-    'l8',
-    'l8s', 
+        # self.generate_csv()
+            
+        # add the command name to a list to be used later for spreadsheet generation
+        RandomSoundEffect.commands.append(self)
 
 
 
@@ -306,8 +310,78 @@ async def ledsfx(message):
     # then send the rest
     await twitch_bot.say(message.channel, msg) # TODO add final page number
 
-!SECTION 
 
+# def gen_sfx_list(sfx_type:class):
+#     'Returns a list of SFX msgs for the info commands'
+
+#     msg = 'SFX can be used freely by subscribers! :D '
+
+#      # for every item in an enumerated list of commands
+#     for cmd in sfx_type.commands:
+#         cmd = '!{}'.format(cmd) # add the !
+
+#         # get the length of the string & compare it to teh length it would be if it added the new command
+#         if (len(msg) + len(cmd) + 2) >= 500:
+#             # send message and start over
+#             await twitch_bot.say(message.channel, msg)  # TODO Add page number
+#             msg = ''
+#         else:
+#             # add to msg
+#             if len(msg) is 0:
+#                 msg += cmd
+#             else:
+#                 msg += ', {}'.format(cmd)
+
+#     return msg
+
+
+# !SECTION
+
+
+###################################################################
+# SECTION Debug commands (remove in refactor, etc)
+###################################################################
+
+
+@twitch_bot.command('earwormroulette')
+async def earwormroulette(message):
+
+# TODO 
+# - Report what they won or not
+# - Send a link to the youtube song, cuz you know they'll need it. Also it's polite.
+# - Timeouts
+# - Betting in general
+# - Integrate StreamElements points
+# - Help command/function
+
+    # SECTION They win
+    if random.random() >= 0.9:
+        msg = 'u lucked tf out, @{}.'.format(message.author.name)
+        await twitch_bot.say(message.channel, msg)
+        return
+
+    # !SECTION 
+
+
+    # SECTION They lose
+    msg = 'rip, @{}'.format(message.author.name)
+    await twitch_bot.say(message.channel, msg)
+    
+    files = []
+
+    # create a list of mp3s in folders (excluding aliases.txt)
+    for file_name in os.listdir('sfx/earworms/'):
+        if not file_name.endswith('.txt'):
+            # add it to a list
+            files.append(file_name)
+
+    random_mp3 = 'sfx/earworms/{}'.format(random.choice(files))
+
+    playsound(random_mp3)
+
+    # !SECTION     
+
+# !SECTION
 
 ###################################################################
 # SECTION Debug commands (remove in refactor, etc)
@@ -316,6 +390,6 @@ async def ledsfx(message):
 @twitch_bot.command('testwaifu')
 async def testwaifu(message):
     playsound('sfx/hooks/waifu.mp3')
-
+   
 
 # !SECTION 
