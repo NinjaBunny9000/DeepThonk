@@ -11,6 +11,7 @@ import content
 import asyncio
 from twitch_permissions import is_bot, is_mod
 import games
+from playsound import playsound
 from games import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score, deal_damage
 
 
@@ -19,13 +20,14 @@ twitch_bot = twitch_instance
 
 band_names = []
 welcome_msg_sent = 0
-branch_url = 'https://github.com/NinjaBunny9000/DeepThonk/tree/sfx' # TODO move to db
+branch_url = 'https://github.com/NinjaBunny9000/DeepThonk/tree/rando-sfx' # TODO move to db
 repo_url = 'https://github.com/NinjaBunny9000/DeepThonk'
+
 
 def update_task_at_launch():
     task = db_query.get_latest_task()
     f = open('data\\task.txt', 'w+')
-    f.write(task.description)
+    f.write('!task = {}'.format(task.description))
     f.close()
 
 update_task_at_launch()
@@ -52,7 +54,7 @@ def parse_commands(message, parts):
  
 def display_task_on_obs(task):
     f = open('data\\task.txt', 'w+')
-    f.write(task)
+    f.write('!task = {}'.format(task))
     f.close()
 
 
@@ -295,6 +297,11 @@ async def event_message(message):
     if any(s in message.content.lower() for s in ('sentient.','sentient!','sentient?','sentient')):
         await twitch_bot.say(message.channel, content.sentient(message))
 
+    # respond if sentient
+    if 'i have a question'.lower() in message.content.lower():
+        playsound('sfx/hooks/question.mp3')
+        return
+
 
 # ─── WHEN BOT IS DIRECTLY ADDRESSED ─────────────────────────────────────────────
 
@@ -430,7 +437,7 @@ async def git(message):
     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('toolset')
+@twitch_bot.command('toolset', alias=['workflow'])
 async def toolset(message):
     msg = "Bun's using VSCode on Windows right now. !theme !git !branch !font for more info."
     await twitch_bot.say(message.channel, msg)
@@ -506,6 +513,11 @@ async def bmo(message):
     msg = "https://imgur.com/gallery/LhPlY"
     await twitch_bot.say(message.channel, msg)
 
+
+@twitch_bot.command('chasers')
+async def chasers(message):
+    msg = "SVL are GREAT folks! Here's a link to the team's streams. https://www.twitch.tv/team/stormviewlive - Tell them @NinjaBunny9000 sent ya & show em some love! <3"
+    await twitch_bot.say(message.channel, msg)
 
 
 # !SECTION 
