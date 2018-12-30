@@ -166,6 +166,46 @@ generate_random_sfx_commands()
 
 
 ###################################################################
+# SECTION Light-reactive SFX
+###################################################################
+
+class LEDSoundEffect(object):
+    """
+    Base class for all lighted-reactive sound effects.
+
+    Eventually looks like ==> LEDSoundEffect(file_name, permission_level, cost, cooldown).
+    """
+
+    commands = []
+
+    # constructor
+    def __init__(self, cmd_name, cmd_path, cmd_char):
+        self.cmd = cmd_name
+        self.path = cmd_path
+        self.char = cmd_char
+
+        # TODO: Check and see if pre-existing command
+        # create/register file as command in event-loop
+        @twitch_bot.command(self.cmd)
+        async def led_sfx_func(message):
+            if message.author.subscriber:
+                serial_send.led_fx(self.cmd, self.char)
+                playsound(self.path + self.cmd + '.mp3')
+        
+        # add the command name to a list to be used later for spreadsheet generation
+        self.commands.append(self.cmd)
+
+# REVIEW move these to UI or something later, so they don't have to be manually set up
+def setup_led_commands():
+    path = 'sfx/ledcmds/'
+    LEDSoundEffect('flashbang', path, 'f')
+    LEDSoundEffect('weewoo', path, 'w')
+
+setup_led_commands()
+
+# !SECTION 
+
+###################################################################
 # SECTION HELP Function
 ###################################################################
 
