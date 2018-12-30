@@ -30,37 +30,46 @@ def get_scene():
 
 # ─── SCENE SWITCHER ─────────────────────────────────────────────────────────────
 
-@twitch_bot.command('scene')
-async def scene(message):
+@twitch_bot.command('obsscene')
+async def obsscene(message):
     if is_mod(message):
         scene = get_scene()
         msg = '@{}, the current scene is {}'.format(message.author.name, scene)
         await twitch_bot.say(message.channel, msg)
 
-@twitch_bot.command('bsod')
-async def bsod(message):
+@twitch_bot.command('obsbsod')
+async def obsbsod(message):
     if is_mod(message):
         change_scene('BSOD')
 
-
-@twitch_bot.command('intro')
-async def intro(message):
+@twitch_bot.command('obsintro')
+async def obsintro(message):
     if is_mod(message):
         change_scene('INTRO')
 
-@twitch_bot.command('swap')
-async def swap(message):
+@twitch_bot.command('obsswap')
+async def obsswap(message):
     if is_mod(message):
         change_scene('GAMES SWAP')
+
+@twitch_bot.command('obsraid')
+async def obsswobsraidap(message):
+    if is_mod(message):
+        change_scene('RAID')
+
+@twitch_bot.command('obsraid2')
+async def obsraid2(message):
+    if is_mod(message):
+        change_scene('RAID2')
         
-@twitch_bot.command('dj')
-async def dj(message):
+@twitch_bot.command('obsdj')
+async def obsdj(message):
     if is_mod(message):
         change_scene('DJ')
 
 # switch scene to GAMES    
-@twitch_bot.command('main')
-async def main(message):
+@twitch_bot.command('obsmain')
+async def obsmain(message):
     if is_mod(message):
         change_scene('MAIN')
         msg = "Switching scene back to MAIN."
