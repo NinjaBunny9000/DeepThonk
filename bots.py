@@ -1,6 +1,7 @@
 import asynctwitch
 import conf
 import cmd
+import serial_conf
 import reacts
 import games
 import moderation
