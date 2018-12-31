@@ -1,14 +1,32 @@
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_admin
 import os, random, time
-from playsound import playsound 
-from twitch_chat import stringify_list
 import serial_send
 import csv
-
+from pygame import mixer
 
 
 # config ze bot!
 twitch_bot = twitch_instance
+
+
+mixer.init()
+
+
+def play_sfx(full_file_path, r00d=True):
+    'Interrupts any sound being played and plays the new one that\'s passed in'
+    # TODO additional argument for interruptability or nah
+
+    if r00d:
+        # stop all sounds playing & load the new file
+        mixer.music.load('{}'.format(full_file_path))    
+    else: 
+        mixer.music.queue('{}'.format(full_file_path))
+
+    # play the new sound
+    try:
+       mixer.music.play()
+    except TypeError:
+        print('TypeError - sound didn\'t play because (assuming) file was not the right type')
 
 
 ###################################################################
@@ -42,7 +60,8 @@ class SoundEffect(object):
             if message.author.subscriber:
                 # compare last use to this use & timeout var
                 if time.time() - self.last_used >= self.timeout:
-                    playsound(self.path)
+                    # playsound(self.path) # REVIEW
+                    play_sfx(self.path)
                     # update the last_used thing
                     self.last_used = time.time()
 
@@ -63,7 +82,7 @@ for file in os.listdir(path):
         SoundEffect(cmd_name, cmd_path)
 
 # !SECTION             
- 
+
 
 ###################################################################
 # SECTION Randomized SFX
@@ -111,7 +130,8 @@ class RandomSoundEffect(object):
             # compare last use to this use & timeout var
             if time.time() - self.last_used >= self.timeout:
                 random_mp3 = 'sfx/randoms/{}/{}'.format(self.folder, random.choice(self.files))
-                playsound(random_mp3)
+                # playsound(random_mp3) # REVIEW 
+                play_sfx(random_mp3)
                 # update the last_used thing
                 self.last_used = time.time()
 
@@ -194,7 +214,8 @@ class LEDSoundEffect(object):
         async def led_sfx_func(message):
             if message.author.subscriber:
                 serial_send.led_fx(self.cmd, self.char)
-                playsound(self.path + self.cmd + '.mp3')
+                # playsound(self.path + self.cmd + '.mp3') # REVIEW 
+                play_sfx(self.path + self.cmd + '.mp3')
         
         # add the command name to a list to be used later for spreadsheet generation
         self.commands.append(self.cmd)
@@ -246,7 +267,8 @@ async def sfx(message):
     
     # then send the rest
     await twitch_bot.say(message.channel, msg) # TODO add final page number
-    playsound('sfx/sfx.mp3')
+    # playsound('sfx/sfx.mp3')
+    play_sfx('sfx/sfx.mp3')
 
 
 # REVIEW function these out in a refactor
@@ -278,7 +300,8 @@ async def randomsfx(message):
     
     # then send the rest
     await twitch_bot.say(message.channel, msg) # TODO add final page number
-    playsound('sfx/sfx.mp3')
+    # playsound('sfx/sfx.mp3')
+    play_sfx('sfx/sfx.mp3')
 
 # REVIEW function these out in a refactor
 @twitch_bot.command('ledsfx')
@@ -377,7 +400,8 @@ async def earwormroulette(message):
 
     random_mp3 = 'sfx/earworms/{}'.format(random.choice(files))
 
-    playsound(random_mp3)
+    # playsound(random_mp3)
+    play_sfx(random_mp3)
 
     # !SECTION     
 
@@ -389,7 +413,18 @@ async def earwormroulette(message):
         
 @twitch_bot.command('testwaifu')
 async def testwaifu(message):
-    playsound('sfx/hooks/waifu.mp3')
+    # playsound('sfx/hooks/waifu.mp3')
+    play_sfx('sfx/hooks/waifu.mp3')
+
+@twitch_bot.command('testsfx')
+async def testsfx(message):
+    path = 'sfx/hooks/'
+    file_name = 'ding'
+    play_sfx(path, file_name)
+
+@twitch_bot.command('testraidsfx')
+async def testraidsfx(message):
+    play_sfx('sfx/alerts/raid.mp3')
    
 
 # !SECTION 
