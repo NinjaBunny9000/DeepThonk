@@ -18,10 +18,14 @@ from games import raid_start, raid_event, raid_in_progress, keep_score, reset_em
 # config ze bot!
 twitch_bot = twitch_instance
 
+# globals everyone can bitch about (that are actually just db objects in testing)
 band_names = []
 welcome_msg_sent = 0
-branch_url = 'https://github.com/NinjaBunny9000/DeepThonk/tree/rando-sfx' # TODO move to db
-repo_url = 'https://github.com/NinjaBunny9000/DeepThonk'
+branch_url = 'https://github.com/NinjaBunny9000/DeepThonk/tree/raid-game' # TODO move to db
+repo_url = 'https://github.com/NinjaBunny9000/DeepThonk/'
+reward_register = []
+# reward_fol = []
+# reward_sub = []
 
 
 def update_task_at_launch():
@@ -71,9 +75,13 @@ def tokenize(message, parts):
         return message.content.lower().split(' ', parts) # TOKENIZE™
 
 
-def stringify_list(list):
-    stringificated_list = '[%s]' % ', '.join(map(str, list))
-    return stringificated_list.strip('[]')
+def stringify_list(stupid_list, prefix_char=''):
+    'Takes a list and concats into a string, separated by commas, with (or without) prefix arg.'
+    addy_part = ', {}'.format(prefix_char)
+    stringificated_listymajig =  '[%s]' % addy_part.join(map(str, stupid_list))
+    stringificated_listymajig = stringificated_listymajig.strip('[]')
+    stringificated_listymajig = prefix_char + stringificated_listymajig
+    return stringificated_listymajig
 
 
 # ─── HELP MENU ──────────────────────────────────────────────────────────────────
@@ -190,6 +198,51 @@ async def haveyou(message):
     #     msg = 'Have you ever ' + db_query.rand_hye().item + '?'
     #     await twitch_bot.say(message.channel, msg) # print the current task
 
+
+@twitch_bot.command('reward')
+async def reward(message):
+    """
+    Rewards followers/subs with whatever reward currnetly is for the strem.
+
+    !reward <user> <fol/sub>
+    """
+    # TODO Validation for members in the room
+
+    # global dict for rewards
+    global reward_register
+    
+    token = tokenize(message, 2)
+
+    # if just `!reward`, list people in teh rewards
+    if len(token) is 1:
+        if len(reward_register) >= 1:
+            # list peeps in the cue
+            rewardees = stringify_list(reward_register, '@')
+            msg = '@{}, these rad folks are qeueued for rewards! {}'.format(message.author.name, rewardees)
+        else:
+            msg = ' @{}, no community members are queued for rewards (yet).'.format(message.author.name)
+        
+        await twitch_bot.say(message.channel, msg)
+        return
+
+    if not is_mod(message):
+        # TODO Drop this into a function that spits out a standard response for lack of priveglage
+        msg = "Sorry, @{}, you can't do this as a mod.".format(message.author.name)
+        await twitch_bot.say(message.channel, msg)
+        return
+
+    # clear the list if rewards rewarded
+    if 'clear' == token[1]:
+        reward_register.clear()
+        msg = 'Rewards delivered!!! @{} cleared the list. Thx for bein rad, dudes!'.format(message.author.name)
+        await twitch_bot.say(message.channel, msg)
+        return
+        
+    # add the person to the list
+    else:
+        reward_register.append(token[1])
+        msg = '@{} registered in the reward cue!'.format(token[1])
+        await twitch_bot.say(message.channel, msg)
 
 
 

@@ -5,6 +5,7 @@ from twitch_permissions import is_bot, is_mod
 import time
 import random
 import api_integrations
+from sfx import play_sfx
 
 
 # config ze bot!
@@ -24,10 +25,6 @@ defending = None
 
 
 # ─── CLASSES ────────────────────────────────────────────────────────────────────
-
-# defenders = RaidDefenders(current_members)
-# attackers = RaidAttackers(raid_members)
-# new_raid = Raid(current_members, raid_members)
 
 class Raid:
     'Keeps track of the status and history of raids'
@@ -287,7 +284,11 @@ def report_hp():
 
 @twitch_bot.command('raid')
 async def raid(message):
-    if is_mod(message) or message.author.name == "streamelements":
+
+    if message.author.name == "streamelements" or message.author.name == "ninjabunny9000": # TODO switch to is_streamer()?
+
+        play_sfx('sfx/alerts/raid.mp3')
+
         await asyncio.sleep(4)
         await twitch_bot.say(message.channel, "!redalert")  # RED LIGHTS
 
@@ -327,6 +328,7 @@ async def raidover(message):
 
 # ─── DEBUG COMMANDS ─────────────────────────────────────────────────────────────
 
+
 @twitch_bot.command('debugreacts')
 async def debugreacts(message):
     """
@@ -340,6 +342,7 @@ def raid_in_progress(message):
     if "trigger raid" in message.content.lower():
         print("raid in progress")
         return True
+
 
 # switch scene to GAMES    
 @twitch_bot.command('emote')
@@ -357,9 +360,27 @@ async def emote(message):
 
 @twitch_bot.command('rabetest')
 async def rabetest(message):
+    'Tests raid function'
 
-    if is_mod(message) or message.author.name == "streamelements":
+    """
+    TODO GET RAIDS WORKING AGAIN!SECTION 
+     - [ ] Get raid audio working again (and put it back into current raid react, not this "test" func)
+     - [ ] Get rid of asyncio.sleep (update raid func)
+     - [ ] Raid timer stuffs?
+     - [ ] Test "scoring" thing again
+     - [ ] Actually split up the room between actaul raiders and actual defenders
+     - [ ] Time things out correctly
+     - [ ] Update the raid func again
+     - [ ] How to interrupt a raid (most importantly, the audio)?
 
+    """
+
+    play_sfx('sfx/alerts/raid.mp3')
+    # play_sfx('sfx/hooks/airhorn.mp3')
+
+    if message.author.name.lower() == "ninjabunny9000":
+
+        # !globals
         global raid_status
         global raiding
         global defending

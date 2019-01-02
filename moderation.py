@@ -2,7 +2,7 @@ import asyncio
 import time
 from conf import twitch_instance
 from twitch_chat import tokenize, is_mod
-from playsound import playsound
+from sfx import play_sfx
 
 # config ze bot!
 twitch_bot = twitch_instance
@@ -62,7 +62,7 @@ async def strike(message):
             await twitch_bot.say(message.channel, '/ban {}'.format(user))
 
             del strike_table[user]
-            await playsound('sfx/nogud.mp3')
+            play_sfx('sfx/nogud.mp3')
 
         # otherwise this is strike #2
         else:
