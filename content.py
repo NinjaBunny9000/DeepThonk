@@ -14,13 +14,34 @@ def get_response_to_call(message):
         "kill all humans" : "on it!",
         "mission" : "This mission is too important for me to allow you to jeopardize it.",
         "horns crew don\'t stop" : "whistle posse pump it up!",
-        "kill me" : "ok, stand still. this might hurt, but then you\'ll no longer feel any more pain."
+        "kill me" : "ok, stand still. this might hurt, but then you\'ll no longer feel any more pain.",
+        " lit " : "🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥",
+        " lit." : "🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥",
+        "lit " : "🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥"
     }
 
     for call in calls_and_responses:
         if call.lower() in message.content.lower():
             return calls_and_responses.get(call)
 
+# TODO Move to db ASAP!
+def faq(message):
+    faq_info = {
+        "!editor" : "The editor Bun uses is VSCode: https://code.visualstudio.com/",
+        "!theme" : "The theme Bun uses is Material Ocean High Contrast, with some modifications: https://imgur.com/a/ivJByy2",
+        "!github" : "Bun's github is: https://github.com/NinjaBunny9000",
+        "!toolset" : "Bun's using VSCode on Windows right now. !theme !git !branch !font for more info.",
+        "!font" : "Bun uses Fira Code with font ligatures. https://github.com/tonsky/FiraCode",
+        "!steam" : "Add Bun on Steam! https://steamcommunity.com/id/ninjabunny9000/",
+        "!kanban" : "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs",
+        # "!portfolio" : "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)",
+        "!bmo" : "https://imgur.com/gallery/LhPlY",
+        "!docs" : "You can find the most (poorly) up-to-date docs here: https://github.com/NinjaBunny9000/DeepThonk/blob/doc-updates/README.md"
+    }
+
+    for key in faq_info:
+        if key.lower() in message.content.lower():
+            return faq_info.get(key)
 
 def generic_responses(message):
     responses = [

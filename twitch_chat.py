@@ -13,21 +13,19 @@ from twitch_permissions import is_bot, is_mod
 import games
 from playsound import playsound
 from games import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score, deal_damage
+import data_tools
 
 
 # config ze bot!
 twitch_bot = twitch_instance
+welcome_msg_sent = 0
 
 # globals everyone can bitch about (that are actually just db objects in testing)
 band_names = []
-welcome_msg_sent = 0
 branch_url = 'https://github.com/NinjaBunny9000/DeepThonk/tree/raid-game' # TODO move to db
 repo_url = 'https://github.com/NinjaBunny9000/DeepThonk/'
-reward_register = []
-# reward_fol = []
-# reward_sub = []
 
-
+               
 def update_task_at_launch():
     task = db_query.get_latest_task()
     f = open('data\\task.txt', 'w+')
@@ -71,7 +69,10 @@ def shuffle_msg(msg_list):
     return ' '.join(msg_list)
 
 
-def tokenize(message, parts):
+def tokenize(message, parts=0):
+    if parts == 0:
+        return message.content.lower().split(' ') # TOKENIZE™
+    else: 
         return message.content.lower().split(' ', parts) # TOKENIZE™
 
 
@@ -82,6 +83,15 @@ def stringify_list(stupid_list, prefix_char=''):
     stringificated_listymajig = stringificated_listymajig.strip('[]')
     stringificated_listymajig = prefix_char + stringificated_listymajig
     return stringificated_listymajig
+
+
+# TODO  Placeholder for db-like functionality, storing lists to txt
+def list_to_file():
+    pass
+
+# TODO  Placeholder for db-like functionality, reading lists from txt
+def read_list_from_file():
+    pass
 
 
 # ─── HELP MENU ──────────────────────────────────────────────────────────────────
@@ -209,10 +219,11 @@ async def reward(message):
     # TODO Validation for members in the room
 
     # global dict for rewards
-    global reward_register
+    reward_register = data_tools.txt_to_list('data/', 'reward_list.txt')
     
     token = tokenize(message, 2)
 
+    
     # if just `!reward`, list people in teh rewards
     if len(token) is 1:
         if len(reward_register) >= 1:
@@ -225,22 +236,29 @@ async def reward(message):
         await twitch_bot.say(message.channel, msg)
         return
 
+    # spit out how many peeps in teh queue
+    if 'qty' == token[1]:
+        msg = '{} rad dudes in teh queue'.format(len(reward_register))
+        await twitch_bot.say(message.channel, msg)
+        return
+
     if not is_mod(message):
         # TODO Drop this into a function that spits out a standard response for lack of priveglage
-        msg = "Sorry, @{}, you can't do this as a mod.".format(message.author.name)
+        msg = "Sorry, @{}, you can't do unless you're as a mod.".format(message.author.name)
         await twitch_bot.say(message.channel, msg)
         return
 
     # clear the list if rewards rewarded
     if 'clear' == token[1]:
-        reward_register.clear()
+        data_tools.clear_txt('data/', 'reward_list.txt')
         msg = 'Rewards delivered!!! @{} cleared the list. Thx for bein rad, dudes!'.format(message.author.name)
         await twitch_bot.say(message.channel, msg)
         return
-        
+
     # add the person to the list
     else:
-        reward_register.append(token[1])
+        data_tools.add_to_txt('data/','reward_list.txt', token[1]) # new hotness
+        # reward_register.append(token[1]) # old and busted
         msg = '@{} registered in the reward cue!'.format(token[1])
         await twitch_bot.say(message.channel, msg)
 
@@ -267,7 +285,7 @@ async def event_message(message):
 
     # msg = ''
     multi_msg = list()  # creates an empty list for messages to get shuffled and responded with
-    message_parts = message.content.lower().split(' ')  # TOKENIZE™
+    message_parts = tokenize(message)  # TOKENIZE™
     mod = is_mod(message)
     bot = conf.bot_name().lower()
 
@@ -278,6 +296,11 @@ async def event_message(message):
         await twitch_bot.say(message.channel, '/me yawns')
         await twitch_bot.say(message.channel, 'maybe later, @{}'.format(message.author.name))
         return
+
+    # return FAQ's
+    if content.faq(message):
+        msg = content.faq(message)
+        await twitch_bot.say(message.channel, msg)
 
 
 # ─── RAID REACT ─────────────────────────────────────────────────────────────────
@@ -337,6 +360,7 @@ async def event_message(message):
 
     #     if raid_state:
     #         keep_score(message)
+
 
 
 
@@ -426,7 +450,19 @@ async def event_message(message):
         # print('reply: ' + reply)
         await twitch_bot.say(message.channel, reply.strip("\n"))
 
+    # sum1 sed fortnite
+    if 'play' in message.content.lower() and 'fortnite' in message.content.lower():
+        msg = 'y would u even think that, @{}??'.format(message.author.name)
+        await twitch_bot.say(message.channel, msg)
+        await twitch_bot.say(message.channel,'/timeout {} 30'.format(message.author.name))
 
+    elif 'fortnite' in message.content.lower():
+        msg = 'who sed fortnite!?!!??...'
+        await twitch_bot.say(message.channel, msg)
+        await twitch_bot.say(message.channel,'/timeout {} 15'.format(message.author.name))
+
+
+   
 # ─── AUF ODER AUS ───────────────────────────────────────────────────────────────
 
     # when it's past the bot's bed time
@@ -472,39 +508,41 @@ async def quit(message):
 # SECTION MENUS & Other Useful Info
 ###################################################################
 
-@twitch_bot.command('theme')
-async def theme(message):
-    msg = "The theme Bun uses is Material Ocean High Contrast, with some modifications: https://imgur.com/a/ivJByy2"
-    await twitch_bot.say(message.channel, msg)
+# REVIEW these got moved to content.py by way of event_message in twitch_chat.py
+
+# @twitch_bot.command('theme')
+# async def theme(message):
+#     msg = "The theme Bun uses is Material Ocean High Contrast, with some modifications: https://imgur.com/a/ivJByy2"
+#     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('editor', alias=['ide'])
-async def editor(message):
-    msg = "The editor Bun uses is VSCode: https://code.visualstudio.com/"
-    await twitch_bot.say(message.channel, msg)
+# @twitch_bot.command('editor', alias=['ide'])
+# async def editor(message):
+#     msg = "The editor Bun uses is VSCode: https://code.visualstudio.com/"
+#     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('git', alias=['versioning', 'github'])
-async def git(message):
-    msg = "Bun's github is: https://github.com/NinjaBunny9000"
-    await twitch_bot.say(message.channel, msg)
+# @twitch_bot.command('git', alias=['versioning', 'github'])
+# async def git(message):
+#     msg = "Bun's github is: https://github.com/NinjaBunny9000"
+#     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('toolset', alias=['workflow'])
-async def toolset(message):
-    msg = "Bun's using VSCode on Windows right now. !theme !git !branch !font for more info."
-    await twitch_bot.say(message.channel, msg)
+# @twitch_bot.command('toolset', alias=['workflow'])
+# async def toolset(message):
+#     msg = "Bun's using VSCode on Windows right now. !theme !git !branch !font for more info."
+#     await twitch_bot.say(message.channel, msg)
 
-@twitch_bot.command('steam')
-async def steam(message):
-    msg = "Add Bun on Steam! https://steamcommunity.com/id/ninjabunny9000/"
-    await twitch_bot.say(message.channel, msg)
+# @twitch_bot.command('steam')
+# async def steam(message):
+#     msg = "Add Bun on Steam! https://steamcommunity.com/id/ninjabunny9000/"
+#     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('font')
-async def font(message):
-    msg = "Bun uses Fira Code with font ligatures. https://github.com/tonsky/FiraCode"
-    await twitch_bot.say(message.channel, msg)
+# @twitch_bot.command('font')
+# async def font(message):
+#     msg = "Bun uses Fira Code with font ligatures. https://github.com/tonsky/FiraCode"
+#     await twitch_bot.say(message.channel, msg)
 
 
 @twitch_bot.command('branch', alias=['current'])
@@ -549,34 +587,43 @@ async def shoutout(message):
             await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('kanban')
-async def kanban(message):
-    msg = "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs"
-    await twitch_bot.say(message.channel, msg)
+# @twitch_bot.command('kanban')
+# async def kanban(message):
+#     msg = "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs"
+#     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('portfolio')
-async def portfolio(message):
-    msg = "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)"
-    await twitch_bot.say(message.channel, msg)
+# @twitch_bot.command('portfolio')
+# async def portfolio(message):
+#     msg = "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)"
+#     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('bmo')
-async def bmo(message):
-    msg = "https://imgur.com/gallery/LhPlY"
-    await twitch_bot.say(message.channel, msg)
+# @twitch_bot.command('bmo')
+# async def bmo(message):
+#     msg = "https://imgur.com/gallery/LhPlY"
+#     await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('chasers')
-async def chasers(message):
-    msg = "SVL are GREAT folks! Here's a link to the team's streams. https://www.twitch.tv/team/stormviewlive - Tell them @NinjaBunny9000 sent ya & show em some love! <3"
-    await twitch_bot.say(message.channel, msg)
+# @twitch_bot.command('chasers')
+# async def chasers(message):
+#     msg = "SVL are GREAT folks! Here's a link to the team's streams. https://www.twitch.tv/team/stormviewlive - Tell them @NinjaBunny9000 sent ya & show em some love! <3"
+#     await twitch_bot.say(message.channel, msg)
+
+
+# @twitch_bot.command('docs')
+# async def docs(message):
+#     msg = "Rn, Bun's updating https://github.com/NinjaBunny9000/DeepThonk/blob/doc-updates/README.md"
+#     await twitch_bot.say(message.channel, msg)
 
 
 # !SECTION 
 
 
 # ─── DEBUG COMMANDS ─────────────────────────────────────────────────────────────
+
+
+# REVIEW Purge these during the next refactor 
 
 @twitch_bot.command('debug')
 async def debug(message):
@@ -609,6 +656,7 @@ async def viewers(message):
     print(twitch_bot.channel_stats)
     print(twitch_bot.hosts)
     print(twitch_bot.host_count)
+
 
 @twitch_bot.command('register')
 async def register(message):
