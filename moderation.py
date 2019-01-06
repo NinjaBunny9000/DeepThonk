@@ -85,6 +85,7 @@ async def strike(message):
                 Chat Rules, ToS (https://www.twitch.tv/p/legal/terms-of-service/) and 
                 Community Guidelines (https://www.twitch.tv/p/legal/community-guidelines/)
             """.format(user)
+        play_sfx('sfx/events/strike1.mp3')
         await twitch_bot.say(message.channel, msg)
 
 
