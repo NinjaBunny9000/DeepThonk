@@ -10,7 +10,7 @@ tmp/**
 data/**
 sfx/**
 discord_related/**
-arduino/**
+arduino_wip/**
 
 config_backup\.yaml
 
