@@ -1,7 +1,7 @@
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_admin, bot_name
 import asyncio
 from obs_ctrl import change_scene, get_scene
-from twitch_permissions import is_bot, is_mod
+from permissions import is_bot, is_mod
 import time
 import random
 import api_integrations
@@ -587,3 +587,14 @@ async def defenders(message):
 
 # command that stops counting 
     # report & of emotes during period
+
+
+@twitch_bot.command('cah')
+async def cah(message):
+    """
+    Cards against humanity play-generator.
+    """
+    await twitch_bot.say(message.channel, play_hand())
+
+
+# SECTION Have You Ever

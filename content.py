@@ -27,6 +27,7 @@ def get_response_to_call(message):
         if call.lower() in message.content.lower():
             return calls_and_responses.get(call)
 
+
 # TODO Move to db ASAP!
 def faq(message):
     faq_info = {
@@ -46,21 +47,6 @@ def faq(message):
         if key.lower() in message.content.lower():
             return faq_info.get(key)
 
-def raid_sequence(message, raiding, defending):
-    message = {
-        # delay : msg
-        0 : "!redalert",    # RED LIGHTS
-        9 : change_scene('BSOD'),   # 9s BSOD
-        15 : "ATTENTION, NINJAS! We\'ve been RAIDED! Our networks are vulnerable!!", # 15s
-        # report hp 1
-        1 : "Raiders & Defenders both start with 100 hp. Spam emotes to deal damage! First team to drop to 0 hp loses teh raid!",   
-        24 : change_scene('RAID'), # 25s Switch to HackerTyper
-        4 : "Type defendNetwork(); to harness avilable blockchains and boost our firewall's signal.",
-        # report hp 2
-        3 : 'KEEP IT UP! Raiders have {}hp left, and we have {}hp.'.format(raiding.hp, defending.hp),
-        10 : "Network defenses are failing. Initiate all protocols! Pizza! Donuts! Bacon!! THROW ALL WE\'VE GOT AT THEM!!",
-        40 : "pizzaProtocol();" # 40s Pizza
-    }
 
 def generic_responses(message):
     responses = [
@@ -158,13 +144,16 @@ def last_words():
         ]
     return random.choice(responses)
 
+
 def help_menu(message):
     return """Howdy, @{}! I'm a robit. Beep boop. Here's some ways we can interact: !task, 
     !cah, !hye, !bands, !bet, !duel, or simply have a chat with me. ;D
     """.format(message.author.name)
 
+
 def easter_egg(message):
     return 'There was nothing clever about what you just did, @{}.'.format(message.author.name)
+
 
 def sentient(message):
     phrases = [
@@ -177,12 +166,11 @@ def sentient(message):
         ]
     return random.choice(phrases) + ', @{}.'.format(message.author.name)
 
+
 def function_disabled():
     pass
     # sfx.play_sfx('sfx/randoms/disabled/disabled.mp3')
 
+
 def stop_yelling_at_me():
     return 'jesus dude calm tf down'
-
-if __name__ == "__main__":
-    print(last_words())

@@ -1,8 +1,9 @@
 import asyncio
 import time
 from conf import twitch_instance
-from twitch_chat import tokenize, is_mod
+import data_tools
 from sfx import play_sfx
+import permissions
 
 # config ze bot!
 twitch_bot = twitch_instance
@@ -31,11 +32,11 @@ async def strike(message):
     global strike_table
     
     # check for permissions
-    if not is_mod(message):
+    if not permissions.is_mod(message):
         return
 
     # tokenize™
-    token = tokenize(message, 2)
+    token = data_tools.tokenize(message, 2)
     user = token[1]
 
 
@@ -101,11 +102,11 @@ async def strikes(message):
     global strike_table
     
     # check for permissions
-    if not is_mod(message):
+    if not permissions.is_mod(message):
         return
 
     # tokenize™
-    token = tokenize(message, 1)
+    token = data_tools.tokenize(message, 1)
     user = token[1]
 
     try:
@@ -120,10 +121,10 @@ async def strikes(message):
 async def mybad(message):
     '!mybad <user> removes a strike for the user.'
     # check for permissions
-    if not is_mod(message):
+    if not permissions.is_mod(message):
         return
 
-    token = tokenize(message, 1)    # tokenize™
+    token = data_tools.tokenize(message, 1)    # tokenize™
 
     # return fyi if no user provided
     if len(token) == 1:

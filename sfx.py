@@ -1,6 +1,5 @@
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_admin
 import os, random, time
-import serial_send
 import csv
 from pygame import mixer
 import games
@@ -222,7 +221,7 @@ class LEDSoundEffect(object):
 		@twitch_bot.command(self.cmd)
 		async def led_sfx_func(message):
 			if message.author.subscriber:
-				serial_send.led_fx(self.cmd, self.char)
+				# serial_send.led_fx(self.cmd, self.char) # TODO Arduino stuffs
 				# playsound(self.path + self.cmd + '.mp3') # REVIEW 
 				play_sfx(self.path + self.cmd + '.mp3')
 		

@@ -1,11 +1,21 @@
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_admin
 import sys
 import os
-from twitch_permissions import is_bot, is_mod
+from permissions import is_bot, is_mod
 
 
 # config ze bot!
 twitch_bot = twitch_instance
+
+
+
+def display_task_on_obs(task):
+    f = open('data\\task.txt', 'w+')
+    f.write('!task = {}'.format(task))
+    f.close()
+
+
+
 
 def change_scene(scene):
     """

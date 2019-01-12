@@ -1,3 +1,40 @@
+import random
+
+
+# SECTION Parsy stuffs ™
+
+def parse_commands(message, parts): 
+    message_parts = message.content.split(' ', parts)
+    return message_parts
+
+def shuffle_msg(msg_list):
+    """
+    Takes a list of responses (if more than one) and shuffles them and combines them
+    so that they can all be sent in one message. ex: Oi deepthonk! Do you like dicks?
+    """
+    random.shuffle(msg_list)
+    return ' '.join(msg_list)
+
+
+def tokenize(message, parts=0):
+    if parts == 0:
+        return message.content.lower().split(' ') # TOKENIZE™
+    else: 
+        return message.content.lower().split(' ', parts) # TOKENIZE™
+
+
+def stringify_list(stupid_list, prefix_char=''):
+    'Takes a list and concats into a string, separated by commas, with (or without) prefix arg.'
+    addy_part = ', {}'.format(prefix_char)
+    stringificated_listymajig =  '[%s]' % addy_part.join(map(str, stupid_list))
+    stringificated_listymajig = stringificated_listymajig.strip('[]')
+    stringificated_listymajig = prefix_char + stringificated_listymajig
+    return stringificated_listymajig
+
+# !SECTION 
+
+
+# SECTION .txt File Operations
 
 def list_to_txt(file_path, file_name, listyboi):
     with open(file_path + file_name, 'w+') as f:
@@ -30,3 +67,5 @@ def clear_txt(file_path, file_name):
 
 def rem_from_txt(list_item:str):
     pass
+
+# !SECTION 

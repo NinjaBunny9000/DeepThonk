@@ -1,9 +1,7 @@
 import asynctwitch
 import conf
-import twitch_chat
+import twitch_events
 import cmd
-import serial_conf
-import reacts
 import games
 import moderation
 import sfx
@@ -24,9 +22,8 @@ def start_twitch():
     # pull in the config var for ze bot!
     print('Starting the Twitch bot...')
     twitch_bot.start()
-    # twitch_bot.loop.run_until_complete(twitch_bot._tcp_echo_client())
-    
-    
+
+
 def main():
     start_twitch()
 

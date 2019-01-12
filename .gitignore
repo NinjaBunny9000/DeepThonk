@@ -9,6 +9,7 @@ discord/**
 tmp/**
 data/**
 sfx/**
+discord_related/**
 
 config_backup\.yaml
 
@@ -24,3 +25,5 @@ scene_current\.txt
 
 
 notes/
+
+wip_temp/
