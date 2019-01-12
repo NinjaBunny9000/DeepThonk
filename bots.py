@@ -8,6 +8,8 @@ import sfx
 import signal
 import sys
 import os
+import faq
+import lists
 
 """
 DEBUG/DEV/WIP NOTES:
