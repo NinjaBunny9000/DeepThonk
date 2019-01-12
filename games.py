@@ -7,12 +7,64 @@ import random
 import api_integrations
 from sfx import play_sfx
 import data_tools
+from cah import play_hand
+import os
 
 
 # config ze bot!
 twitch_bot = twitch_instance
 
-# global vars
+
+###############################################################################
+# SECTION Earworm Roulet™
+###############################################################################
+
+@twitch_bot.command('earworm')
+async def earworm(message):
+
+# TODO 
+# - Report what they won or not
+# - Send a link to the youtube song, cuz you know they'll need it. Also it's polite.
+# - Timeouts
+# - Betting in general
+# - Integrate StreamElements points
+# - Help command/function
+
+	# SECTION They win
+	if random.random() >= 0.9:
+		msg = 'u lucked tf out, @{}.'.format(message.author.name)
+		await twitch_bot.say(message.channel, msg)
+		return
+
+	# !SECTION 
+
+
+	# SECTION They lose
+	msg = 'rip, @{}'.format(message.author.name)
+	await twitch_bot.say(message.channel, msg)
+	
+	files = []
+
+	# create a list of mp3s in folders (excluding aliases.txt)
+	for file_name in os.listdir('sfx/earworms/'):
+		if not file_name.endswith('.txt'):
+			# add it to a list
+			files.append(file_name)
+
+	random_mp3 = 'sfx/earworms/{}'.format(random.choice(files))
+
+	# playsound(random_mp3)
+	play_sfx(random_mp3)
+
+	# !SECTION     
+
+# !SECTION 
+
+###############################################################################
+# SECTION Raid Game
+###############################################################################
+
+# globals everyone can bitch about (that are actually just db objects in testing)
 emote_count = 0
 emotes_this_raid = 0
 attacker_score = 0
@@ -28,7 +80,7 @@ raiding = None
 defending = None
 
 
-# ─── CLASSES ────────────────────────────────────────────────────────────────────
+# ANCHOR Classes / Teams
 
 class Raid:
     'Keeps track of the status and history of raids'
@@ -66,7 +118,6 @@ class RaidAttackers:
         # emote dmg/weight??
 
 
-# ─── RAID SEQUENCE ──────────────────────────────────────────────────────────────
  
 def raid_is_happening():
     global raid_status
@@ -85,7 +136,7 @@ def raid_start():
     if raid_in_progress == True:
         return True
 
-
+# REVIEW why was this needed? still needed?
 def raid_event(message):
     success_msg = "raid triggered successfully"
     print(success_msg)
@@ -147,6 +198,7 @@ def split_chatters(chatters):
     # index = len(chatters)//2
     # return chatters[:index]
     return random.sample(chatters, len(chatters)//2)
+
 
 def who_raided():
     """
@@ -253,12 +305,10 @@ def get_defender_score():
 def update_defenders_list():
     global raid_defender_members
     raid_defender_members = api_integrations.get_chatters()
-    print('DEFENDERS : {}'.format(raid_defender_members))
 
 
 def append_defenders(user):
     raid_defender_members.append(user.name)
-    print('[DEFENDER] @{} registered.'.format(user.name))
 
 
 def append_raiders(user):
@@ -267,7 +317,7 @@ def append_raiders(user):
         raiding.members.append(user.name)
     else: # if raid hasn't started scoring
         raid_attacker_members.append(user.name)
-        print('[RAIDER] @{} registered.'.format(user.name))
+        print('[RAIDER] @{} registered.'.format(user.name)) # TODO Logging
 
 
 # debug
@@ -285,16 +335,14 @@ def print_teams(
     defenders_printable = defenders_printable.strip('[]')
 
     # print out who we gots
-    print('\n[A RAID HAS BEGUN]\n')
-    print('ATTACKERS: {} \n'.format(attackers_printable))
-    print('DEFENDERS: {}\n'.format(defenders_printable))
+    print('\n[A RAID HAS BEGUN]\n') # TODO Logging
+
 
 def report_ko():
     global raiding
     global defending
 
     if raiding.hp <= 0 or defending.hp <= 0:
-        print('[RETURNED TRUE]')
         return True
     else:
         return False
@@ -305,7 +353,7 @@ def end_raid():
 
 
 def reset_raid():
-    print('resetting raid score')
+    print('resetting raid score') # TODO Logging???
     data_tools.clear_txt('data/', 'raid_score.txt')
 
 def get_winner():
@@ -426,18 +474,10 @@ async def debugreacts(message):
     msg = bot_name().lower()   
     await twitch_bot.say(message.channel, msg)
 
-# def raid_in_progress(message):
-#     # chk the message or webhooks for raid triggers
-#     if "trigger raid" in message.content.lower():
-#         print("raid in progress")
-#         return True
 
-
-# switch scene to GAMES    
+# counts the emotes in a message ==> !emote <emotes>
 @twitch_bot.command('emote')
 async def emote(message):
-    # print(message.content.emotes)
-    print(message.emotes)
     count = 0
     for emote in message.emotes:
         count = count + 1
@@ -564,6 +604,7 @@ async def setupraid(message):
     print_teams(raiding.members, defending.members)
 
 
+# gets the current list of ppl in the chat room from twitch TMI
 @twitch_bot.command('getchatters')
 async def getchatters(message):
     print(api_integrations.get_chatters())

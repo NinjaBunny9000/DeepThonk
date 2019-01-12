@@ -42,7 +42,6 @@ def add_user_twitch(message):
         snowflake=message.author.id,
         username=message.author.name
     )
-    print(new_twitch_user)
    
     session.add(new_twitch_user)
     session.commit()

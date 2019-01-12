@@ -20,7 +20,7 @@ def play_sfx(full_file_path, r00d=True, unr00dable=False):
 	if full_file_path == 'sfx/events/raid_victory.mp3':
 		pass
 	elif games.raid_start():
-		print('SFX ABORTED')
+		print('SFX ABORTED') # TODO Logging refactor
 		return
 
 	if r00d:
@@ -31,10 +31,10 @@ def play_sfx(full_file_path, r00d=True, unr00dable=False):
 
 	# play the new sound
 	try:
-		print('[SFX] {} played'.format(full_file_path))
+		print('[SFX] {} played'.format(full_file_path)) # TODO Logging refactor
 		mixer.music.play()
 	except TypeError:
-		print('TypeError - {} didn\'t play because (assuming) file was not the right type'.format(full_file_path))
+		print('TypeError - {} didn\'t play because (assuming) file was not the right type'.format(full_file_path)) # TODO Logging refactor
 
 
 ###################################################################
@@ -108,18 +108,7 @@ class RandomSoundEffect(object):
 
 	commands = []
 
-	def generate_csv(self, cmds):
-		# REVIEW  what it shoudl REALLY do is just be called from the constructor 
-		# and add the command to the next empty line
-		
-		# TODO check if the command is already in the csv & make it if it doesn't exist (r+)
-		# TODO if it isn't, add it
 
-		with open('data/test.csv', 'w+', newline='') as csv_file:
-			for cmd in cmds:
-				csv_writer = csv.writer(csv_file)
-				print('writing {}'.format(cmd.name))
-				csv_writer.writerow([cmd.name, cmd.timeout])
 
 
 	# constructor
@@ -172,10 +161,8 @@ def generate_random_sfx_commands():
 			RandomSoundEffect(folder, files, get_aliases(folder))
 			# TODO CSV "clean" func? Not sure if needed.
 
-		else:
-			print('doin it rong')
-
-	RandomSoundEffect.generate_csv(RandomSoundEffect, RandomSoundEffect.commands)
+	# TODO CSV generation (or migrate to db >>> ;D)
+	# RandomSoundEffect.generate_csv(RandomSoundEffect, RandomSoundEffect.commands)
 
 
 # TODO Get this loading aliases from text files
@@ -369,51 +356,6 @@ async def ledsfx(message):
 # !SECTION
 
 
-###################################################################
-# SECTION Debug commands (remove in refactor, etc)
-###################################################################
-
-
-@twitch_bot.command('earwormroulette')
-async def earwormroulette(message):
-
-# TODO 
-# - Report what they won or not
-# - Send a link to the youtube song, cuz you know they'll need it. Also it's polite.
-# - Timeouts
-# - Betting in general
-# - Integrate StreamElements points
-# - Help command/function
-
-	# SECTION They win
-	if random.random() >= 0.9:
-		msg = 'u lucked tf out, @{}.'.format(message.author.name)
-		await twitch_bot.say(message.channel, msg)
-		return
-
-	# !SECTION 
-
-
-	# SECTION They lose
-	msg = 'rip, @{}'.format(message.author.name)
-	await twitch_bot.say(message.channel, msg)
-	
-	files = []
-
-	# create a list of mp3s in folders (excluding aliases.txt)
-	for file_name in os.listdir('sfx/earworms/'):
-		if not file_name.endswith('.txt'):
-			# add it to a list
-			files.append(file_name)
-
-	random_mp3 = 'sfx/earworms/{}'.format(random.choice(files))
-
-	# playsound(random_mp3)
-	play_sfx(random_mp3)
-
-	# !SECTION     
-
-# !SECTION
 
 ###################################################################
 # SECTION Debug commands (remove in refactor, etc)

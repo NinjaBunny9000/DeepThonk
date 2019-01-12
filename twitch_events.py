@@ -9,8 +9,8 @@ import random
 import content
 import asyncio
 from permissions import is_bot, is_mod
+# REVIEW Get rid of the from games import __
 import games
-from playsound import playsound
 from games import raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score, deal_damage
 import data_tools
 from sfx import play_sfx
@@ -19,8 +19,6 @@ from sfx import play_sfx
 # config ze bot!
 twitch_bot = twitch_instance
 welcome_msg_sent = 0
-
-
 
                
 ###############################################################################
@@ -190,11 +188,6 @@ async def event_message(message):
     # respond if sentient
     if any(s in message.content.lower() for s in ('sentient.','sentient!','sentient?','sentient')):
         await twitch_bot.say(message.channel, content.sentient(message))
-
-    # respond if sentient
-    if 'i have a question'.lower() in message.content.lower():
-        playsound('sfx/hooks/question.mp3')
-        return
 
 
 # ─── WHEN BOT IS DIRECTLY ADDRESSED ─────────────────────────────────────────────

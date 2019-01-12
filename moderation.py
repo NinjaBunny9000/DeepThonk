@@ -68,6 +68,7 @@ async def strike(message):
         # otherwise this is strike #2
         else:
             if user in strike_table:
+                play_sfx('sfx/hooks/question.mp3')
                 strike_table.update({user : 2})
                 msg = """Strike #2, @{}. Your next strike will result in a ban.
                 Please review the Chat Rules, ToS (https://www.twitch.tv/p/legal/terms-of-service/) 

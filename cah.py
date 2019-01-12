@@ -736,12 +736,10 @@ def play_hand():
     i = 0
     if len(black) == 1:
         white = draw_white_card()
-        # print(white)
         hand = "{} [{}]".format(black[0], white)
     else:
         for i in range(len(black) - 1):
             white = draw_white_card()
-            # print(white)
             hand = "{}{}[{}]".format(hand, black[i], white)
             i+=1
         hand = hand + black[i]
