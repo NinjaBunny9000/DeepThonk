@@ -1,11 +1,13 @@
 discord:
     token: paste_token_here
     server_id: 'server_id_goes_here'
+    
 twitch:
     streamer: 'streamer_twitch_username'
     bot_account: 'bot_twitch_username'
     oauth: 'oauth:paste_token_here'
     channel: 'twitch_user_name'
+    client-id: 'client_id'
     prefix: '!'  # defaults to !
     welcome_msg: "I'm back!"
     bot_admins:
