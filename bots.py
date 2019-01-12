@@ -1,22 +1,16 @@
 import asynctwitch
 import conf
+import sys
+import os
+
+'Import all the bot Modules'
 import twitch_events
-import cmd
+import faq
+import lists
 import games
 import moderation
 import sfx
-import signal
-import sys
-import os
-import faq
-import lists
 
-"""
-DEBUG/DEV/WIP NOTES:
-
-Currently the Discord module is *not* being called right now. You can still run it separately
-by just doing "python discord_chat.py" or whatever. WIP <3
-"""
 
 twitch_bot = conf.twitch_instance
 
