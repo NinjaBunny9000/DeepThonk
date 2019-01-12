@@ -3,25 +3,31 @@ import os, random, time
 import serial_send
 import csv
 from pygame import mixer
+import games
 
 
 # config ze bot!
 twitch_bot = twitch_instance
 
 
-mixer.init()
+mixer.init(frequency=44100)
 
 
-def play_sfx(full_file_path, r00d=True):
+def play_sfx(full_file_path, r00d=True, unr00dable=False):
 	'Interrupts any sound being played and plays the new one that\'s passed in'
 	# TODO additional argument for interruptability or nah
 
+	# prevent trampling over raid routine
+	if full_file_path == 'sfx/events/raid_victory.mp3':
+		pass
+	elif games.raid_start():
+		print('SFX ABORTED')
+		return
+
 	if r00d:
 		# stop all sounds playing & load the new file
-		print('[SFX] {} loaded'.format(full_file_path))
-		mixer.music.load('{}'.format(full_file_path))    
+		mixer.music.load('{}'.format(full_file_path))  
 	else: 
-		print('[SFX] {} queued'.format(full_file_path))
 		mixer.music.queue('{}'.format(full_file_path))
 
 	# play the new sound
@@ -118,7 +124,7 @@ class RandomSoundEffect(object):
 
 
 	# constructor
-	def __init__(self, folder, files:list, aliases=(), cmd_timeout=10):
+	def __init__(self, folder, files:list, aliases=(), cmd_timeout=3):
 		self.name = folder
 		self.folder = folder
 		self.files = files
@@ -254,19 +260,19 @@ async def sfx(message):
 
 	# for every item in an enumerated list of commands
 	for cmd in SoundEffect.commands:
-		cmd.name = '!{}'.format(cmd.name) # add the !
+		cmd_name = '!{}'.format(cmd.name) # add the !
 
 		# get the length of the string & compare it to teh length it would be if it added the new command
-		if (len(msg) + len(cmd.name) + 2) >= 500:
+		if (len(msg) + len(cmd_name) + 2) >= 500:
 			# send message and start over
 			await twitch_bot.say(message.channel, msg)  # TODO Add page number
 			msg = ''
 		else:
 			# add to msg
 			if len(msg) is 0:
-				msg += cmd.name
+				msg += cmd_name
 			else:
-				msg += ', {}'.format(cmd.name)
+				msg += ', {}'.format(cmd_name)
 	
 	# then send the rest
 	await twitch_bot.say(message.channel, msg) # TODO add final page number
@@ -287,19 +293,19 @@ async def randomsfx(message):
 
 	# for every item in an enumerated list of commands
 	for cmd in RandomSoundEffect.commands:
-		cmd = '!{}'.format(cmd) # add the !
+		cmd_name = '!{}'.format(cmd.name) # add the !
 
 		# get the length of the string & compare it to teh length it would be if it added the new command
-		if (len(msg) + len(cmd) + 2) >= 500:
+		if (len(msg) + len(cmd_name) + 2) >= 500:
 			# send message and start over
 			await twitch_bot.say(message.channel, msg)  # TODO Add page number
 			msg = ''
 		else:
 			# add to msg
 			if len(msg) is 0:
-				msg += cmd
+				msg += cmd_name
 			else:
-				msg += ', {}'.format(cmd)
+				msg += ', {}'.format(cmd_name)
 	
 	# then send the rest
 	await twitch_bot.say(message.channel, msg) # TODO add final page number

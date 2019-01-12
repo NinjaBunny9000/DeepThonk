@@ -12,8 +12,9 @@ import asyncio
 from twitch_permissions import is_bot, is_mod
 import games
 from playsound import playsound
-from games import raid_start, raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score, deal_damage
+from games import raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score, deal_damage
 import data_tools
+from sfx import play_sfx
 
 
 # config ze bot!
@@ -24,7 +25,7 @@ welcome_msg_sent = 0
 band_names = []
 branch_url = 'https://github.com/NinjaBunny9000/DeepThonk/tree/raid-game' # TODO move to db
 repo_url = 'https://github.com/NinjaBunny9000/DeepThonk/'
-
+# time_users_last_polled = time.now()
                
 def update_task_at_launch():
     task = db_query.get_latest_task()
@@ -33,6 +34,7 @@ def update_task_at_launch():
     f.close()
 
 update_task_at_launch()
+
 
 
 # ─── WELCOME MESSAGE ────────────────────────────────────────────────────────────
@@ -45,6 +47,33 @@ async def raw_event(message):
         print(conf.bot_name().capitalize() + ' has landed.')
         await twitch_bot.say(twitch_channel(), welcome_msg())
         await twitch_bot.say(twitch_channel(), "/me tips hat to chat")
+
+        # make initial list of people in the room
+        games.update_defenders_list()
+        msg = '{} defenders registered.'.format(games.get_def_count())
+        await twitch_bot.say(twitch_channel(), msg)
+        
+
+@twitch_bot.override
+async def event_user_join(user):
+    # print(user.name)
+    # if raid is happening
+    if games.raid_start():
+        # add new people that join to the attacking team
+        games.append_raiders(user)
+    else:
+        games.append_defenders(user)
+
+
+@twitch_bot.override
+async def event_user_leave(user):
+    # print(user.name)
+    pass
+    # if raid is happening
+    # if games.raid_start():
+        # add new people that join to the attacking team
+
+    
 
 
 # ─── PLAIN OLE FUNCTIONS ────────────────────────────────────────────────────────
@@ -264,6 +293,8 @@ async def reward(message):
 
 
 
+
+
 # ─── OVERRIDE ───────────────────────────────────────────────────────────────────
 
 @twitch_bot.override
@@ -304,63 +335,61 @@ async def event_message(message):
 
 
 # ─── RAID REACT ─────────────────────────────────────────────────────────────────
+    """
+    Considerations:
+    - on_message loop happens every message
+    - Can't talk to twitch chat (use await) within function called here.
+
+    IDEA 1: Report hp ever x-hp. Would require using the on_message loop
+    and some logic and/or conditionals to report only losing team, etc.
+
+    IDEA 2: Incorporate into timed-out raid react. This happens in games.py
+    and includes async sleep functions (timeouts). Could be not fun, but 
+    would have control over reporting health ever x-seconds.
+
+    """
+
+    # update the viewer list for defending
+    # TODO How to make this happen all cached and stuff? 
+    # games.update_defenders_list()
 
     if games.raid_is_happening():
-        # count emotes
+
+
+        # send commands periodically (@jigo has async solution)
+        # FIXME this wont work because loop only happens once per message sent
+
+        # count & score emotes
         if message.emotes:   
 
             deal_damage(message)
-
-            # # hp report conditions met?
-            # if games.hp_condition():
-            #     # report hp
-            #     msg = '{} is below 50% health!'.format(games.hp_condition())
-            #     await twitch_bot.say(message.channel, msg)
-            
-            """
-            Considerations:
-            - on_message loop happens every message
-            - Can't talk to twitch chat (use await) within function called here.
-
-            IDEA 1: Report hp ever x-hp. Would require using the on_message loop
-            and some logic and/or conditionals to report only losing team, etc.
-
-            IDEA 2: Incorporate into timed-out raid react. This happens in games.py
-            and includes async sleep functions (timeouts). Could be not fun, but 
-            would have control over reporting health ever x-seconds.
-
-            """
-            
 
             print('raiding.hp={} || defending.hp={}'.format(
                 games.raiding.hp, games.defending.hp
                 ))
 
-            # if anyone goes negative, report the KO
+            # prints hp to .txt file
+            data_tools.score_to_txt(games.defending.hp, games.raiding.hp)
+
+            # WIN CONDITION
             if games.report_ko():
-                raid_winner = games.get_winner() 
-
-
-                # end raid & flip the bool thing
+                # end raid & reset the scores
                 games.end_raid()
+
+                raid_winner = games.get_winner() 
+                
+                play_sfx('sfx/events/raid_victory.mp3')
 
                 # report the victor
                 msg = 'Raid over! The winner is {}'.format(raid_winner)
                 await twitch_bot.say(message.channel, msg)
 
-
-
-    # if "end raid" in message.content.lower():
-    #     raid_state = False
-    #     reset_emote_count()
-    #     print("raid ended")
-
-    #     if raid_in_progress(message):
-    #         raid_state = True
-
-    #     if raid_state:
-    #         keep_score(message)
-
+    
+            # # hp report conditions met?
+            # if games.hp_condition():
+            #     # report hp
+            #     msg = '{} is below 50% health!'.format(games.hp_condition())
+            #     await twitch_bot.say(message.channel, msg)
 
 
 

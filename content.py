@@ -1,5 +1,7 @@
 import random
 from conf import streamer
+from obs_ctrl import change_scene
+# from sfx import play_sfx
 
 
 #! Fix it only returning one of these && => get_responses_to_calls
@@ -9,6 +11,7 @@ def get_response_to_call(message):
         "dick" : "🍆",
         "🍆" : "dicks OUT!",
         "5/7" : "perfect score!",
+        "10/10" : "try again!",
         "how meta" : "so meta.",
         "oi bruv" : "oi m8!",
         "kill all humans" : "on it!",
@@ -42,6 +45,22 @@ def faq(message):
     for key in faq_info:
         if key.lower() in message.content.lower():
             return faq_info.get(key)
+
+def raid_sequence(message, raiding, defending):
+    message = {
+        # delay : msg
+        0 : "!redalert",    # RED LIGHTS
+        9 : change_scene('BSOD'),   # 9s BSOD
+        15 : "ATTENTION, NINJAS! We\'ve been RAIDED! Our networks are vulnerable!!", # 15s
+        # report hp 1
+        1 : "Raiders & Defenders both start with 100 hp. Spam emotes to deal damage! First team to drop to 0 hp loses teh raid!",   
+        24 : change_scene('RAID'), # 25s Switch to HackerTyper
+        4 : "Type defendNetwork(); to harness avilable blockchains and boost our firewall's signal.",
+        # report hp 2
+        3 : 'KEEP IT UP! Raiders have {}hp left, and we have {}hp.'.format(raiding.hp, defending.hp),
+        10 : "Network defenses are failing. Initiate all protocols! Pizza! Donuts! Bacon!! THROW ALL WE\'VE GOT AT THEM!!",
+        40 : "pizzaProtocol();" # 40s Pizza
+    }
 
 def generic_responses(message):
     responses = [
@@ -159,12 +178,8 @@ def sentient(message):
     return random.choice(phrases) + ', @{}.'.format(message.author.name)
 
 def function_disabled():
-    responses = [
-        '!disabled',
-        '!disabled2',
-        '!disabled3'
-    ]
-    return random.choice(responses)
+    pass
+    # sfx.play_sfx('sfx/randoms/disabled/disabled.mp3')
 
 def stop_yelling_at_me():
     return 'jesus dude calm tf down'

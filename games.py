@@ -6,6 +6,7 @@ import time
 import random
 import api_integrations
 from sfx import play_sfx
+import data_tools
 
 
 # config ze bot!
@@ -19,6 +20,9 @@ defender_score = 0
 raid_status = False
 raid_defender_members = []
 raid_attacker_members = []
+raid_in_progress = False
+current_defenders = []
+current_raiders = []
 
 raiding = None
 defending = None
@@ -44,7 +48,7 @@ class RaidDefenders:
     def __init__(self, defenders):
         self.id = 'DEFENDERS' # debug
         self.members = defenders
-        self.hp = 100
+        self.hp = 500
         self.emotes = 0
         # healing vs attacking emotes?
         # emote dmg/weight??
@@ -56,7 +60,7 @@ class RaidAttackers:
     def __init__(self, attackers):
         self.id = 'RAIDERS' # TODO change later to be raiding channel
         self.members = attackers
-        self.hp = 100
+        self.hp = 500
         self.emotes = 0
         # healing vs attacking emotes?
         # emote dmg/weight??
@@ -68,6 +72,7 @@ def raid_is_happening():
     global raid_status
     return raid_status
 
+
 def count_emotes(message):
     global emote_count
     emote_count += len(message.emotes)
@@ -75,9 +80,9 @@ def count_emotes(message):
 
 
 #trigger teh start of a raid
-def raid_start(message):
-    # chk the message or webhooks for raid triggers
-    if "trigger raid" in message.content.lower():
+def raid_start():
+    global raid_in_progress
+    if raid_in_progress == True:
         return True
 
 
@@ -118,6 +123,11 @@ def keep_oop_score(message):
         
     if message.author.name.lower() in defending.members:
         defender_score += len(message.emotes)
+
+
+def get_def_count():
+    global raid_defender_members
+    return len(raid_defender_members)
 
 def deal_damage(message):
     global attacker_score
@@ -165,6 +175,16 @@ def assign_teams():
     global raid_attacker_members
     global raid_defender_members
   
+    raid_defender_members = current_defenders   
+    raid_attacker_members = who_raided() # DEBUG
+
+
+def assign_test_teams(): 
+    'Determines attackers & defenders for the raid'
+
+    global raid_attacker_members
+    global raid_defender_members
+  
     raid_defender_members = api_integrations.get_chatters()    # TODO: eventually this will happen periodically
     raid_attacker_members = who_raided() # DEBUG
 
@@ -172,7 +192,21 @@ def assign_teams():
 def create_oop_teams(): 
     'Creates instances of attackers & defenders.'
 
-    assign_teams()  # debug
+    global raid_attacker_members    # debug
+    global raid_defender_members    # debug
+
+    # create lists of attackers and defenders & make dem instances n wotnot
+    global defending
+    global raiding
+    defending = RaidDefenders(raid_defender_members)
+    raiding = RaidAttackers(raid_attacker_members)
+
+
+
+def create_oop_test_teams(): 
+    'Creates instances of attackers & defenders.'
+
+    assign_test_teams()  # debug
     global raid_attacker_members    # debug
     global raid_defender_members    # debug
 
@@ -216,6 +250,26 @@ def get_defender_score():
     return defender_score
         
 
+def update_defenders_list():
+    global raid_defender_members
+    raid_defender_members = api_integrations.get_chatters()
+    print('DEFENDERS : {}'.format(raid_defender_members))
+
+
+def append_defenders(user):
+    raid_defender_members.append(user.name)
+    print('[DEFENDER] @{} registered.'.format(user.name))
+
+
+def append_raiders(user):
+    # if raid is scoring, it'll need to append to the raid instance
+    if raid_status:
+        raiding.members.append(user.name)
+    else: # if raid hasn't started scoring
+        raid_attacker_members.append(user.name)
+        print('[RAIDER] @{} registered.'.format(user.name))
+
+
 # debug
 def print_teams(
     raiders=raid_attacker_members, 
@@ -249,6 +303,11 @@ def end_raid():
     global raid_status
     raid_status = False
 
+
+def reset_raid():
+    print('resetting raid score')
+    data_tools.clear_txt('data/', 'raid_score.txt')
+
 def get_winner():
     global raiding
     global defending
@@ -275,56 +334,86 @@ def report_hp():
     if hp_condition():
         return hp_condition()
 
-
-#start counting emotes & keep score
-
-#report score (emote count)
+# SECTION Raid Game
 
 
 
 @twitch_bot.command('raid')
 async def raid(message):
+    
+    if message.author.name == "streamelements" or message.author.name.lower() == "ninjabunny9000":
+        
+        # start teh raid sequcence
+        global raid_in_progress
+        raid_in_progress = False # FIXME why does this need to be here?
+        play_sfx('sfx/events/raid.mp3')
+        raid_in_progress = True
 
-    if message.author.name == "streamelements" or message.author.name == "ninjabunny9000": # TODO switch to is_streamer()?
+        # !globals (pls dont cry)
+        global raid_status
+        global raiding
+        global defending
 
-        play_sfx('sfx/alerts/raid.mp3')
+        # also pls dont dubble-rade
+        if raid_status:
+            return
 
-        await asyncio.sleep(4)
+        # oop test
+        create_oop_teams()
+        print_teams(raiding.members, defending.members)
+
+        # flip the bool bit thing so on_message can process emotes
+        raid_status = True
+
         await twitch_bot.say(message.channel, "!redalert")  # RED LIGHTS
 
-        await asyncio.sleep(5)  # 9s BSOD
+        await asyncio.sleep(7)  # 9s BSOD
         change_scene('BSOD')
         
-        await asyncio.sleep(6)  # 15s
+        await asyncio.sleep(14)  # 15s
         msg = 'ATTENTION, NINJAS! We\'ve been RAIDED! Our networks are vulnerable!!'
+        await twitch_bot.say(message.channel, msg)
+
+        # report hp
+        msg = """Raiders & Defenders both start with 100 hp. Spam emotes to deal damage!
+         First team to drop to 0 hp loses teh raid!
+        """
         await twitch_bot.say(message.channel, msg)
         
         await asyncio.sleep(10)  # 25s Switch to HackerTyper
         change_scene('RAID')
+
+        # flip the bool bit thing so on_message can process emotes
+        raid_status = True
         
-        await asyncio.sleep(4) 
-        msg = 'Type defendNetwork(); to harness avilable blockchains and boost our firewall\'s signal.'
+        msg = 'Type defendNetwork(); to harness avilable blockchains. Boost our firewall\'s signal with any and all available shit-tier memes.'
         await twitch_bot.say(message.channel, msg)
-
-        await asyncio.sleep(10) 
-        msg = 'Network defenses are failing. Initiate all protocols! Pizza! Donuts! Bacon!! THROW ALL WE\'VE GOT AT THEM!!'
-        await twitch_bot.say(message.channel, msg)
-
-        await asyncio.sleep(5) # 40s Pizza
-        await twitch_bot.say(message.channel, "pizzaProtocol();")
-
-                
+       
+       
 @twitch_bot.command('raidover')
 async def raidover(message):
-    if is_mod(message):
-        msg = "!disabled3"
-        await twitch_bot.say(message.channel, msg)
-        change_scene('RAID2')
-        await twitch_bot.say(message.channel, "Keepo")
-        await asyncio.sleep(2) #
-        change_scene('MAIN')
+    global emotes_this_raid
+    global raid_in_progress
 
-   
+    # Let sfx be interruptable again 
+    raid_in_progress = False    # REVIEW this could be handled better
+
+    play_sfx('sfx/randoms/disabled/disabled.mp3')
+    change_scene('RAID2')
+    await twitch_bot.say(message.channel, "Keepo")
+    await asyncio.sleep(1)
+    change_scene('MAIN')
+
+    # report the score
+    msg = '!airhorn RAID OVER!. {} emotes were spammeded. Final Score was Attackers: {}, Defenders: {}'.format(
+        (100-raiding.hp) + (100-defending.hp), raiding.hp, defending.hp
+        )
+    await twitch_bot.say(message.channel, msg) 
+
+    reset_raid()
+    reset_raid_score()
+
+# !SECTION   
 
 # ─── DEBUG COMMANDS ─────────────────────────────────────────────────────────────
 
@@ -337,11 +426,11 @@ async def debugreacts(message):
     msg = bot_name().lower()   
     await twitch_bot.say(message.channel, msg)
 
-def raid_in_progress(message):
-    # chk the message or webhooks for raid triggers
-    if "trigger raid" in message.content.lower():
-        print("raid in progress")
-        return True
+# def raid_in_progress(message):
+#     # chk the message or webhooks for raid triggers
+#     if "trigger raid" in message.content.lower():
+#         print("raid in progress")
+#         return True
 
 
 # switch scene to GAMES    
@@ -353,52 +442,48 @@ async def emote(message):
     for emote in message.emotes:
         count = count + 1
     await twitch_bot.say(message.channel, str(count)) 
-    # except:
-    #     msg = "no emotes"
-    #     await twitch_bot.say(message.channel, msg) 
 
 
-@twitch_bot.command('rabetest')
-async def rabetest(message):
+@twitch_bot.command('testraid')
+async def testraid(message):
     'Tests raid function'
 
     """
     TODO GET RAIDS WORKING AGAIN!SECTION 
-     - [ ] Get raid audio working again (and put it back into current raid react, not this "test" func)
-     - [ ] Get rid of asyncio.sleep (update raid func)
      - [ ] Raid timer stuffs?
-     - [ ] Test "scoring" thing again
      - [ ] Actually split up the room between actaul raiders and actual defenders
-     - [ ] Time things out correctly
-     - [ ] Update the raid func again
-     - [ ] How to interrupt a raid (most importantly, the audio)?
-
     """
 
-    play_sfx('sfx/alerts/raid.mp3')
-    # play_sfx('sfx/hooks/airhorn.mp3')
+    if message.author.name == "streamelements" or message.author.name.lower() == "ninjabunny9000":
+        
+        # start teh raid sequcence
+        global raid_in_progress
+        raid_in_progress = False # FIXME why does this need to be here?
+        play_sfx('sfx/events/raid.mp3')
+        raid_in_progress = True
 
-    if message.author.name.lower() == "ninjabunny9000":
-
-        # !globals
+        # !globals (pls dont cry)
         global raid_status
         global raiding
         global defending
 
+        # also pls dont dubble-rade
+        if raid_status:
+            return
+
         # oop test
-        create_oop_teams()
+        create_oop_test_teams()
         print_teams(raiding.members, defending.members)
 
         # flip the bool bit thing so on_message can process emotes
         raid_status = True
 
-        await asyncio.sleep(4)
         await twitch_bot.say(message.channel, "!redalert")  # RED LIGHTS
 
-        await asyncio.sleep(5)  # 9s BSOD
+        await asyncio.sleep(7)  # 9s BSOD
         change_scene('BSOD')
         
-        await asyncio.sleep(6)  # 15s
+        await asyncio.sleep(14)  # 15s
         msg = 'ATTENTION, NINJAS! We\'ve been RAIDED! Our networks are vulnerable!!'
         await twitch_bot.say(message.channel, msg)
 
@@ -408,48 +493,32 @@ async def rabetest(message):
         """
         await twitch_bot.say(message.channel, msg)
         
+        await asyncio.sleep(10)  # 25s Switch to HackerTyper
+        change_scene('RAID')
+
         # flip the bool bit thing so on_message can process emotes
         raid_status = True
         
-        await asyncio.sleep(10)  # 25s Switch to HackerTyper
-        change_scene('RAID')
+        msg = 'Type defendNetwork(); to harness avilable blockchains. Boost our firewall\'s signal with any and all available shit-tier memes.'
+        await twitch_bot.say(message.channel, msg)
+
         
-        await asyncio.sleep(4)
-        msg = 'Type defendNetwork(); to harness avilable blockchains and boost our firewall\'s signal.'
-        await twitch_bot.say(message.channel, msg)
-        
-        # report hp
-        msg = 'KEEP IT UP! Raiders have {}hp left, and we have {}hp.'.format(raiding.hp, defending.hp)
-        await twitch_bot.say(message.channel, msg)
-        
-        await asyncio.sleep(10) 
-        msg = 'Network defenses are failing. Initiate all protocols! Pizza! Donuts! Bacon!! THROW ALL WE\'VE GOT AT THEM!!'
-        await twitch_bot.say(message.channel, msg)
-
-        await asyncio.sleep(5) # 40s Pizza
-        await twitch_bot.say(message.channel, "pizzaProtocol();")
-
-        # report hp
-        msg = 'KEEP IT UP! Raiders have {}hp left, and we have {}hp.'.format(raiding.hp, defending.hp)
-        await twitch_bot.say(message.channel, msg)
 
 
-@twitch_bot.command('testraid')
-async def testraid(message):
-    global raid_status
+# REVIEW old raid test func?
+# @twitch_bot.command('testraid')
+# async def testraid(message):
+#     global raid_status
 
-    # assign_teams()
-    # print_teams()
+#     # oop test
+#     create_oop_teams()  
+#     print_teams(raiding.members, defending.members)
 
-    # oop test
-    create_oop_teams()  
-    print_teams(raiding.members, defending.members)
+#     # flip the bool bit thing so on_message can process emotes
+#     raid_status = True
 
-    # flip the bool bit thing so on_message can process emotes
-    raid_status = True
-
-    msg = 'raid in progress. spam a few emotes for teh test! kthx <3'
-    await twitch_bot.say(message.channel, msg)
+#     msg = 'raid in progress. spam a few emotes for teh test! kthx <3'
+#     await twitch_bot.say(message.channel, msg)
 
 
 @twitch_bot.command('endraidtest')
@@ -466,6 +535,7 @@ async def endraidtest(message):
         )
     await twitch_bot.say(message.channel, msg) 
 
+    reset_raid()
     reset_raid_score()
 
 
@@ -494,23 +564,16 @@ async def setupraid(message):
     print_teams(raiding.members, defending.members)
 
 
+@twitch_bot.command('getchatters')
+async def getchatters(message):
+    print(api_integrations.get_chatters())
 
 
+@twitch_bot.command('defenders')
+async def defenders(message):
+    msg = '{} defenders registered'.format(len(raid_defender_members))
+    await twitch_bot.say(message.channel, msg)
 
-
-
-# @twitch_bot.command('endraidtest')
-# async def endraidtest(message):
-#     # flip the bool bit thing again
-#     global raid_status
-#     global emotes_this_raid
-#     raid_status = False
-#     # spit out the count of emotes that were dropped during the raid
-#     msg = 'raid ended. {} emotes were spammeded.'.format(emotes_this_raid)
-#     await twitch_bot.say(message.channel, msg) 
-#     msg = 'state={}'.format(raid_status)
-#     await twitch_bot.say(message.channel, msg) 
-#     reset_raid_score()
 
 
 # command registers that it needs to start counting emotes

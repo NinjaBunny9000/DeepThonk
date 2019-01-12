@@ -18,6 +18,12 @@ def add_to_txt(file_path, file_name, list_item:str):
         f.write('{}\n'.format(list_item))
 
 
+def score_to_txt(defense_hp, raider_hp):
+    with open('data/raid_score.txt', 'w+') as f:
+        msg = "RAIDERS : {}/500 hp   ||   DEFENDERS : {}/500 hp".format(raider_hp, defense_hp)
+        f.write(msg)
+
+
 def clear_txt(file_path, file_name):
     open(file_path + file_name, 'w').close()
 
