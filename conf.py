@@ -8,9 +8,11 @@ ignore_list = [
     "nobodyYET"
 ]
 
+
 bot_list = [
     "streamelements"
 ]
+
 
 # Load the config file
 with open(os.path.join(sys.path[0], 'config.yaml'), "r") as f:
@@ -28,19 +30,43 @@ def get_twitch_config():
     return bot_config
 
 
+def get_custom_settings():
+    settings = {
+        "off_cmd" : cfg['bot_ctrl']['off_cmd'],
+        "welcome_msg" : cfg['custom_responses']['welcome_msg']
+    }
+    return settings
+
+
+def debug_yaml():
+    return cfg['bot_ctrl']['off_cmd']
+
+def get_obs_scenes():
+    scenes = {
+        'intro' : cfg['obs']['intro'],
+        'main' : cfg['obs']['main'],
+        'talk' : cfg['obs']['talk'],
+        'brb' : cfg['obs']['brb'],
+        'outro' : cfg['obs']['outro']
+    }
+    return scenes
+
+
 def twitch_channel():
     return cfg['twitch']['channel']
 
+
 def bot_name():
-    # str(cfg['twitch']['bot_account'])
-    msg = "deepthonk"
-    return msg
+    return str(cfg['twitch']['bot_account'])
+
 
 def streamer():
     return cfg['twitch']['streamer']
 
+
 def welcome_msg():
     return cfg['twitch']['welcome_msg']
+
 
 def is_bot_admin():
     admin = [cfg['twitch']['streamer'], cfg['twitch']['bot_admins']]

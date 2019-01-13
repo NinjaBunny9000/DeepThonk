@@ -1,7 +1,7 @@
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_admin, bot_name
 import asyncio
 from obs_ctrl import change_scene, get_scene
-from permissions import is_bot, is_mod
+from privilege import is_bot, is_mod
 import time
 import random
 import api_integrations

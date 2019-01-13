@@ -1,5 +1,5 @@
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg
-from permissions import is_bot, is_mod
+from privilege import is_bot, is_mod
 import data_tools
 import content
 

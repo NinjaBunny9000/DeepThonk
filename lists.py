@@ -1,5 +1,5 @@
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg
-from permissions import is_bot, is_mod
+from privilege import is_bot, is_mod
 import data_tools
 import db_query
 import db_insert
@@ -179,10 +179,23 @@ async def reward(message):
 
 
 ###############################################################################
-# SECTION 
+# SECTION Movie Night
 ###############################################################################
 
+@twitch_bot.command('movienight')
+async def movienight(message):
 
+    token = data_tools.tokenize(message, 1, lower_case=False)
+    movies = data_tools.txt_to_list('data/lists/', 'movie_night.txt')
+
+    if len(token) == 1:
+        # spit out random movie from the list
+        msg = f'@{message.author.name}, "{str(random.choice(movies))[:-1]}" was picked randomly from teh list.'
+    else:
+        # add the movie to the list
+        data_tools.add_to_txt('data/lists/', 'movie_night.txt', token[1])
+        msg = f'@{message.author.name}, "{token[1]}" was added to the list!'
+    await twitch_bot.say(message.channel, msg)
 
 # !SECTION 
 

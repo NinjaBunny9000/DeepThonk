@@ -41,6 +41,7 @@ def get_response_to_call(message):
 def faq(message):
     faq_info = {
         "!editor" : "The editor Bun uses is VSCode: https://code.visualstudio.com/",
+        "!ide" : "The editor Bun uses is VSCode: https://code.visualstudio.com/",
         "!theme" : "The theme Bun uses is Material Ocean High Contrast, with some modifications: https://imgur.com/a/ivJByy2",
         "!github" : "Bun's github is: https://github.com/NinjaBunny9000",
         "!toolset" : "Bun's using VSCode on Windows right now. !theme !git !branch !font for more info.",

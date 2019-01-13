@@ -3,7 +3,7 @@ import time
 from conf import twitch_instance
 import data_tools
 from sfx import play_sfx
-import permissions
+import privilege
 
 # config ze bot!
 twitch_bot = twitch_instance
@@ -31,8 +31,8 @@ async def strike(message):
     global probation_timer
     global strike_table
     
-    # check for permissions
-    if not permissions.is_mod(message):
+    # check for privilege
+    if not privilege.is_mod(message):
         return
 
     # tokenize™
@@ -102,8 +102,8 @@ async def strikes(message):
     """
     global strike_table
     
-    # check for permissions
-    if not permissions.is_mod(message):
+    # check for privilege
+    if not privilege.is_mod(message):
         return
 
     # tokenize™
@@ -121,8 +121,8 @@ async def strikes(message):
 @twitch_bot.command('mybad')
 async def mybad(message):
     '!mybad <user> removes a strike for the user.'
-    # check for permissions
-    if not permissions.is_mod(message):
+    # check for privilege
+    if not privilege.is_mod(message):
         return
 
     token = data_tools.tokenize(message, 1)    # tokenize™

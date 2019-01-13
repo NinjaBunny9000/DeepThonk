@@ -1,7 +1,7 @@
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_admin
 import sys
 import os
-from permissions import is_bot, is_mod
+from privilege import is_bot, is_mod
 
 
 # config ze bot!

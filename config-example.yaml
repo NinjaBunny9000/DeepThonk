@@ -1,17 +1,30 @@
 discord:
     token: paste_token_here
-    server_id: 'server_id_goes_here'
-    
+    server_id: "server_id_goes_here" 
+
 twitch:
-    streamer: 'streamer_twitch_username'
-    bot_account: 'bot_twitch_username'
-    oauth: 'oauth:paste_token_here'
-    channel: 'twitch_user_name'
-    client-id: 'client_id'
-    prefix: '!'  # defaults to !
-    welcome_msg: "I'm back!"
+    streamer: "streamer_twitch_username"
+    bot_account: "bot_twitch_username"
+    oauth: "oauth:paste_token_here"
+    channel: "twitch_user_name"
+    client-id: "client_id"
+    prefix: "!"  # defaults to !
     bot_admins:
-        - 'username_1'
-        - 'username_2'
-        - 'username_...'
-        - 'username_n'
+        - "username_1"
+        - "username_2"
+        - "username_..."
+        - "username_n"
+        
+obs:
+    intro: "scene name"
+    main: "scene name"
+    talk: "scene name"
+    brb: "scene name"
+    outro: "scene name"
+
+bot_ctrl:
+    off_cmd: "stahp"
+
+custom_responses:
+    welcome_msg: "Howdy, chat!!"
+    no_privilege: "I can't do that, @{}"

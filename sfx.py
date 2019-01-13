@@ -49,7 +49,7 @@ class SoundEffect(object):
 	"""
 
 	# TODO Overriding cooldowns (csv? ORM models?)
-	# TODO Attributes: permissions level, cost
+	# TODO Attributes: privilege level, cost
 
 	commands = []
 
@@ -104,7 +104,7 @@ class RandomSoundEffect(object):
 	"""
 	# TODO Overriding cooldowns (csv? ORM models?)
 	# TODO Put 'hi' and 'bye' in their own thing? So they can work w/o '!' preface once that's func again
-	# TODO Attributes: permissions level, cost
+	# TODO Attributes: privilege level, cost
 
 	commands = []
 

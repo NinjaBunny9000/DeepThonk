@@ -8,7 +8,7 @@ import db_query
 import random
 import content
 import asyncio
-from permissions import is_bot, is_mod
+from privilege import is_bot, is_mod
 # REVIEW Get rid of the from games import __
 import games
 from games import raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score, deal_damage
@@ -20,7 +20,10 @@ from sfx import play_sfx
 twitch_bot = twitch_instance
 welcome_msg_sent = 0
 
-               
+# load bot settings from yaml config file to dict
+bot_settings = conf.get_custom_settings()
+
+
 ###############################################################################
 # SECTION Raw Events
 ###############################################################################
@@ -30,9 +33,10 @@ async def raw_event(message):
     global welcome_msg_sent
     if not welcome_msg_sent:
         welcome_msg_sent = 1
+        welcome_msg = bot_settings['welcome_msg']
         print(conf.bot_name().capitalize() + ' has landed.')
-        await twitch_bot.say(twitch_channel(), welcome_msg())
-        await twitch_bot.say(twitch_channel(), "/me tips hat to chat")
+        await twitch_bot.say(twitch_channel(), welcome_msg)
+        await twitch_bot.say(twitch_channel(), "/me tips fedora to chat")
 
         # make initial list of people in the room
         games.update_defenders_list()
@@ -67,7 +71,7 @@ async def event_user_leave(user):
 
 
 @twitch_bot.command(
-    'cmd', 
+    'cmd',
     alias=['command', 'commands', 'help', 'wtf', 'wth'],
     desc='Get help info about the bot'
     )
@@ -87,6 +91,9 @@ async def event_message(message):
     Each message in chat is sent through this command. Parse teh data (into tokens, ofc),
     add a conditional or two, and make all sorts of fun stuff happen!
     """
+
+
+
     # prevent bot from responding to itself
     if message.author.name == twitch_bot.nick:
         return
@@ -270,8 +277,9 @@ async def event_message(message):
         await twitch_bot.say(message.channel,'/timeout {} 15'.format(message.author.name))
 
 
-   
-# ─── AUF ODER AUS ───────────────────────────────────────────────────────────────
+    ###############################################################################
+    # SECTION Bot On / Off Control
+    ###############################################################################
 
     # when it's past the bot's bed time
     if 'say goodnight' in message.content.lower() and bot in message.content.lower() and is_bot_admin:
@@ -288,7 +296,7 @@ async def event_message(message):
         multi_msg.append('goodnight, {}!'.format(message.author.name))
 
     # make it stahp
-    if 'stahp' in message.content.lower() and (message.author.name == streamer() or message.author.name == 'jigokuniku') :
+    if bot_settings['off_cmd'].lower() in message.content.lower() and (message.author.name == streamer()) :
         await twitch_bot.say(message.channel, content.last_words())
         bot = conf.twitch_instance
         print('Chat-Interrupted')
@@ -311,6 +319,7 @@ async def quit(message):
         print(msg)
         await twitch_bot.say(message.channel, msg)
 
+    # !SECTION 
 
 # !SECTION 
 
@@ -346,23 +355,8 @@ async def debug(message):
     """
     DEBUG: change msg var to print whatever var u tryin'a lern gooder
     """
-    msg = conf.bot_name().lower()   
+    msg = conf.debug_yaml()
     await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('author')
-async def author(message):
-    await twitch_bot.say(message.channel, str(message.author.id))
-
-
-@twitch_bot.command('subornah')
-async def subornah(message):
-    await twitch_bot.say(message.channel, str(message.author.subscriber))
-
-
-@twitch_bot.command('channel')
-async def channel(message):
-    await twitch_bot.say(message.channel, str(message.channel.id))
 
 
 @twitch_bot.command('viewers')

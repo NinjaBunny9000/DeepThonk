@@ -43,6 +43,10 @@ def stringify_list(stupid_list, prefix_char=''):
 
 # SECTION .txt File Operations
 
+def check_for_duplicates():
+    # TODO check for duplicates in string or list
+    pass
+
 def list_to_txt(file_path, file_name, listyboi):
     with open(file_path + file_name, 'w+') as f:
         for item in listyboi:
@@ -57,9 +61,13 @@ def txt_to_list(file_path, file_name):
     return listyboi
     
 
-def add_to_txt(file_path, file_name, list_item:str):
+def add_to_txt(file_path, file_name, list_item:str, lower_case=True):
     with open(file_path + file_name, 'a') as f:
-        f.write('{}\n'.format(list_item))
+        if lower_case:
+            f.write('{}\n'.format(list_item))
+        else:
+            f.write('{}\n'.format(list_item))
+    
 
 
 def score_to_txt(defense_hp, raider_hp):
