@@ -36,9 +36,7 @@ async def raw_event(message):
 
         # make initial list of people in the room
         games.update_defenders_list()
-        msg = '{} defenders registered.'.format(games.get_def_count())
-        await twitch_bot.say(twitch_channel(), msg)
-        
+
 
 @twitch_bot.override
 async def event_user_join(user):

@@ -16,11 +16,18 @@ def shuffle_msg(msg_list):
     return ' '.join(msg_list)
 
 
-def tokenize(message, parts=0):
-    if parts == 0:
-        return message.content.lower().split(' ') # TOKENIZE™
-    else: 
-        return message.content.lower().split(' ', parts) # TOKENIZE™
+def tokenize(message, parts=0, lower_case=True):
+    if lower_case:
+        if parts == 0:
+                return message.content.lower().split(' ') # TOKENIZE™
+        else: 
+                return message.content.lower().split(' ', parts) # TOKENIZE™
+    else:
+        if parts == 0:
+            return message.content.split(' ') # TOKENIZE™
+        else: 
+            return message.content.split(' ', parts) # TOKENIZE™
+                
 
 
 def stringify_list(stupid_list, prefix_char=''):

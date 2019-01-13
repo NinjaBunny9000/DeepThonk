@@ -60,6 +60,7 @@ async def earworm(message):
 
 # !SECTION 
 
+
 ###############################################################################
 # SECTION Raid Game
 ###############################################################################
@@ -135,6 +136,7 @@ def raid_start():
     global raid_in_progress
     if raid_in_progress == True:
         return True
+
 
 # REVIEW why was this needed? still needed?
 def raid_event(message):

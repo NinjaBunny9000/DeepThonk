@@ -5,6 +5,7 @@ import db_query
 import db_insert
 import content
 import obs_ctrl
+import random
 
 # config ze bot!
 twitch_bot = twitch_instance
@@ -53,8 +54,7 @@ async def randomtask(message):
 # !SECTION Bands
 ###############################################################################
 
-# globals everyone can bitch about (that are actually just db objects in testing)
-band_names = []
+
 
 
 @twitch_bot.command('bands')
@@ -63,37 +63,35 @@ async def bands(message):
     Works similar to quotes, but tracks TOTALLY AWESOME band names. Still a WIP, 
     needs to connect to the database, that kind of stuff.
     """
-    message_parts = data_tools.tokenize(message, 2)
+    token = data_tools.tokenize(message, 2, lower_case=False)
 
-    if len(message_parts) >= 2:
-        subcmd = message_parts[1]
+    band_names = data_tools.txt_to_list('data/lists/', 'bands.txt')
 
-        if subcmd == 'add' and is_mod(message):
-            band_names.append(message_parts[2])
-            msg = '{} added to the list of TOTALLY AWESOME band names.'.format(message_parts[2])
-            await twitch_bot.say(message.channel, msg)
+    if len(token) >= 2:
 
-        elif subcmd == 'oops' and is_mod(message):
-            band_names.pop()
-            await twitch_bot.say(message.channel, 'Last band name removed. Who dun fucked up this time?!???')
-        
-        elif subcmd == 'clear' and is_mod(message):
-            band_names.clear()
-            await twitch_bot.say(message.channel, 'No clue why you did this, but all the band names are GONE!.. Jerk! D:')
-        
-        elif not is_mod(message):
+        subcmd = token[1]
+
+        # !bands (permission check failure)
+        if not is_mod(message):
             await twitch_bot.say(message.channel, 'Y u do dat?! Where\'s your sword, pal?')
+            return
 
+        # !bands add
+        elif subcmd == 'add' and is_mod(message):
+            band_names.append(token[2])
+            data_tools.add_to_txt('data/lists/', 'bands.txt', token[2])
+            msg = '{} added to the list of TOTALLY AWESOME band names.'.format(token[2])
+            await twitch_bot.say(message.channel, msg)
+ 
+        # syntax halpz
         else:
-            await twitch_bot.say(message.channel, 'Syntax tip: !bands add/list/clear')
+            await twitch_bot.say(message.channel, 'Syntax tip: !bands or !bands add <name>')
 
     else:
         if len(band_names) == 0:
             await twitch_bot.say(message.channel, 'No bands in the list!')
-        else:
-            bands = '[%s]' % ', '.join(map(str, band_names))
-            bands = bands.strip('[]')
-            msg = 'Here\'s some totally awesome band names: {}'.format(bands)
+        else:            
+            msg = '@{}, "{}"'.format(message.author.name, random.choice(band_names))
             await twitch_bot.say(message.channel, msg)
 
 
@@ -138,7 +136,7 @@ async def reward(message):
     # global dict for rewards
     reward_register = data_tools.txt_to_list('data/', 'reward_list.txt')
     
-    token = data_tools.tokenize(message, 2)
+    token = data_tools.tokenize(message, 2, lower_case=False)
 
     
     # if just `!reward`, list people in teh rewards

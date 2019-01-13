@@ -8,14 +8,21 @@ from permissions import is_bot, is_mod
 twitch_bot = twitch_instance
 
 
+###############################################################################
+# SECTION Graphics & Overlay Content
+###############################################################################
 
 def display_task_on_obs(task):
     f = open('data\\task.txt', 'w+')
     f.write('!task = {}'.format(task))
     f.close()
 
+# !SECTION 
 
 
+###############################################################################
+# SECTION OBS Scene Control
+###############################################################################
 
 def change_scene(scene):
     """
@@ -25,6 +32,7 @@ def change_scene(scene):
     f = open('data\\scene_next.txt', 'w+')
     f.write(scene)
     f.close()
+
 
 def get_scene():
     """
@@ -38,8 +46,6 @@ def get_scene():
     return scene
 
 
-# ─── SCENE SWITCHER ─────────────────────────────────────────────────────────────
-
 @twitch_bot.command('obsscene')
 async def obsscene(message):
     if is_mod(message):
@@ -47,35 +53,42 @@ async def obsscene(message):
         msg = '@{}, the current scene is {}'.format(message.author.name, scene)
         await twitch_bot.say(message.channel, msg)
 
+
 @twitch_bot.command('obsbsod')
 async def obsbsod(message):
     if is_mod(message):
         change_scene('BSOD')
+
 
 @twitch_bot.command('obsintro')
 async def obsintro(message):
     if is_mod(message):
         change_scene('INTRO')
 
+
 @twitch_bot.command('obsswap')
 async def obsswap(message):
     if is_mod(message):
         change_scene('GAMES SWAP')
+
 
 @twitch_bot.command('obsraid')
 async def obsswobsraidap(message):
     if is_mod(message):
         change_scene('RAID')
 
+
 @twitch_bot.command('obsraid2')
 async def obsraid2(message):
     if is_mod(message):
         change_scene('RAID2')
-        
+
+
 @twitch_bot.command('obsdj')
 async def obsdj(message):
     if is_mod(message):
         change_scene('DJ')
+
 
 # switch scene to GAMES    
 @twitch_bot.command('obsmain')
@@ -84,3 +97,5 @@ async def obsmain(message):
         change_scene('MAIN')
         msg = "Switching scene back to MAIN."
         await twitch_bot.say(message.channel, msg) 
+
+# !SECTION 

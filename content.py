@@ -1,7 +1,16 @@
 import random
 from conf import streamer
 from obs_ctrl import change_scene
-# from sfx import play_sfx
+
+
+def help_menu(message):
+    return """Howdy, @{}! I'm a robit. Beep boop. Here's some ways we can interact: !task, 
+    !cah, !hye, !bands, !bet, !duel, or simply have a chat with me. ;D
+    """.format(message.author.name)
+
+
+def stop_yelling_at_me():
+    return 'jesus dude calm tf down'
 
 
 #! Fix it only returning one of these && => get_responses_to_calls
@@ -145,10 +154,6 @@ def last_words():
     return random.choice(responses)
 
 
-def help_menu(message):
-    return """Howdy, @{}! I'm a robit. Beep boop. Here's some ways we can interact: !task, 
-    !cah, !hye, !bands, !bet, !duel, or simply have a chat with me. ;D
-    """.format(message.author.name)
 
 
 def easter_egg(message):
@@ -172,5 +177,3 @@ def function_disabled():
     # sfx.play_sfx('sfx/randoms/disabled/disabled.mp3')
 
 
-def stop_yelling_at_me():
-    return 'jesus dude calm tf down'
