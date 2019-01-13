@@ -11,7 +11,7 @@ import asyncio
 from privilege import is_bot, is_mod
 # REVIEW Get rid of the from games import __
 import games
-from games import raid_event, raid_in_progress, keep_score, reset_emote_count, keep_oop_score, deal_damage
+from games import raid_in_progress, deal_damage
 import data_tools
 from sfx import play_sfx
 

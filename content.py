@@ -51,7 +51,8 @@ def faq(message):
         "!kanban" : "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs",
         # "!portfolio" : "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)",
         "!bmo" : "https://imgur.com/gallery/LhPlY",
-        "!docs" : "You can find the most (poorly) up-to-date docs here: https://github.com/NinjaBunny9000/DeepThonk/blob/doc-updates/README.md"
+        "!docs" : "You can find the most (poorly) up-to-date docs here: https://github.com/NinjaBunny9000/DeepThonk/blob/doc-updates/README.md",
+        "!gitgud" : "Check out Corey Schafer on YT for some great Python tuturials! :D https://www.youtube.com/watch?v=YYXdXT2l-Gg&list=PL-osiE80TeTt2d9bfVyTiXJA-UTHn6WwU"
     }
 
     for key in faq_info:

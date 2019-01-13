@@ -3,21 +3,37 @@ import yaml
 import os
 import sys
 
-
-
-
-bot_list = [
-    "streamelements"
-]
-
-
 # Load the config file
 with open(os.path.join(sys.path[0], 'config.yaml'), "r") as f:
     cfg = yaml.load(f)
 
-
 ignore_list = cfg['twitch']['ignore_list']
 
+bot_list = cfg['twitch']['bots']
+
+scenes = {
+    'intro' : cfg['obs']['intro'],
+    'main' : cfg['obs']['main'],
+    'talk' : cfg['obs']['talk'],
+    'brb' : cfg['obs']['brb'],
+    'outro' : cfg['obs']['outro'],
+    'raid' : cfg['obs']['raid'],
+    'victory' : cfg['obs']['victory']
+}
+
+custom_settings = {
+    "off_cmd" : cfg['bot_ctrl']['off_cmd'],
+    "welcome_msg" : cfg['custom_responses']['welcome_msg'],
+    "help_cmds" : cfg['twitch']['help_cmds'],
+    "raid_over" : cfg['custom_responses']['raid_over'],
+    "link_msg" : cfg['custom_responses']['link_msg'],
+    "raid_scene" : cfg['obs']['raid_scene'],
+    "raid_timer" : cfg['obs']['raid_timer'],
+    "victory_scene" : cfg['obs']['victory_scene'],
+    "victory_timer" : cfg['obs']['victory_timer'],
+}
+
+streamer = cfg['twitch']['streamer']
 
 def get_twitch_config():
     bot_config = asynctwitch.CommandBot(
@@ -36,7 +52,11 @@ def get_custom_settings():
         "welcome_msg" : cfg['custom_responses']['welcome_msg'],
         "help_cmds" : cfg['twitch']['help_cmds'],
         "raid_over" : cfg['custom_responses']['raid_over'],
-        "link_msg" : cfg['custom_responses']['link_msg']
+        "link_msg" : cfg['custom_responses']['link_msg'],
+        "raid_scene" : cfg['obs']['raid_scene'],
+        "raid_timer" : cfg['obs']['raid_timer'],
+        "victory_scene" : cfg['obs']['victory_scene'],
+        "victory_timer" : cfg['obs']['victory_timer'],
     }
     return settings
 
@@ -44,15 +64,7 @@ def get_custom_settings():
 def debug_yaml():
     return cfg['bot_ctrl']['off_cmd']
 
-def get_obs_scenes():
-    scenes = {
-        'intro' : cfg['obs']['intro'],
-        'main' : cfg['obs']['main'],
-        'talk' : cfg['obs']['talk'],
-        'brb' : cfg['obs']['brb'],
-        'outro' : cfg['obs']['outro']
-    }
-    return scenes
+
 
 
 def twitch_channel():

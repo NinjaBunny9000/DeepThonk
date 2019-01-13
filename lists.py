@@ -201,13 +201,16 @@ async def movienight(message):
 
 
 ###############################################################################
-# SECTION 
+# SECTION Comments
 ###############################################################################
 
-
+@twitch_bot.command('comment')
+async def comment(message):
+    comments = data_tools.txt_to_list('data/lists/', 'comments.txt')
+    msg = f'@{message.author.name}: "{str(random.choice(comments))}"'
+    await twitch_bot.say(message.channel, msg)
 
 # !SECTION 
-
 
 ###############################################################################
 # SECTION 

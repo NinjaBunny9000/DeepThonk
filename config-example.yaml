@@ -9,6 +9,8 @@ twitch:
     channel: "twitch_user_name"
     client-id: "client_id"
     prefix: "!"  # defaults to !
+    bots:
+        - "streamelements"
     help_cmds: # !help already included
         - "commands"
         - "cmds"
