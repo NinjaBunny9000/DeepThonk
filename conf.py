@@ -16,7 +16,7 @@ with open(os.path.join(sys.path[0], 'config.yaml'), "r") as f:
     cfg = yaml.load(f)
 
 
-ignore_list = cfg['twitch']['bot_admins']
+ignore_list = cfg['twitch']['ignore_list']
 
 
 def get_twitch_config():
