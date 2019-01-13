@@ -16,6 +16,7 @@ def stop_yelling_at_me():
 #! Fix it only returning one of these && => get_responses_to_calls
 def get_response_to_call(message):
     calls_and_responses = {
+        # "call" : "response",
         "chili party" : "(gross..)",
         "dick" : "🍆",
         "🍆" : "dicks OUT!",

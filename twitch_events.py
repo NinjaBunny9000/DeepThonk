@@ -21,7 +21,7 @@ twitch_bot = twitch_instance
 welcome_msg_sent = 0
 
 # load bot settings from yaml config file to dict
-bot_settings = conf.get_custom_settings()
+custom_settings = conf.get_custom_settings()
 
 
 ###############################################################################
@@ -33,7 +33,7 @@ async def raw_event(message):
     global welcome_msg_sent
     if not welcome_msg_sent:
         welcome_msg_sent = 1
-        welcome_msg = bot_settings['welcome_msg']
+        welcome_msg = custom_settings['welcome_msg']
         print(conf.bot_name().capitalize() + ' has landed.')
         await twitch_bot.say(twitch_channel(), welcome_msg)
         await twitch_bot.say(twitch_channel(), "/me tips fedora to chat")
@@ -64,18 +64,16 @@ async def event_user_leave(user):
 # !SECTION 
 
 
-
 ###############################################################################
 # SECTION Help Commands
 ###############################################################################
 
+help_commands = conf.get_custom_settings()
+help_commands = help_commands["help_cmds"]
 
-@twitch_bot.command(
-    'cmd',
-    alias=['command', 'commands', 'help', 'wtf', 'wth'],
-    desc='Get help info about the bot'
-    )
+@twitch_bot.command('help', alias=help_commands)
 async def cmd(message):
+    play_sfx('sfx/hooks/murderbot.mp3')
     await twitch_bot.say(message.channel, content.help_menu(message))
 
 # !SECTION 
@@ -88,36 +86,29 @@ async def cmd(message):
 @twitch_bot.override
 async def event_message(message):
     """
-    Each message in chat is sent through this command. Parse teh data (into tokens, ofc),
-    add a conditional or two, and make all sorts of fun stuff happen!
+    Each message in chat is sent through this command.
+    
+    Parse teh data (into tokens, ofc), add a conditional or two, and make all
+    sorts of fun stuff happen!
     """
 
+    # prevent bot from responding to itself unless it's emotes in a message
+    if not games.raid_is_happening() and not message.emotes:
+        if message.author.name == twitch_bot.nick:
+            return
 
-
-    # prevent bot from responding to itself
-    if message.author.name == twitch_bot.nick:
-        return
-
-    # ignore certain users
-    if message.author.name in conf.ignore_list:
-        return
+    # ignore blacklisted users
+    for user in conf.ignore_list:
+        if message.author.name.lower() == user.lower():
+            return
 
     # enable bot.commands stuffs to werk
     await twitch_bot.parse_commands(message)
 
-    # msg = ''
     multi_msg = list()  # creates an empty list for messages to get shuffled and responded with
     message_parts = data_tools.tokenize(message)  # TOKENIZE™
     mod = is_mod(message)
     bot = conf.bot_name().lower()
-
-    if 'take a nap' in message.content.lower() and bot in message.content.lower() and mod:
-        """
-        Demonstrate the stubborness of your robit.
-        """
-        await twitch_bot.say(message.channel, '/me yawns')
-        await twitch_bot.say(message.channel, 'maybe later, @{}'.format(message.author.name))
-        return
 
     # return FAQ's
     if content.faq(message):
@@ -125,36 +116,18 @@ async def event_message(message):
         await twitch_bot.say(message.channel, msg)
 
 
-# ─── RAID REACT ─────────────────────────────────────────────────────────────────
-    """
-    Considerations:
-    - on_message loop happens every message
-    - Can't talk to twitch chat (use await) within function called here.
-
-    IDEA 1: Report hp ever x-hp. Would require using the on_message loop
-    and some logic and/or conditionals to report only losing team, etc.
-
-    IDEA 2: Incorporate into timed-out raid react. This happens in games.py
-    and includes async sleep functions (timeouts). Could be not fun, but 
-    would have control over reporting health ever x-seconds.
-
-    """
-
-    # update the viewer list for defending
-    # TODO How to make this happen all cached and stuff? 
-    # games.update_defenders_list()
+    ###########################################################################
+    # ANCHOR Raid Stuffs
+    ###########################################################################
 
     if games.raid_is_happening():
-
-
-        # send commands periodically (@jigo has async solution)
-        # FIXME this wont work because loop only happens once per message sent
 
         # count & score emotes
         if message.emotes:   
 
             deal_damage(message)
 
+            # TODO logging
             print('raiding.hp={} || defending.hp={}'.format(
                 games.raiding.hp, games.defending.hp
                 ))
@@ -162,53 +135,44 @@ async def event_message(message):
             # prints hp to .txt file
             data_tools.score_to_txt(games.defending.hp, games.raiding.hp)
 
-            # WIN CONDITION
+            # WIN CONDITION EVENTS
             if games.report_ko():
-                # end raid & reset the scores
-                games.end_raid()
 
+                games.end_raid()
                 raid_winner = games.get_winner() 
                 
                 play_sfx('sfx/events/raid_victory.mp3')
+                # TODO Switch scenes to "victory" scene?
 
                 # report the victor
-                msg = 'Raid over! The winner is {}'.format(raid_winner)
+                msg = f'{custom_settings["raid_over"]} The victor is {raid_winner}!'
                 await twitch_bot.say(message.channel, msg)
 
-    
-            # # hp report conditions met?
-            # if games.hp_condition():
-            #     # report hp
-            #     msg = '{} is below 50% health!'.format(games.hp_condition())
-            #     await twitch_bot.say(message.channel, msg)
 
-
-
-# ─── SILLY STUFF ────────────────────────────────────────────────────────────────
+    ###########################################################################
+    # ANCHOR Link-handling (_It's dangerous to go alone.._)
+    ###########################################################################
 
     # mock links that people send
-    if (any(s in message.content.lower() for s in ('http://','https://','www.'))) and (not is_mod(message) or not is_bot(message)):
-        await twitch_bot.say(message.channel, 'NSFW!!')
+    if any(s in message.content.lower() for s in ('http://','https://','www.')) and not mod:
+        await twitch_bot.say(message.channel, custom_settings['link_msg'])
 
     # respond if sentient
     if any(s in message.content.lower() for s in ('sentient.','sentient!','sentient?','sentient')):
         await twitch_bot.say(message.channel, content.sentient(message))
 
 
-# ─── WHEN BOT IS DIRECTLY ADDRESSED ─────────────────────────────────────────────
+    ###########################################################################
+    # ANCHOR Addressing (talking to) the bot
+    ###########################################################################
 
-    # don't be a wanker
-    elif 'oi' in message_parts[0] and bot in message_parts:
-        await twitch_bot.say(message.channel,'oi bruv!')
-    
+    # REVIEW This is a mess, and I hate it.
+
     # cuz your bot is from Texas
     elif 'howdy' in message_parts[0]:
         await twitch_bot.say(message.channel, 'Howdy, @{}!'.format(message.author.name))
 
-    # for use by Robosexuals™ only!
-    elif 'love me' in message.content.lower() and bot in message.content.lower():
-        multi_msg.append(content.binary_responses() + ', @{}.'.format(message.author.name))
-    
+    # REVIEW Convert to dictionary/key-function refs
     # handles when the bot is mentioned/adressed in a message, or asked a question
     elif message.content.lower().startswith(bot):
         if len(message_parts) > 1:
@@ -235,29 +199,23 @@ async def event_message(message):
         multi_msg.append(content.generic_responses(message))
 
     
-# ─── CALL + RESPONSES ───────────────────────────────────────────────────────
-
-    # responses to random words and shit. customize in content.py
+    ###########################################################################
+    # ANCHOR Calls & Responses
+    ###########################################################################
+            
+    # responses to random words in messages. customize in content.py
     msg = content.get_response_to_call(message)
     if msg is not None:
         multi_msg.append(msg)
-            
-    # the circular argument
-    if 'buddy' and r'\s?(buddy)[\W$]' in message.content.lower():
-        multi_msg.append('@{} - I ain\'t your buddy, friend!'.format(message.author.name))
-    elif 'friend' and r'\s?(friend)[\W$]' in message.content.lower():
-        multi_msg.append('@{} - I ain\'t your friend, guy!!'.format(message.author.name))
-    elif 'guy' and r'\s?(guy)[\W$]' in message.content.lower():
-        multi_msg.append('@{} - I ain\'t your guy, buddy!!'.format(message.author.name))
 
     # who said robit?     
     if any(s in message_parts for s in ('robot','robit','bot')):
         multi_msg.append(content.someone_sed_robit())
 
-    # sometimes you just wanna feel loved
-    if (any(s in message.content.lower() for s in ('love you','love u')) and bot):
+    # for use by Robosexuals™ only!
+    if (any(s in message.content.lower() for s in ('love you','love u', 'love me')) and bot):
+        play_sfx('sfx/hooks/norobo.mp3')
         multi_msg.append(content.love_or_nah())
-      
 
     # Combine all responses in a random order and send them in chat
     if multi_msg:
@@ -277,36 +235,14 @@ async def event_message(message):
         await twitch_bot.say(message.channel,'/timeout {} 15'.format(message.author.name))
 
 
-    ###############################################################################
-    # SECTION Bot On / Off Control
-    ###############################################################################
+###############################################################################
+# SECTION Bot On / Off Control
+###############################################################################
 
-    # when it's past the bot's bed time
-    if 'say goodnight' in message.content.lower() and bot in message.content.lower() and is_bot_admin:
-        multi_msg.append('goodnight, everyone!!')
-
-    if  message.content.lower().startswith("goodnight, " + bot) and message.author.name == streamer():
-        await twitch_bot.say(message.channel, content.last_words())
-        bot = conf.twitch_instance
-        print('Chat-Interrupted')
-        print('Stopping the bot..')
-        bot.stop(exit=True)
-        
-    if ('goodnight' in message.content.lower() or 'gnight' in message.content.lower()) and bot in message.content.lower():
-        multi_msg.append('goodnight, {}!'.format(message.author.name))
-
-    # make it stahp
-    if bot_settings['off_cmd'].lower() in message.content.lower() and (message.author.name == streamer()) :
-        await twitch_bot.say(message.channel, content.last_words())
-        bot = conf.twitch_instance
-        print('Chat-Interrupted')
-        print('Stopping the bot..')
-        bot.stop(exit=True)
-
-
-# stops the bot from Twitch chat command !die
-@twitch_bot.command('quit')
-async def quit(message):
+# make it stahp
+off_cmd = custom_settings['off_cmd'].lower()
+@twitch_bot.command(off_cmd)
+async def off(message):
     if message.author.mod or message.author.name == streamer():
         await twitch_bot.say(message.channel, content.last_words())  # DEBUG comment later (used for debug)
         bot = conf.twitch_instance
@@ -339,9 +275,7 @@ async def shoutout(message):
             msg = "You didn't include a streamer to shout out to, {}.".format(message.author.name)
             await twitch_bot.say(message.channel, msg)
 
-
 # !SECTION 
-
 
 
 ###############################################################################
@@ -358,70 +292,12 @@ async def debug(message):
     msg = conf.debug_yaml()
     await twitch_bot.say(message.channel, msg)
 
-
-@twitch_bot.command('viewers')
-async def viewers(message):
-    print(twitch_bot.viewers)
-    print(twitch_bot.viewers["#" + message.channel])
-    print(twitch_bot.channel_stats)
-    print(twitch_bot.hosts)
-    print(twitch_bot.host_count)
-
-
-@twitch_bot.command('register')
-async def register(message):
-    """
-    Registers a Twitch user with a service-agnostic ID in the database. WIP, mostly used
-    for debugging at the moment.
-    """
-    if db_insert.add_user_twitch(message):
-        msg = 'Registered!'
-    else:
-        msg = 'You already registered!'
-    await twitch_bot.say(message.channel, msg)
-
-
-@twitch_bot.command('botmod')
-async def botmod(message):
-    """
-    Checks if user calling is a bot mod or not.
-    """
-    msg = 'Usage: !botmod, !botmod [user], or !botmod [user] [true/false]'
-    message_parts = message.content.lower().split(' ')  # TOKENIZE™
-    arg_count = len(message_parts)
-    if arg_count == 1:
-        if db_query.is_bot_mod_twitch(message.author.name):
-            msg = 'You are a Bot Mod!'
-        else:
-            msg = 'You are NOT a Bot Mod!'
-    elif arg_count == 2:
-        if db_query.is_bot_mod_twitch(message_parts[1]):
-            msg = '{} is a Bot Mod!'.format((message_parts[1]))
-        else:
-            msg = '{} is a NOT Bot Mod!'.format((message_parts[1]))
-    elif arg_count == 3:
-        # TODO: Verify user calling is a bot mod, themselves
-        if message_parts[2] =='true':
-            msg = db_query.set_bot_mod_twitch(message_parts[1], True)
-        elif message_parts[2] =='false':
-            msg = db_query.set_bot_mod_twitch(message_parts[1], False)
-    
-    await twitch_bot.say(message.channel, msg)
-
-
-# list commands registered with the async library
-@twitch_bot.command('listcommands')
-async def listcommands(message):
-    commands = list(twitch_bot.commands.keys())
-    print(commands)
-    # await twitch_bot.say(message.channel, twitch_bot.commands)
-
 # !SECTION 
 
 
-
+###############################################################################
 # SECTION Easter Eggs
-
+###############################################################################
 
 @twitch_bot.command('easteregg')
 async def easteregg(message):

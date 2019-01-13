@@ -4,9 +4,6 @@ import os
 import sys
 
 
-ignore_list = [
-    "nobodyYET"
-]
 
 
 bot_list = [
@@ -17,6 +14,9 @@ bot_list = [
 # Load the config file
 with open(os.path.join(sys.path[0], 'config.yaml'), "r") as f:
     cfg = yaml.load(f)
+
+
+ignore_list = cfg['twitch']['bot_admins']
 
 
 def get_twitch_config():
@@ -33,7 +33,10 @@ def get_twitch_config():
 def get_custom_settings():
     settings = {
         "off_cmd" : cfg['bot_ctrl']['off_cmd'],
-        "welcome_msg" : cfg['custom_responses']['welcome_msg']
+        "welcome_msg" : cfg['custom_responses']['welcome_msg'],
+        "help_cmds" : cfg['twitch']['help_cmds'],
+        "raid_over" : cfg['custom_responses']['raid_over'],
+        "link_msg" : cfg['custom_responses']['link_msg']
     }
     return settings
 
