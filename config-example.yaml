@@ -1,3 +1,6 @@
+bot:
+    debug: False  # don't change this unless you have a good reason pls <3
+
 discord:
     token: paste_token_here
     server_id: "server_id_goes_here" 

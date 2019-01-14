@@ -35,11 +35,16 @@ custom_settings = {
 
 streamer = cfg['twitch']['streamer']
 
+streamelements_id = cfg['streamelements']['account_id']
+streamelements_auth = f"Bearer {cfg['streamelements']['jwt_token']}"
+
+debug = cfg['bot']['debug']
+
 def get_twitch_config():
     bot_config = asynctwitch.CommandBot(
         user=cfg['twitch']['bot_account'],
         oauth=cfg['twitch']['oauth'],
-        channel=cfg['twitch']['channel'],         
+        channel=cfg['twitch']['channel'],
         prefix=cfg['twitch']['prefix'],
         client_id=cfg['twitch']['client-id']
     )

@@ -11,6 +11,8 @@ import games
 import moderation
 import sfx
 
+if conf.debug:
+    import debug
 
 twitch_bot = conf.twitch_instance
 

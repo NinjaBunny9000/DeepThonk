@@ -22,9 +22,8 @@ twitch_bot = twitch_instance
 
 @twitch_bot.command('cah')
 async def cah(message):
-    """
-    Cards against humanity play-generator.
-    """
+    'Cards against humanity play-generator.'
+
     await twitch_bot.say(message.channel, play_hand())
 
 # !SECTION 
@@ -52,7 +51,7 @@ async def earworm(message):
 	# ANCHOR They lose
 	msg = f'rip, @{message.author.name}'
 	await twitch_bot.say(message.channel, msg)
-	
+
 	files = []
 
 	# create a list of mp3s in folders (excluding aliases.txt)
@@ -182,9 +181,6 @@ def append_raiders(user):
 
 
 def report_ko():
-    global raiding
-    global defending
-
     if raiding.hp <= 0 or defending.hp <= 0:
         return True
     else:
@@ -202,9 +198,6 @@ def reset_raid():
 
 
 def get_winner():
-    global raiding
-    global defending
-
     if raiding.hp <= 0:
         return defending.id
     elif defending.hp <= 0:
@@ -217,13 +210,18 @@ def get_winner():
 @twitch_bot.command('raid')
 async def raid(message):
     
-    if message.author.name.lower() in conf.bot_list.lower() or message.author.name.lower() == conf.streamer.lower():
+    for bot in conf.bot_list:
+        if message.author.name.lower() != bot.lower():
+            print('not bot')
+            return
+
+    if message.author.name.lower() == conf.streamer.lower():
         
         # start teh raid sequcence
         global raid_in_progress
         raid_in_progress = False # FIXME why does this need to be here?
         play_sfx('sfx/events/raid.mp3')
-        
+
         # REVIEW NinjaBunny9000 channel only!
         if twitch_channel().lower() == 'ninjabunny9000'.lower():
             await twitch_bot.say(message.channel, "!redalert")  # RED LIGHTS
