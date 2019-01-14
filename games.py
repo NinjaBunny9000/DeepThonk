@@ -17,13 +17,48 @@ twitch_bot = twitch_instance
 
 
 ###############################################################################
+# SECTION Points gifting system
+###############################################################################
+
+@twitch_bot.command('gift')
+async def gift(message):
+    'Change meh'
+
+    token = data_tools.tokenize(message, 3)
+
+    if len(token) <= 2 or token[2].isdigit() == False:
+        msg = 'Try !gift <user> <amount>.'
+        await twitch_bot.say(message.channel, msg)
+        return
+
+    gift = int(token[2])
+    gifter = message.author.name
+    giftee = token[1]
+
+    # cehck if gifter has enough points
+    if api_integrations.get_points(gifter) >= gift:
+        # do the exchangey thing
+        api_integrations.put_points(giftee, gift) # TODO Check to get 404
+        api_integrations.put_points(gifter, -gift)
+        points = api_integrations.get_points(gifter)
+        msg = f'@{gifter}. You gave {gift} shuriken to @{giftee}!! You have {points} left.'
+        await twitch_bot.say(message.channel, msg)
+
+    # otherwise, tell them they don't if they don't have enough points
+    else:
+        msg = f'While your generosity is greatly apprecaited, @{gifter}, you don\'t seem to have enough points right now.'
+        await twitch_bot.say(message.channel, msg)
+
+# !SECTION 
+
+
+###############################################################################
 # SECTION Cards Against Humanity ™
 ###############################################################################
 
 @twitch_bot.command('cah')
 async def cah(message):
     'Cards against humanity play-generator.'
-
     await twitch_bot.say(message.channel, play_hand())
 
 # !SECTION 
@@ -42,26 +77,39 @@ async def earworm(message):
     # - Betting THE General™
     # - Help command/function
 
-	# ANCHOR They win
-	if random.random() >= 0.9:
-		msg = f'u lucked tf out, @{message.author.name}.'
-		await twitch_bot.say(message.channel, msg)
-		return
+    token = data_tools.tokenize(message, 2)
 
-	# ANCHOR They lose
-	msg = f'rip, @{message.author.name}'
-	await twitch_bot.say(message.channel, msg)
+    if len(token) == 1 or token[1].isdigit() == False:
+        msg = 'Try !earworm <bet>.'
+        await twitch_bot.say(message.channel, msg)
+        return
 
-	files = []
+    bet = int(token[1])
 
-	# create a list of mp3s in folders (excluding aliases.txt)
-	for file_name in os.listdir('sfx/earworms/'):
-		if not file_name.endswith('.txt'):
-			files.append(file_name)
+    # ANCHOR They win
+    if random.random() >= 0.5:
+        api_integrations.put_points(message.author.name, bet*2)
+        points = api_integrations.get_points(message.author.name)
+        msg = f'@{message.author.name}, u lucked tf out! {bet*2} shuriken added. You\'re have {points} now.'
+        await twitch_bot.say(message.channel, msg)
+        return
 
-	random_mp3 = f'sfx/earworms/{random.choice(files)}'
+    # ANCHOR They lose
+    api_integrations.put_points(message.author.name, -bet)
+    points = api_integrations.get_points(message.author.name)
+    msg = f'rip, @{message.author.name}. You lost {bet} shuriken. You have {points} left. Pls dun cry.'
+    await twitch_bot.say(message.channel, msg)
 
-	play_sfx(random_mp3)
+    files = []
+
+    # create a list of mp3s in folders (excluding aliases.txt)
+    for file_name in os.listdir('sfx/earworms/'):
+        if not file_name.endswith('.txt'):
+            files.append(file_name)
+
+    random_mp3 = f'sfx/earworms/{random.choice(files)}'
+
+    play_sfx(random_mp3)
 
 # !SECTION 
 

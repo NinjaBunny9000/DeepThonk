@@ -28,6 +28,11 @@ twitch:
         - "username_..."
         - "username_n"
 
+streamelements:
+    account_id: "paste_id"
+    jwt_token: "paste_token"
+    points_name: "points"
+
 obs: # You need to install Advanced Scene Switcher OBS Plug-in to use! (refer to docs)
     raid_scene: False # Switch to True if you want a custom raid scene!
     raid_timer: 10 # Delay (seconds) after raid before scene is switched
