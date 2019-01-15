@@ -153,7 +153,7 @@ async def event_message(message):
     ###########################################################################
 
     # mock links that people send
-    if re.match(r'^(http(s)?://|www.)', message.content, re.IGNORECASE) and not mod:
+    if re.match(r'(http(s)?://|www.)', message.content, re.IGNORECASE) and not mod:
         await twitch_bot.say(message.channel, custom_settings['link_msg'])
 
     # respond if sentient
@@ -223,6 +223,7 @@ async def event_message(message):
         await twitch_bot.say(message.channel, reply.strip("\n"))
 
     # sum1 sed fortnite
+    # Matches with message content that contains the words 'fortnite' and 'play' in any order
     if re.match(r'^(?=.*\bfortnite.*\b)(?=.*\bplay.*\b).*$', message.content, re.IGNORECASE):
         msg = 'y would u even think that, @{message.author.name}??'
         await twitch_bot.say(message.channel, msg)
