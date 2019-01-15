@@ -14,7 +14,7 @@ twitch_bot = twitch_instance
 
 def display_task_on_obs(task):
     f = open('data\\task.txt', 'w+')
-    f.write('!task = {}'.format(task))
+    f.write(f'!task = {task}')
     f.close()
 
 # !SECTION 
@@ -50,7 +50,7 @@ def get_scene():
 async def obsscene(message):
     if is_mod(message):
         scene = get_scene()
-        msg = '@{}, the current scene is {}'.format(message.author.name, scene)
+        msg = f'@{message.author.name}, the current scene is {scene}'
         await twitch_bot.say(message.channel, msg)
 
 

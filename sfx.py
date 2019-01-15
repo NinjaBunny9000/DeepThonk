@@ -1,3 +1,4 @@
+import conf
 from conf import twitch_instance, twitch_channel, streamer, welcome_msg, is_bot_admin
 import os, random, time
 import csv
@@ -25,161 +26,149 @@ def play_sfx(full_file_path, r00d=True, unr00dable=False):
 
 	if r00d:
 		# stop all sounds playing & load the new file
-		mixer.music.load('{}'.format(full_file_path))  
+		mixer.music.load(f'{full_file_path}')  
 	else: 
-		mixer.music.queue('{}'.format(full_file_path))
+		mixer.music.queue(f'{full_file_path}')
 
 	# play the new sound
 	try:
-		print('[SFX] {} played'.format(full_file_path)) # TODO Logging refactor
+		print(f'[SFX] {full_file_path} played') # TODO Logging refactor
 		mixer.music.play()
 	except TypeError:
-		print('TypeError - {} didn\'t play because (assuming) file was not the right type'.format(full_file_path)) # TODO Logging refactor
+		print(f'TypeError - {full_file_path} didn\'t play because (assuming) file was not the right type') # TODO Logging refactor
 
 
 ###################################################################
 # SECTION SFX Generation via folder/file structure bidness
 ###################################################################
 
-class SoundEffect(object):
-	"""
-	Base class for all sound effects.
+if conf.sfx['hooks']:
 
-	Eventually looks like ==> SoundEffect(file_name, permission_level, cost, cooldown).
-	"""
+	class SoundEffect(object):
+		"""
+		Base class for all sound effects.
 
-	# TODO Overriding cooldowns (csv? ORM models?)
-	# TODO Attributes: privilege level, cost
+		Eventually looks like ==> SoundEffect(file_name, permission_level, cost, cooldown).
+		"""
 
-	commands = []
+		# TODO Overriding cooldowns (csv? ORM models?)
+		# TODO Attributes: privilege level, cost
 
-	# constructor
-	def __init__(self, cmd_name, cmd_path, cmd_timeout=10):
-		self.name = cmd_name
-		self.path = cmd_path
-		# TODO Look into using timedate.timedelta() instead
-		self.timeout = cmd_timeout 
-		self.last_used = time.time()
+		commands = []
 
-		# TODO: Check and see if pre-existing command
-		# create/register file as command in event-loop
-		@twitch_bot.command(self.name)
-		async def sfx_func(message):
-			if message.author.subscriber:
-				# compare last use to this use & timeout var
-				if time.time() - self.last_used >= self.timeout:
-					# playsound(self.path) # REVIEW
-					play_sfx(self.path)
-					# update the last_used thing
-					self.last_used = time.time()
+		# constructor
+		def __init__(self, cmd_name, cmd_path, cmd_timeout=conf.sfx['hooks_timeout']):
+			self.name = cmd_name
+			self.path = cmd_path
+			# TODO Look into using timedate.timedelta() instead
+			self.timeout = cmd_timeout 
+			self.last_used = time.time()
 
-		# add the command object to a list to be used later for spreadsheet generation
-		SoundEffect.commands.append(self)
+			# TODO: Check and see if pre-existing command
+			# create/register file as command in event-loop
+			@twitch_bot.command(self.name)
+			async def sfx_func(message):
+				if message.author.subscriber:
+					# compare last use to this use & timeout var
+					if time.time() - self.last_used >= self.timeout:
+						play_sfx(self.path)
+						# update the last_used thing
+						self.last_used = time.time()
+
+			# add the command object to a list to be used later for spreadsheet generation
+			SoundEffect.commands.append(self)
 
 
-# REVIEW  move into a function later during refactor
-# for every file in directory (os.listdir(path))
-path = 'sfx/hooks/'
-for file in os.listdir(path):
+	# REVIEW  move into a function later during refactor
+	# for every file in directory (os.listdir(path))
+	path = 'sfx/hooks/'
+	for file in os.listdir(path):
 
-	# create instance with attributes
-	if file.endswith('.mp3'):
-		cmd_name = file[:-4]
-		cmd_path = path + file
-		debug_msg = 'cmd_name={} cmd_path={}'.format(cmd_name, cmd_path)
-		SoundEffect(cmd_name, cmd_path)
+		# create instance with attributes
+		if file.endswith('.mp3'):
+			cmd_name = file[:-4]
+			cmd_path = path + file
+			debug_msg = f'cmd_name={cmd_name} cmd_path={cmd_path}'
+			SoundEffect(cmd_name, cmd_path)
 
-# !SECTION             
+# !SECTION
 
 
 ###################################################################
 # SECTION Randomized SFX
 ###################################################################
 
-class RandomSoundEffect(object):
-	"""
-	Base class for all rando sound effects.
+if conf.sfx['randoms']:
 
-	Eventually looks like ==> RandoSoundEffect(file_name, permission_level, cost, cooldown).
-	"""
-	# TODO Overriding cooldowns (csv? ORM models?)
-	# TODO Put 'hi' and 'bye' in their own thing? So they can work w/o '!' preface once that's func again
-	# TODO Attributes: privilege level, cost
+	class RandomSoundEffect(object):
+		"""
+		Base class for all rando sound effects.
 
-	commands = []
+		Eventually looks like ==> RandoSoundEffect(file_name, permission_level, cost, cooldown).
+		"""
+		# TODO Overriding cooldowns (csv? ORM models?)
+		# TODO Put 'hi' and 'bye' in their own thing? So they can work w/o '!' preface once that's func again
+		# TODO Attributes: privilege level, cost
 
+		commands = []
 
+		# constructor
+		def __init__(self, folder, files:list, aliases=(), cmd_timeout=conf.sfx['randoms_timeout']):
+			self.name = folder
+			self.folder = folder
+			self.files = files
+			self.aliases = aliases
+			self.timeout = cmd_timeout
+			self.last_used = time.time()
 
-
-	# constructor
-	def __init__(self, folder, files:list, aliases=(), cmd_timeout=3):
-		self.name = folder
-		self.folder = folder
-		self.files = files
-		self.aliases = aliases
-		self.timeout = cmd_timeout
-		self.last_used = time.time()
-
-		# TODO: Check and see if pre-existing command
-		# create/register file as command in event-loop
-		@twitch_bot.command(self.name, alias=self.aliases)
-		async def rando_sfx_func(message):
-			# compare last use to this use & timeout var
-			if time.time() - self.last_used >= self.timeout:
-				random_mp3 = 'sfx/randoms/{}/{}'.format(self.folder, random.choice(self.files))
-				# playsound(random_mp3) # REVIEW 
-				play_sfx(random_mp3)
-				# update the last_used thing
-				self.last_used = time.time()
-
-		# self.generate_csv()
-			
-		# add the command name to a list to be used later for spreadsheet generation
-		RandomSoundEffect.commands.append(self)
+			# TODO: Check and see if pre-existing command
+			# create/register file as command in event-loop
+			@twitch_bot.command(self.name, alias=self.aliases)
+			async def rando_sfx_func(message):
+				# compare last use to this use & timeout var
+				if time.time() - self.last_used >= self.timeout:
+					random_mp3 = f'sfx/randoms/{self.folder}/{random.choice(self.files)}'
+					play_sfx(random_mp3)
+					# update the last_used thing
+					self.last_used = time.time()
+				
+			# add the command name to a list to be used later for spreadsheet generation
+			RandomSoundEffect.commands.append(self)
 
 
+	def generate_random_sfx_commands():
 
-def generate_random_sfx_commands():
+		path = 'sfx/randoms/' # TODO change this to something configurable elsewhere for distro stuffs
 
-	path = 'sfx/randoms/' # TODO change this to something configurable elsewhere for distro stuffs
+		# get a list of folders in sfx/randoms & create commands for each
+		for thing in os.listdir(path):
 
-	# get a list of folders in sfx/randoms & create commands for each
-	for thing in os.listdir(path):
+			# if directory
+			if '.' not in thing or not thing.startswith('.'):
+				folder = thing
+				files = []
 
-		# if directory
-		if '.' not in thing or not thing.startswith('.'):
-			folder = thing
-			files = []
+				# create a list of mp3s in folders (excluding aliases.txt)
+				for file_name in os.listdir(f'sfx/randoms/{folder}'):
+					if not file_name.endswith('.txt'):
+						# add it to a list
+						files.append(file_name)
 
-			# create a list of mp3s in folders (excluding aliases.txt)
-			for file_name in os.listdir('sfx/randoms/{}'.format(folder)):
-				if not file_name.endswith('.txt'):
-					# add it to a list
-					files.append(file_name)
-
-			# use the above list to create the object thingybob
-			RandomSoundEffect(folder, files, get_aliases(folder))
-			# TODO CSV "clean" func? Not sure if needed.
-
-	# TODO CSV generation (or migrate to db >>> ;D)
-	# RandomSoundEffect.generate_csv(RandomSoundEffect, RandomSoundEffect.commands)
+				# use the above list to create the object thingybob
+				RandomSoundEffect(folder, files, get_aliases(folder))
 
 
-# TODO Get this loading aliases from text files
-def get_aliases(folder):
-	# loads alias file based on folder name
-	try:
-		# f = open('sfx/randoms/{}/aliases.txt'.format(folder), 'r')
-		# creates a list based on aliases
-		# aliases = f.readlines()
-		with open('sfx/randoms/{}/aliases.txt'.format(folder), 'r') as f:
-			aliases = f.read().splitlines()
-		return tuple(aliases)
-	except:
-		return []
+	# TODO Get this loading aliases from text files
+	def get_aliases(folder):
+		# loads alias file based on folder name
+		try:
+			with open(f'sfx/randoms/{folder}/aliases.txt', 'r') as f:
+				aliases = f.read().splitlines()
+			return tuple(aliases)
+		except:
+			return []
 
-
-generate_random_sfx_commands()
+	generate_random_sfx_commands()
 
 # !SECTION 
 
@@ -246,7 +235,7 @@ async def sfx(message):
 
 	# for every item in an enumerated list of commands
 	for cmd in SoundEffect.commands:
-		cmd_name = '!{}'.format(cmd.name) # add the !
+		cmd_name = f'!{cmd.name}' # add the !
 
 		# get the length of the string & compare it to teh length it would be if it added the new command
 		if (len(msg) + len(cmd_name) + 2) >= 500:
@@ -258,7 +247,7 @@ async def sfx(message):
 			if len(msg) is 0:
 				msg += cmd_name
 			else:
-				msg += ', {}'.format(cmd_name)
+				msg += f', {cmd_name}'
 	
 	# then send the rest
 	await twitch_bot.say(message.channel, msg) # TODO add final page number
@@ -279,7 +268,7 @@ async def randomsfx(message):
 
 	# for every item in an enumerated list of commands
 	for cmd in RandomSoundEffect.commands:
-		cmd_name = '!{}'.format(cmd.name) # add the !
+		cmd_name = f'!{cmd.name}' # add the !
 
 		# get the length of the string & compare it to teh length it would be if it added the new command
 		if (len(msg) + len(cmd_name) + 2) >= 500:
@@ -291,7 +280,7 @@ async def randomsfx(message):
 			if len(msg) is 0:
 				msg += cmd_name
 			else:
-				msg += ', {}'.format(cmd_name)
+				msg += f', {cmd_name}'
 	
 	# then send the rest
 	await twitch_bot.say(message.channel, msg) # TODO add final page number
@@ -311,7 +300,7 @@ async def ledsfx(message):
 
 	# for every item in an enumerated list of commands
 	for cmd in LEDSoundEffect.commands:
-		cmd = '!{}'.format(cmd) # add the !
+		cmd = f'!{cmd}' # add the !
 
 		# get the length of the string & compare it to teh length it would be if it added the new command
 		if (len(msg) + len(cmd) + 2) >= 500:
@@ -323,7 +312,7 @@ async def ledsfx(message):
 			if len(msg) is 0:
 				msg += cmd
 			else:
-				msg += ', {}'.format(cmd)
+				msg += f', {cmd}'
 	
 	# then send the rest
 	await twitch_bot.say(message.channel, msg) # TODO add final page number
@@ -336,7 +325,7 @@ async def ledsfx(message):
 
 #      # for every item in an enumerated list of commands
 #     for cmd in sfx_type.commands:
-#         cmd = '!{}'.format(cmd) # add the !
+#         cmd = f'!{cmd}' # add the !
 
 #         # get the length of the string & compare it to teh length it would be if it added the new command
 #         if (len(msg) + len(cmd) + 2) >= 500:
@@ -348,7 +337,7 @@ async def ledsfx(message):
 #             if len(msg) is 0:
 #                 msg += cmd
 #             else:
-#                 msg += ', {}'.format(cmd)
+#                 msg += f', {cmd}'
 
 #     return msg
 

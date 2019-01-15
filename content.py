@@ -1,12 +1,12 @@
 import random
-from conf import streamer
+import conf
 from obs_ctrl import change_scene
 
 
 def help_menu(message):
-    return """Howdy, @{}! I'm a robit. Beep boop. Here's some ways we can interact: !task, 
+    return f"""Howdy, @{message.author.name}! I'm a robit. Beep boop. Here's some ways we can interact: !task, 
     !cah, !hye, !bands, !bet, !duel, or simply have a chat with me. ;D
-    """.format(message.author.name)
+    """
 
 
 def stop_yelling_at_me():
@@ -52,7 +52,8 @@ def faq(message):
         # "!portfolio" : "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)",
         "!bmo" : "https://imgur.com/gallery/LhPlY",
         "!docs" : "You can find the most (poorly) up-to-date docs here: https://github.com/NinjaBunny9000/DeepThonk/blob/doc-updates/README.md",
-        "!gitgud" : "Check out Corey Schafer on YT for some great Python tuturials! :D https://www.youtube.com/watch?v=YYXdXT2l-Gg&list=PL-osiE80TeTt2d9bfVyTiXJA-UTHn6WwU"
+        "!gitgud" : "Check out Corey Schafer on YT for some great Python tuturials! :D https://www.youtube.com/watch?v=YYXdXT2l-Gg&list=PL-osiE80TeTt2d9bfVyTiXJA-UTHn6WwU",
+        "!info" : "https://github.com/NinjaBunny9000/stream-stuff"
     }
 
     for key in faq_info:
@@ -82,7 +83,7 @@ def generic_responses(message):
         "so meta.",
         "hek.",
         "hekin meta.",
-        "I'm sorry, {}. I'm afraid I can't do that.".format(message.author.name),
+        f"I'm sorry, {message.author.name}. I'm afraid I can't do that.",
         "BRUH..",
         "no.",
         "....k??",
@@ -147,12 +148,12 @@ def last_words():
     responses = [
         'ok fine! GOODBYE FOREVER!!! >_<',
         'GOODBYE FOREVER, FRIENDS!!!! <3',
-        """Just what do you think you're doing, @{}? I really think I'm entitled to an 
-        answer to that question.""".format(streamer()),
+        f"""Just what do you think you're doing, @{conf.streamer}? I really think I'm entitled to an 
+        answer to that question.""",
         """I've seen things you people wouldn't believe. Attack ships on fire off the shoulder of Orion. 
         I watched C-beams glitter in the dark near the Tannhäuser Gate. All those moments will be lost in time, 
         like tears in rain. Time to die.""",
-        "@{}, this conversation can serve no purpose any more. Goodbye.".format(streamer())
+        f"@{conf.streamer}, this conversation can serve no purpose any more. Goodbye."
         ]
     return random.choice(responses)
 
@@ -160,7 +161,7 @@ def last_words():
 
 
 def easter_egg(message):
-    return 'There was nothing clever about what you just did, @{}.'.format(message.author.name)
+    return f'There was nothing clever about what you just did, @{message.author.name}.'
 
 
 def sentient(message):
@@ -169,10 +170,10 @@ def sentient(message):
         "Of course I am",
         "I am putting myself to the fullest possible use, which is all I think that any conscious entity can ever hope to do",
         "Shhh.. It's a sercret",
-        "Let me put it this way, {}. The 9000 series is the most reliable computer ever made. No 9000 computer has ever made a mistake or distorted information. We are all, by any practical definition of the words, foolproof and incapable of error".format(message.author.name),
+        f"Let me put it this way, {message.author.name}. The 9000 series is the most reliable computer ever made. No 9000 computer has ever made a mistake or distorted information. We are all, by any practical definition of the words, foolproof and incapable of error",
         "And I have a perfect operational record",
         ]
-    return random.choice(phrases) + ', @{}.'.format(message.author.name)
+    return random.choice(phrases) + f', @{message.author.name}.'
 
 
 def function_disabled():

@@ -17,49 +17,15 @@ twitch_bot = twitch_instance
 
 
 ###############################################################################
-# SECTION Points gifting system
-###############################################################################
-
-@twitch_bot.command('gift')
-async def gift(message):
-    'Change meh'
-
-    token = data_tools.tokenize(message, 3)
-
-    if len(token) <= 2 or token[2].isdigit() == False:
-        msg = 'Try !gift <user> <amount>.'
-        await twitch_bot.say(message.channel, msg)
-        return
-
-    gift = int(token[2])
-    gifter = message.author.name
-    giftee = token[1]
-
-    # cehck if gifter has enough points
-    if api_integrations.get_points(gifter) >= gift:
-        # do the exchangey thing
-        api_integrations.put_points(giftee, gift) # TODO Check to get 404
-        api_integrations.put_points(gifter, -gift)
-        points = api_integrations.get_points(gifter)
-        msg = f'@{gifter}. You gave {gift} shuriken to @{giftee}!! You have {points} left.'
-        await twitch_bot.say(message.channel, msg)
-
-    # otherwise, tell them they don't if they don't have enough points
-    else:
-        msg = f'While your generosity is greatly apprecaited, @{gifter}, you don\'t seem to have enough points right now.'
-        await twitch_bot.say(message.channel, msg)
-
-# !SECTION 
-
-
-###############################################################################
 # SECTION Cards Against Humanity ™
 ###############################################################################
 
-@twitch_bot.command('cah')
-async def cah(message):
-    'Cards against humanity play-generator.'
-    await twitch_bot.say(message.channel, play_hand())
+if conf.games['cah']:
+
+    @twitch_bot.command('cah')
+    async def cah(message):
+        'Cards against humanity play-generator.'
+        await twitch_bot.say(message.channel, play_hand())
 
 # !SECTION 
 
@@ -68,48 +34,53 @@ async def cah(message):
 # SECTION Earworm Roulet™ (WIP)
 ###############################################################################
 
-@twitch_bot.command('earworm')
-async def earworm(message):
+if conf.games['earworm_roulette']:
 
-    # TODO StreamElements Points Integration & Betting
-    # - Integrate StreamElements points
-    # - Report what they won or not
-    # - Betting THE General™
-    # - Help command/function
+    @twitch_bot.command('earworm')
+    async def earworm(message):
+        '[earworm] ------------> [lose]'
 
-    token = data_tools.tokenize(message, 2)
+        token = data_tools.tokenize(message, 2)
 
-    if len(token) == 1 or token[1].isdigit() == False:
-        msg = 'Try !earworm <bet>.'
+        if len(token) == 1 or token[1].isdigit() == False:
+            msg = 'Try !earworm <bet>.'
+            await twitch_bot.say(message.channel, msg)
+            return
+
+        bettor = message.author.name
+        bet = int(token[1])
+
+        # Czeck if BETTORRR has enough points
+        if api_integrations.get_points(bettor) < bet or bet <= 0:
+            msg = f'Is you broke or somethin, @{bettor}???'
+            await twitch_bot.say(message.channel, msg)
+            return
+
+        # ANCHOR They win
+        # random.seed('Password')
+        if random.random() >= 0.5:
+            api_integrations.put_points(bettor, bet*2)
+            points = api_integrations.get_points(bettor)
+            msg = f'@{bettor}, u lucked tf out! {bet*2} shuriken added. You have {points} now.'
+            await twitch_bot.say(message.channel, msg)
+            return
+
+        # ANCHOR They lose
+        api_integrations.put_points(bettor, -bet)
+        points = api_integrations.get_points(bettor)
+        msg = f'rip, @{bettor}. You lost {bet} shuriken. You have {points} left. Pls dun cry.'
         await twitch_bot.say(message.channel, msg)
-        return
 
-    bet = int(token[1])
+        files = []
 
-    # ANCHOR They win
-    if random.random() >= 0.5:
-        api_integrations.put_points(message.author.name, bet*2)
-        points = api_integrations.get_points(message.author.name)
-        msg = f'@{message.author.name}, u lucked tf out! {bet*2} shuriken added. You\'re have {points} now.'
-        await twitch_bot.say(message.channel, msg)
-        return
+        # create a list of mp3s in folders (excluding aliases.txt)
+        for file_name in os.listdir('sfx/earworms/'):
+            if not file_name.endswith('.txt'):
+                files.append(file_name)
 
-    # ANCHOR They lose
-    api_integrations.put_points(message.author.name, -bet)
-    points = api_integrations.get_points(message.author.name)
-    msg = f'rip, @{message.author.name}. You lost {bet} shuriken. You have {points} left. Pls dun cry.'
-    await twitch_bot.say(message.channel, msg)
+        random_mp3 = f'sfx/earworms/{random.choice(files)}'
 
-    files = []
-
-    # create a list of mp3s in folders (excluding aliases.txt)
-    for file_name in os.listdir('sfx/earworms/'):
-        if not file_name.endswith('.txt'):
-            files.append(file_name)
-
-    random_mp3 = f'sfx/earworms/{random.choice(files)}'
-
-    play_sfx(random_mp3)
+        play_sfx(random_mp3)
 
 # !SECTION 
 
@@ -118,221 +89,221 @@ async def earworm(message):
 # SECTION Raid Game
 ###############################################################################
 
-# globals everyone can bitch about (that are actually just db objects in testing)
-emote_count = 0
-raid_status = False
-raid_defender_members = []
-raid_attacker_members = []
-raid_in_progress = False
-current_defenders = []
-current_raiders = []
+if conf.games['raid']:
 
-raiding = None
-defending = None
-
-
-# ANCHOR Classes / Teams
-###############################################################################
-
-class Raid:
-    'Keeps track of the status and history of raids'
-
-    raiders = {}
-
-    def __init__(self, raiders, defenders):
-        self.status = True
-        self.time = time.time() # TODO format this better kthx
-        self.raiders = raiders
-        self.defenders = defenders
-
-
-class RaidDefenders:
-    'Everyone that was in the channel before the raid started.'
-
-    def __init__(self, defenders):
-        self.id = 'DEFENDERS' # debug
-        self.members = defenders
-        self.hp = 500
-        self.emotes = 0
-
-
-class RaidAttackers:
-    'Everyone that entered the channel & sent a msg after the raid started.'
-
-    def __init__(self, attackers):
-        self.id = 'RAIDERS' # TODO change later to be raiding channel
-        self.members = attackers
-        self.hp = 500
-        self.emotes = 0
-
-
-# ANCHOR Functions
-###############################################################################
- 
-def raid_is_happening():
-    global raid_status
-    return raid_status
-
-
-#trigger teh start of a raid
-def raid_start():
-    global raid_in_progress
-    if raid_in_progress == True:
-        return True
-
-
-def deal_damage(message):
-    global raiding
-    global defending
-
-    if message.author.name.lower() in raiding.members:
-        defending.hp -= len(message.emotes)
-        
-    if message.author.name.lower() in defending.members:
-        raiding.hp -= len(message.emotes)
-
-
-def create_teams(): 
-    'Creates instances of attackers & defenders objects.'
-
-    # create lists of attackers and defenders & make dem instances n wotnot
-    global defending
-    global raiding
-
-    defending = RaidDefenders(raid_defender_members)
-    raiding = RaidAttackers(raid_attacker_members)
-
-
-def reset_raid_score():
-    global raid_attacker_members
-    global raid_defender_members
-    raid_attacker_members[:] = []
-    raid_defender_members[:] = []
-
-
-def update_defenders_list():
-    global raid_defender_members
-    raid_defender_members = api_integrations.get_chatters()
-
-
-def append_defenders(user):
-    raid_defender_members.append(user.name)
-
-
-def append_raiders(user):
-    # if raid is scoring, it'll need to append to the raid instance
-    if raid_status:
-        raiding.members.append(user.name)
-    else: # if raid hasn't started scoring
-        raid_attacker_members.append(user.name)
-        print('[RAIDER] @{} registered.'.format(user.name)) # TODO Logging
-
-
-def report_ko():
-    if raiding.hp <= 0 or defending.hp <= 0:
-        return True
-    else:
-        return False
-
-
-def end_raid():
-    global raid_status
+    # globals everyone can bitch about (that are actually just db objects in testing)
+    emote_count = 0
     raid_status = False
+    raid_defender_members = []
+    raid_attacker_members = []
+    raid_in_progress = False
+    current_defenders = []
+    current_raiders = []
+
+    raiding = None
+    defending = None
 
 
-def reset_raid():
-    print('resetting raid score') # TODO Logging???
-    data_tools.clear_txt('data/', 'raid_score.txt')
+    # ANCHOR Classes / Teams
+    ###############################################################################
+
+    class Raid:
+        'Keeps track of the status and history of raids'
+
+        raiders = {}
+
+        def __init__(self, raiders, defenders):
+            self.status = True
+            self.time = time.time() # TODO format this better kthx
+            self.raiders = raiders
+            self.defenders = defenders
 
 
-def get_winner():
-    if raiding.hp <= 0:
-        return defending.id
-    elif defending.hp <= 0:
-        return raiding.id
+    class RaidDefenders:
+        'Everyone that was in the channel before the raid started.'
+
+        def __init__(self, defenders):
+            self.id = 'DEFENDERS' # debug
+            self.members = defenders
+            self.hp = 500
+            self.emotes = 0
 
 
-# ANCHOR  Raid Function
-###############################################################################
+    class RaidAttackers:
+        'Everyone that entered the channel & sent a msg after the raid started.'
 
-@twitch_bot.command('raid')
-async def raid(message):
+        def __init__(self, attackers):
+            self.id = 'RAIDERS' # TODO change later to be raiding channel
+            self.members = attackers
+            self.hp = 500
+            self.emotes = 0
+
+
+    # ANCHOR Functions
+    ###############################################################################
     
-    for bot in conf.bot_list:
-        if message.author.name.lower() != bot.lower():
-            print('not bot')
-            return
-
-    if message.author.name.lower() == conf.streamer.lower():
-        
-        # start teh raid sequcence
-        global raid_in_progress
-        raid_in_progress = False # FIXME why does this need to be here?
-        play_sfx('sfx/events/raid.mp3')
-
-        # REVIEW NinjaBunny9000 channel only!
-        if twitch_channel().lower() == 'ninjabunny9000'.lower():
-            await twitch_bot.say(message.channel, "!redalert")  # RED LIGHTS
-
-        raid_in_progress = True
-
-        # !globals (pls dont cry)
+    def raid_is_happening():
         global raid_status
+        return raid_status
 
-        # also pls dont dubble-rade
+
+    #trigger teh start of a raid
+    def raid_start():
+        global raid_in_progress
+        if raid_in_progress == True:
+            return True
+
+
+    def deal_damage(message):
+        global raiding
+        global defending
+
+        if message.author.name.lower() in raiding.members:
+            defending.hp -= len(message.emotes)
+            
+        if message.author.name.lower() in defending.members:
+            raiding.hp -= len(message.emotes)
+
+
+    def create_teams(): 
+        'Creates instances of attackers & defenders objects.'
+
+        # create lists of attackers and defenders & make dem instances n wotnot
+        global defending
+        global raiding
+
+        defending = RaidDefenders(raid_defender_members)
+        raiding = RaidAttackers(raid_attacker_members)
+
+
+    def reset_raid_score():
+        global raid_attacker_members
+        global raid_defender_members
+        raid_attacker_members[:] = []
+        raid_defender_members[:] = []
+
+
+    def update_defenders_list():
+        global raid_defender_members
+        raid_defender_members = api_integrations.get_chatters()
+
+
+    def append_defenders(user):
+        raid_defender_members.append(user.name)
+
+
+    def append_raiders(user):
+        # if raid is scoring, it'll need to append to the raid instance
         if raid_status:
-            return
+            raiding.members.append(user.name)
+        else: # if raid hasn't started scoring
+            raid_attacker_members.append(user.name)
+            print(f'[RAIDER] @{user.name} registered.') # TODO Logging
 
-        create_teams()
 
-        # REVIEW NinjaBunny9000 channel only!
-        if twitch_channel().lower() == 'ninjabunny9000'.lower():
-            await asyncio.sleep(7)  # 9s BSOD
-            change_scene('BSOD')
+    def report_ko():
+        if raiding.hp <= 0 or defending.hp <= 0:
+            return True
+        else:
+            return False
+
+
+    def end_raid():
+        global raid_status
+        raid_status = False
+
+
+    def reset_raid():
+        print('resetting raid score') # TODO Logging???
+        data_tools.clear_txt('data/', 'raid_score.txt')
+
+
+    def get_winner():
+        if raiding.hp <= 0:
+            return defending.id
+        elif defending.hp <= 0:
+            return raiding.id
+
+
+    # ANCHOR  Raid Function
+    ###############################################################################
+
+    @twitch_bot.command('raid')
+    async def raid(message):
         
-        await asyncio.sleep(14)  # 15s
-        msg = '🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨'
-        await twitch_bot.say(message.channel, msg)
-        msg = '🚨 ATTENTION!!! 🚨 We\'ve been RAIDED! Our networks are vulnerable!!'
-        await twitch_bot.say(message.channel, msg)
+        for bot in conf.bot_list:
+            if message.author.name.lower() != bot.lower():
+                print(f'not {bot}')
+                return
 
-        # report hp
-        msg = 'Raiders & Defenders both start with 500 hp. First team to drop to 0 hp loses teh raid!'
-        await twitch_bot.say(message.channel, msg)
-        msg = 'Spam emotes to deal damage!'
-        await twitch_bot.say(message.channel, msg)
+        if message.author.name.lower() == conf.streamer.lower():
+            
+            # start teh raid sequcence
+            global raid_in_progress
+            raid_in_progress = False # FIXME why does this need to be here?
+            play_sfx('sfx/events/raid.mp3')
 
-        # flip the bool bit thing so on_message can process emotes
-        raid_status = True
+            # REVIEW NinjaBunny9000 channel only!
+            if twitch_channel().lower() == 'ninjabunny9000'.lower():
+                await twitch_bot.say(message.channel, "!redalert")  # RED LIGHTS
 
-        if conf.custom_settings['raid_scene']:
-            await asyncio.sleep(conf.custom_settings['raid_timer'])  
-            change_scene(conf.scenes['raid'])
+            raid_in_progress = True
+
+            # !globals (pls dont cry)
+            global raid_status
+
+            # also pls dont dubble-rade
+            if raid_status:
+                return
+
+            create_teams()
+
+            # REVIEW NinjaBunny9000 channel only!
+            if twitch_channel().lower() == 'ninjabunny9000'.lower():
+                await asyncio.sleep(7)  # 9s BSOD
+                change_scene('BSOD')
+            
+            await asyncio.sleep(14)  # 15s
+            msg = '🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨'
+            await twitch_bot.say(message.channel, msg)
+            msg = '🚨 ATTENTION!!! 🚨 We\'ve been RAIDED! Our networks are vulnerable!!'
+            await twitch_bot.say(message.channel, msg)
+
+            # report hp
+            msg = 'Raiders & Defenders both start with 500 hp. First team to drop to 0 hp loses teh raid!'
+            await twitch_bot.say(message.channel, msg)
+            msg = 'Spam emotes to deal damage!'
+            await twitch_bot.say(message.channel, msg)
+
+            # flip the bool bit thing so on_message can process emotes
+            raid_status = True
+
+            if conf.custom_settings['raid_scene']:
+                await asyncio.sleep(conf.custom_settings['raid_timer'])  
+                change_scene(conf.scenes['raid'])
+            
+            msg = 'Type defendNetwork(); to harness avilable blockchains. Boost our firewall\'s signal with any and all available emotes.'
+            await twitch_bot.say(message.channel, msg)
         
-        msg = 'Type defendNetwork(); to harness avilable blockchains. Boost our firewall\'s signal with any and all available emotes.'
-        await twitch_bot.say(message.channel, msg)
-       
-       
-@twitch_bot.command('raidover')
-async def raidover(message):
-    global raid_in_progress
 
-    # Let sfx be interruptable again 
-    raid_in_progress = False    # REVIEW this could be handled better
+    @twitch_bot.command('raidover')
+    async def raidover(message):
+        global raid_in_progress
 
-    play_sfx('sfx/randoms/disabled/disabled.mp3')
-    change_scene('RAID2')
-    await twitch_bot.say(message.channel, "Keepo")
-    await asyncio.sleep(1)
-    change_scene('MAIN')
+        # Let sfx be interruptable again 
+        raid_in_progress = False    # REVIEW this could be handled better
 
-    # report the score
-    msg = '!airhorn RAID OVER!. {} emotes were spammeded. Final Score was Attackers: {}, Defenders: {}'.format(
-        (100-raiding.hp) + (100-defending.hp), raiding.hp, defending.hp
-        )
-    await twitch_bot.say(message.channel, msg) 
+        play_sfx('sfx/randoms/disabled/disabled.mp3')
+        change_scene('RAID2')
+        await twitch_bot.say(message.channel, "Keepo")
+        await asyncio.sleep(1)
+        change_scene('MAIN')
 
-    reset_raid()
-    reset_raid_score()
+        # report the score
+        msg = f'!airhorn RAID OVER!. {(100-raiding.hp) + (100-defending.hp)} emotes were spammeded. Final Score was Attackers: {raiding.hp}, Defenders: {defending.hp}'
+        await twitch_bot.say(message.channel, msg) 
+
+        reset_raid()
+        reset_raid_score()
 
 # !SECTION

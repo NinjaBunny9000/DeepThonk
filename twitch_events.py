@@ -129,9 +129,8 @@ async def event_message(message):
             deal_damage(message)
 
             # TODO logging
-            print('raiding.hp={} || defending.hp={}'.format(
-                games.raiding.hp, games.defending.hp
-            ))
+            print(
+                f'raiding.hp={games.raiding.hp} || defending.hp={games.defending.hp}')
 
             # prints hp to .txt file
             data_tools.score_to_txt(games.defending.hp, games.raiding.hp)
@@ -169,7 +168,7 @@ async def event_message(message):
 
     # cuz your bot is from Texas
     elif re.match(r'howdy', message.message_parts[0], re.IGNORECASE):
-        await twitch_bot.say(message.channel, 'Howdy, @{}!'.format(message.author.name))
+        await twitch_bot.say(message.channel, f'Howdy, @{message.author.name}!')
 
     # REVIEW Convert to dictionary/key-function refs
     # handles when the bot is mentioned/adressed in a message, or asked a question
@@ -177,7 +176,7 @@ async def event_message(message):
         if len(message_parts) > 1:
             if message.content[-1] is '?':
                 multi_msg.append(content.binary_responses() +
-                                 ', @{}.'.format(message.author.name))
+                                 f', @{message.author.name}.')
             elif message.content[-1] is '.':
                 multi_msg.append(content.generic_responses(message))
             elif message.content[-1] is '!':
@@ -193,7 +192,7 @@ async def event_message(message):
 
     elif len(message_parts) > 1 and message_parts[-1] == bot + '?':
         multi_msg.append(content.binary_responses() +
-                         ', @{}.'.format(message.author.name))
+                         f', @{message.author.name}.')
     elif len(message_parts) > 1 and message_parts[-1] == bot + '!':
         multi_msg.append(content.generic_responses(message))
     elif len(message_parts) > 1 and message_parts[-1] == bot:
@@ -224,16 +223,16 @@ async def event_message(message):
         await twitch_bot.say(message.channel, reply.strip("\n"))
 
     # sum1 sed fortnite
-    # matches with strings containing both play and fortnite
+
     if re.match(r'^(?=.*\bfortnite.*\b)(?=.*\bplay.*\b).*$', message.content, re.IGNORECASE):
-        msg = 'y would u even think that, @{}??'.format(message.author.name)
+        msg = 'y would u even think that, @{message.author.name}??'
         await twitch_bot.say(message.channel, msg)
-        await twitch_bot.say(message.channel, '/timeout {} 30'.format(message.author.name))
+        await twitch_bot.say(message.channel, f'/timeout {message.author.name} 30')
 
     elif re.match(r'fortnite', message.content, re.IGNORECASE):
         msg = 'who sed fortnite!?!!??...'
         await twitch_bot.say(message.channel, msg)
-        await twitch_bot.say(message.channel, '/timeout {} 15'.format(message.author.name))
+        await twitch_bot.say(message.channel, f'/timeout {message.author.name} 15')
 
 
 ###############################################################################
@@ -255,7 +254,7 @@ async def off(message):
         bot.stop(exit=True)
 
     else:
-        msg = "@{user} tried to kill me! D:".format(user=message.author.name)
+        msg = f"@{message.author.name} tried to kill me! D:"
         print(msg)
         await twitch_bot.say(message.channel, msg)
 
@@ -273,12 +272,9 @@ async def shoutout(message):
     if is_mod(message):
         msg_parts = data_tools.tokenize(message, 2)
         try:
-            msg = "Big ups to @{}! They're a friend of the stream and worth a follow, if you have the time! https://twitch.tv/{}".format(
-                msg_parts[1], msg_parts[1])
-            await twitch_bot.say(message.channel, msg)
+            msg = f"Big ups to @{msg_parts[1]}! They're a friend of the stream and worth a follow, if you have the time! https://twitch.tv/{msg_parts[1]}"
         except:
-            msg = "You didn't include a streamer to shout out to, {}.".format(
-                message.author.name)
+            msg = f"You didn't include a streamer to shout out to, {message.author.name}."
             await twitch_bot.say(message.channel, msg)
 
 # !SECTION

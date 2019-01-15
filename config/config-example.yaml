@@ -1,0 +1,34 @@
+bot:
+    debug: False  # don't change this unless you have a good reason pls <3
+
+twitch:
+    streamer: "streamer_twitch_username"
+    bot_account: "bot_twitch_username"
+    oauth: "oauth:paste_token_here"
+    channel: "twitch_user_name"
+    client-id: "client_id"
+    prefix: "!"  # defaults to !
+    bots:
+        - "streamelements"
+    help_cmds: # !help already included
+        - "commands"
+        - "cmds"
+    bot_admins: # unused atm
+        - "username_1"
+        - "username_2"
+        - "username_..."
+        - "username_n"
+    ignore_list: # blacklisted users
+        - "username_1"
+        - "username_2"
+        - "username_..."
+        - "username_n"
+
+bot_ctrl:
+    off_cmd: "stahp"
+
+custom_responses:
+    welcome_msg: "Howdy, chat!!"
+    no_privilege: "I can't do that, @{}"
+    raid_over: "Raid over!"
+    link_msg: "NSFW!!"
