@@ -129,8 +129,12 @@ async def event_message(message):
             deal_damage(message)
 
             # TODO logging
+<<<<<<< HEAD
             print(
                 f'raiding.hp={games.raiding.hp} || defending.hp={games.defending.hp}')
+=======
+            print(f'raiding.hp={games.raiding.hp} || defending.hp={games.defending.hp}')
+>>>>>>> 07fe6110abee3f9151f6f7bcfe4d74a1ab6d1edc
 
             # prints hp to .txt file
             data_tools.score_to_txt(games.defending.hp, games.raiding.hp)
@@ -175,9 +179,14 @@ async def event_message(message):
     elif message.content.lower().startswith(bot):
         if len(message_parts) > 1:
             if message.content[-1] is '?':
+<<<<<<< HEAD
                 multi_msg.append(content.binary_responses() +
                                  f', @{message.author.name}.')
             elif message.content[-1] is '.':
+=======
+                multi_msg.append(content.binary_responses() + f', @{message.author.name}.')
+            elif message.content[-1] is '.': 
+>>>>>>> 07fe6110abee3f9151f6f7bcfe4d74a1ab6d1edc
                 multi_msg.append(content.generic_responses(message))
             elif message.content[-1] is '!':
                 multi_msg.append(content.stop_yelling_at_me())  # pls do not D:
@@ -191,8 +200,12 @@ async def event_message(message):
             multi_msg.append('yea?')
 
     elif len(message_parts) > 1 and message_parts[-1] == bot + '?':
+<<<<<<< HEAD
         multi_msg.append(content.binary_responses() +
                          f', @{message.author.name}.')
+=======
+        multi_msg.append(content.binary_responses() + f', @{message.author.name}.')
+>>>>>>> 07fe6110abee3f9151f6f7bcfe4d74a1ab6d1edc
     elif len(message_parts) > 1 and message_parts[-1] == bot + '!':
         multi_msg.append(content.generic_responses(message))
     elif len(message_parts) > 1 and message_parts[-1] == bot:
@@ -223,16 +236,27 @@ async def event_message(message):
         await twitch_bot.say(message.channel, reply.strip("\n"))
 
     # sum1 sed fortnite
+<<<<<<< HEAD
 
     if re.match(r'^(?=.*\bfortnite.*\b)(?=.*\bplay.*\b).*$', message.content, re.IGNORECASE):
         msg = 'y would u even think that, @{message.author.name}??'
         await twitch_bot.say(message.channel, msg)
         await twitch_bot.say(message.channel, f'/timeout {message.author.name} 30')
+=======
+    if re.match(r'^(?=.*\bfortnite.*\b)(?=.*\bplay.*\b).*$', message.content, re.IGNORECASE):
+        msg = 'y would u even think that, @{message.author.name}??'
+        await twitch_bot.say(message.channel, msg)
+        await twitch_bot.say(message.channel,f'/timeout {message.author.name} 30')
+>>>>>>> 07fe6110abee3f9151f6f7bcfe4d74a1ab6d1edc
 
     elif re.match(r'fortnite', message.content, re.IGNORECASE):
         msg = 'who sed fortnite!?!!??...'
         await twitch_bot.say(message.channel, msg)
+<<<<<<< HEAD
         await twitch_bot.say(message.channel, f'/timeout {message.author.name} 15')
+=======
+        await twitch_bot.say(message.channel,f'/timeout {message.author.name} 15')
+>>>>>>> 07fe6110abee3f9151f6f7bcfe4d74a1ab6d1edc
 
 
 ###############################################################################
@@ -245,9 +269,14 @@ off_cmd = custom_settings['off_cmd'].lower()
 
 @twitch_bot.command(off_cmd)
 async def off(message):
+<<<<<<< HEAD
     if message.author.mod or message.author.name == streamer():
         # DEBUG comment later (used for debug)
         await twitch_bot.say(message.channel, content.last_words())
+=======
+    if message.author.mod or message.author.name == conf.streamer:
+        await twitch_bot.say(message.channel, content.last_words())  # DEBUG comment later (used for debug)
+>>>>>>> 07fe6110abee3f9151f6f7bcfe4d74a1ab6d1edc
         bot = conf.twitch_instance
         print('Chat-Interrupted')
         print('Stopping the bot..')
