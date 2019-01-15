@@ -4,10 +4,11 @@ from cah import play_hand
 import sys
 import os
 import db_insert
-import db_query 
+import db_query
 import random
 import content
 import asyncio
+import re
 from privilege import is_bot, is_mod
 # REVIEW Get rid of the from games import __
 import games
@@ -59,9 +60,9 @@ async def event_user_leave(user):
     pass
     # if raid is happening
     # if games.raid_start():
-        # add new people that join to the attacking team
+    # add new people that join to the attacking team
 
-# !SECTION 
+# !SECTION
 
 
 ###############################################################################
@@ -71,12 +72,13 @@ async def event_user_leave(user):
 help_commands = conf.get_custom_settings()
 help_commands = help_commands["help_cmds"]
 
+
 @twitch_bot.command('help', alias=help_commands)
 async def cmd(message):
     play_sfx('sfx/hooks/murderbot.mp3')
     await twitch_bot.say(message.channel, content.help_menu(message))
 
-# !SECTION 
+# !SECTION
 
 
 ###############################################################################
@@ -87,7 +89,7 @@ async def cmd(message):
 async def event_message(message):
     """
     Each message in chat is sent through this command.
-    
+
     Parse teh data (into tokens, ofc), add a conditional or two, and make all
     sorts of fun stuff happen!
     """
@@ -115,7 +117,6 @@ async def event_message(message):
         msg = content.faq(message)
         await twitch_bot.say(message.channel, msg)
 
-
     ###########################################################################
     # ANCHOR Raid Stuffs
     ###########################################################################
@@ -123,14 +124,14 @@ async def event_message(message):
     if games.raid_is_happening():
 
         # count & score emotes
-        if message.emotes:   
+        if message.emotes:
 
             deal_damage(message)
 
             # TODO logging
             print('raiding.hp={} || defending.hp={}'.format(
                 games.raiding.hp, games.defending.hp
-                ))
+            ))
 
             # prints hp to .txt file
             data_tools.score_to_txt(games.defending.hp, games.raiding.hp)
@@ -139,8 +140,8 @@ async def event_message(message):
             if games.report_ko():
 
                 games.end_raid()
-                raid_winner = games.get_winner() 
-                
+                raid_winner = games.get_winner()
+
                 play_sfx('sfx/events/raid_victory.mp3')
                 # TODO Switch scenes to "victory" scene?
 
@@ -148,19 +149,17 @@ async def event_message(message):
                 msg = f'{custom_settings["raid_over"]} The victor is {raid_winner}!'
                 await twitch_bot.say(message.channel, msg)
 
-
     ###########################################################################
     # ANCHOR Link-handling (_It's dangerous to go alone.._)
     ###########################################################################
 
     # mock links that people send
-    if any(s in message.content.lower() for s in ('http://','https://','www.')) and not mod:
+    if re.match(r'^(http(s)?://|www.)', message.content, re.IGNORECASE) and not mod:
         await twitch_bot.say(message.channel, custom_settings['link_msg'])
 
     # respond if sentient
-    if any(s in message.content.lower() for s in ('sentient.','sentient!','sentient?','sentient')):
+    if re.match(r'sentient', message.content, re.IGNORECASE):
         await twitch_bot.say(message.channel, content.sentient(message))
-
 
     ###########################################################################
     # ANCHOR Addressing (talking to) the bot
@@ -169,7 +168,7 @@ async def event_message(message):
     # REVIEW This is a mess, and I hate it.
 
     # cuz your bot is from Texas
-    elif 'howdy' in message_parts[0]:
+    elif re.match(r'howdy', message.message_parts[0], re.IGNORECASE):
         await twitch_bot.say(message.channel, 'Howdy, @{}!'.format(message.author.name))
 
     # REVIEW Convert to dictionary/key-function refs
@@ -177,43 +176,44 @@ async def event_message(message):
     elif message.content.lower().startswith(bot):
         if len(message_parts) > 1:
             if message.content[-1] is '?':
-                multi_msg.append(content.binary_responses() + ', @{}.'.format(message.author.name))
-            elif message.content[-1] is '.': 
+                multi_msg.append(content.binary_responses() +
+                                 ', @{}.'.format(message.author.name))
+            elif message.content[-1] is '.':
                 multi_msg.append(content.generic_responses(message))
             elif message.content[-1] is '!':
-                multi_msg.append(content.stop_yelling_at_me()) # pls do not D:
+                multi_msg.append(content.stop_yelling_at_me())  # pls do not D:
             else:
                 multi_msg.append(content.generic_responses(message))
-        elif message.content[-1] is '?': 
+        elif message.content[-1] is '?':
             multi_msg.append('wot?? 0_o')
-        elif message.content[-1] is '!': 
+        elif message.content[-1] is '!':
             multi_msg.append('wot!?!!! o_0')
         else:
-            multi_msg.append('yea?')    
-    
+            multi_msg.append('yea?')
+
     elif len(message_parts) > 1 and message_parts[-1] == bot + '?':
-        multi_msg.append(content.binary_responses() + ', @{}.'.format(message.author.name))
+        multi_msg.append(content.binary_responses() +
+                         ', @{}.'.format(message.author.name))
     elif len(message_parts) > 1 and message_parts[-1] == bot + '!':
         multi_msg.append(content.generic_responses(message))
     elif len(message_parts) > 1 and message_parts[-1] == bot:
         multi_msg.append(content.generic_responses(message))
 
-    
     ###########################################################################
     # ANCHOR Calls & Responses
     ###########################################################################
-            
+
     # responses to random words in messages. customize in content.py
     msg = content.get_response_to_call(message)
     if msg is not None:
         multi_msg.append(msg)
 
-    # who said robit?     
-    if any(s in message_parts for s in ('robot','robit','bot')):
+    # who said robit?
+    if re.match(r'(robot|robit|bot)', message_parts, re.IGNORECASE):
         multi_msg.append(content.someone_sed_robit())
 
     # for use by Robosexuals™ only!
-    if (any(s in message.content.lower() for s in ('love you','love u', 'love me')) and bot):
+    if re.match(r'love (you|u|me)', message.content, re.IGNORECASE) and bot:
         play_sfx('sfx/hooks/norobo.mp3')
         multi_msg.append(content.love_or_nah())
 
@@ -224,15 +224,16 @@ async def event_message(message):
         await twitch_bot.say(message.channel, reply.strip("\n"))
 
     # sum1 sed fortnite
-    if 'play' in message.content.lower() and 'fortnite' in message.content.lower():
+    # matches with strings containing both play and fortnite
+    if re.match(r'^(?=.*\bfortnite.*\b)(?=.*\bplay.*\b).*$', message.content, re.IGNORECASE):
         msg = 'y would u even think that, @{}??'.format(message.author.name)
         await twitch_bot.say(message.channel, msg)
-        await twitch_bot.say(message.channel,'/timeout {} 30'.format(message.author.name))
+        await twitch_bot.say(message.channel, '/timeout {} 30'.format(message.author.name))
 
-    elif 'fortnite' in message.content.lower():
+    elif re.match(r'fortnite', message.content, re.IGNORECASE):
         msg = 'who sed fortnite!?!!??...'
         await twitch_bot.say(message.channel, msg)
-        await twitch_bot.say(message.channel,'/timeout {} 15'.format(message.author.name))
+        await twitch_bot.say(message.channel, '/timeout {} 15'.format(message.author.name))
 
 
 ###############################################################################
@@ -241,23 +242,26 @@ async def event_message(message):
 
 # make it stahp
 off_cmd = custom_settings['off_cmd'].lower()
+
+
 @twitch_bot.command(off_cmd)
 async def off(message):
     if message.author.mod or message.author.name == streamer():
-        await twitch_bot.say(message.channel, content.last_words())  # DEBUG comment later (used for debug)
+        # DEBUG comment later (used for debug)
+        await twitch_bot.say(message.channel, content.last_words())
         bot = conf.twitch_instance
         print('Chat-Interrupted')
         print('Stopping the bot..')
         bot.stop(exit=True)
-       
+
     else:
         msg = "@{user} tried to kill me! D:".format(user=message.author.name)
         print(msg)
         await twitch_bot.say(message.channel, msg)
 
-    # !SECTION 
+    # !SECTION
 
-# !SECTION 
+# !SECTION
 
 
 ###############################################################################
@@ -269,20 +273,22 @@ async def shoutout(message):
     if is_mod(message):
         msg_parts = data_tools.tokenize(message, 2)
         try:
-            msg = "Big ups to @{}! They're a friend of the stream and worth a follow, if you have the time! https://twitch.tv/{}".format(msg_parts[1], msg_parts[1])
+            msg = "Big ups to @{}! They're a friend of the stream and worth a follow, if you have the time! https://twitch.tv/{}".format(
+                msg_parts[1], msg_parts[1])
             await twitch_bot.say(message.channel, msg)
         except:
-            msg = "You didn't include a streamer to shout out to, {}.".format(message.author.name)
+            msg = "You didn't include a streamer to shout out to, {}.".format(
+                message.author.name)
             await twitch_bot.say(message.channel, msg)
 
-# !SECTION 
+# !SECTION
 
 
 ###############################################################################
 # SECTION Debug Tools
 ###############################################################################
 
-# REVIEW Purge these during the next refactor 
+# REVIEW Purge these during the next refactor
 
 @twitch_bot.command('debug')
 async def debug(message):
@@ -292,7 +298,7 @@ async def debug(message):
     msg = conf.debug_yaml()
     await twitch_bot.say(message.channel, msg)
 
-# !SECTION 
+# !SECTION
 
 
 ###############################################################################
@@ -306,4 +312,4 @@ async def easteregg(message):
     """
     await twitch_bot.say(message.channel, content.easter_egg(message))
 
-# !SECTION 
+# !SECTION
