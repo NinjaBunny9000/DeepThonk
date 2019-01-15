@@ -15,6 +15,8 @@ if conf.modules['games']:
 if conf.modules['moderation']:
     import moderation
 if conf.modules['sfx']:
+    key = conf.modules['sfx']
+    print(f'importing sfx: {key}')
     import sfx
 if conf.modules['economy']:
     import economy

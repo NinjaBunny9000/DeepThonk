@@ -104,7 +104,7 @@ if conf.moderation['strike_system']:
 
 
         # TODO prevent striking mods
-        # can't strike themselves
+        # stop hitting yourself
         if user.lower() == message.author.name.lower():
             msg = 'Ur doin it rong. You can\'t strike mods (or yourself)'
             await twitch_bot.say(message.channel, msg)
@@ -143,7 +143,7 @@ if conf.moderation['strike_system']:
             # register the time for probation timer
             probation_timer.update({user : time.time()})
             # time them out
-            await twitch_bot.say(message.channel, f'/timeout {conf.strike_timeout[0]} {user}')
+            await twitch_bot.say(message.channel, f'/timeout {conf.probation_period[0]} {user}')
             msg = f"""Strike #1, @{user}.  You're on a 10m probationary period. Another strike during this 
                     period will result in an immediate and irreversable ban.
                 """
@@ -184,6 +184,8 @@ if conf.moderation['strike_system']:
         # check for privilege
         if not privilege.is_mod(message):
             return
+
+        global strike_table
 
         token = data_tools.tokenize(message, 1)    # tokenize™
 

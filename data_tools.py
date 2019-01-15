@@ -1,6 +1,5 @@
 import random
 
-
 # SECTION Parsy stuffs ™
 
 def parse_commands(message, parts): 

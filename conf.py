@@ -43,20 +43,20 @@ custom_settings = {
 
 streamer = cfg['twitch']['streamer']
 
-streamelements_id = cfg['streamelements']['account_id']
-streamelements_auth = f"Bearer {cfg['streamelements']['jwt_token']}"
+streamelements_id = cfg_apis['streamelements']['account_id']
+streamelements_auth = f"Bearer {cfg_apis['streamelements']['jwt_token']}"
 debug = cfg['bot']['debug']
 
 strike_timeout = [cfg['moderation']['strike_1_timeout'], cfg['moderation']['strike_2_timeout']]
 
 modules = {
-    "faq" : cfg_modules['modules']['faq'],
-    "lists" : cfg_modules['modules']['lists'],
-    "sfx" : cfg_modules['modules']['sfx'],
-    "games" : cfg_modules['modules']['games'],
-    "moderation" : cfg_modules['modules']['moderation'],
-    "economy" : cfg_modules['modules']['economy'],
-    "obs_ctrl" : cfg_modules['modules']['obs_ctrl']
+    "faq" : cfg_modules['modules']['faq'] == 'True',
+    "lists" : cfg_modules['modules']['lists'] == 'True',
+    "sfx" : cfg_modules['modules']['sfx'] == 'True',
+    "games" : cfg_modules['modules']['games'] == 'True',
+    "moderation" : cfg_modules['modules']['moderation'] == 'True',
+    "economy" : cfg_modules['modules']['economy'] == 'True',
+    "obs_ctrl" : cfg_modules['modules']['obs_ctrl'] == 'True'
 }
 
 lists = {
@@ -67,8 +67,10 @@ lists = {
 }
 
 sfx = {
+    "hooks" : cfg_modules['sfx']['hooks'],
     "hooks_timeout" : cfg_modules['sfx']['hooks_timeout'],
-    "random_timeout" : cfg_modules['sfx']['random_timeout']
+    "randoms" : cfg_modules['sfx']['randoms'],
+    "randoms_timeout" : cfg_modules['sfx']['randoms_timeout']
 }
 
 games = {
@@ -79,6 +81,7 @@ games = {
 
 moderation = {
     "strike_system" : cfg_modules['moderation']['strike_system'],
+    "probation_period" : cfg_modules['moderation']['probation_period'],
     "strike_timeout" : cfg_modules['moderation']['strike_timeout'],
     "reward_system" : cfg_modules['moderation']['reward_system']
 }
