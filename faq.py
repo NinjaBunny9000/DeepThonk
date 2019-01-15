@@ -21,10 +21,10 @@ async def branch(message):
     if is_mod(message) and len(token) == 2:
         # !branch <url> ==> token[0] token[1]
         branch_url = token[1]
-        msg = 'New branch set to \"{}\"'.format(branch_url)
+        msg = f'New branch set to \"{branch_url}\"'
         await twitch_bot.say(message.channel, msg)
     else:
-        msg = "The branch Bun's working in rn is: {}".format(branch_url)
+        msg = f"The branch Bun's working in rn is: {branch_url}"
         await twitch_bot.say(message.channel, msg)
 
 
@@ -36,8 +36,8 @@ async def repo(message):
     if is_mod(message) and len(token) == 2:
         # !repo <url> ==> token[0] token[1]
         repo_url = token[1]
-        msg = 'New project repo set to \"{}\"'.format(repo_url)
+        msg = f'New project repo set to \"{repo_url}\"'
         await twitch_bot.say(message.channel, msg)
     else:
-        msg = "The repo Bun's working with rn is: {}".format(repo_url)
+        msg = f"The repo Bun's working with rn is: {repo_url}"
         await twitch_bot.say(message.channel, msg)

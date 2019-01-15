@@ -29,3 +29,11 @@ scene_current\.txt
 notes/
 
 wip_temp/
+
+config/integrations\.yaml
+
+config/modules\.yaml
+
+integrations\.yaml
+
+modules\.yaml

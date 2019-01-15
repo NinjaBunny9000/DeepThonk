@@ -30,4 +30,3 @@ def put_points(user_name, amount):
         headers=headers
     )
     r = r.json()
-    print(r)

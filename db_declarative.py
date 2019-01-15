@@ -38,7 +38,7 @@ class Task(Base):
     date_registered = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     def __str__(self):
-        return "{} - {}/{}/{}".format(self.description, self.date_registered.month, self.date_registered.day, self.date_registered.year)
+        return f"{self.description} - {self.date_registered.month}/{self.date_registered.day}/{self.date_registered.year}"
 
 
 class HaveYouEver(Base):

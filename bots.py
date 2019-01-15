@@ -3,18 +3,28 @@ import conf
 import sys
 import os
 
+
 'Import all the bot Modules'
 import twitch_events
-import faq
-import lists
-import games
-import moderation
-import sfx
-
+if conf.modules['faq']:
+    import faq
+if conf.modules['lists']:
+    import lists
+if conf.modules['games']:
+    import games
+if conf.modules['moderation']:
+    import moderation
+if conf.modules['sfx']:
+    key = conf.modules['sfx']
+    print(f'importing sfx: {key}')
+    import sfx
+if conf.modules['economy']:
+    import economy
 if conf.debug:
     import debug
 
 twitch_bot = conf.twitch_instance
+
 
 def start_twitch():
     # pull in the config var for ze bot!
