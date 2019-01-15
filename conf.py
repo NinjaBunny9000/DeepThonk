@@ -3,9 +3,17 @@ import yaml
 import os
 import sys
 
-# Load the config file
-with open(os.path.join(sys.path[0], 'config.yaml'), "r") as f:
+# Load the main config file
+with open(os.path.join(sys.path[0], 'config/config.yaml'), "r") as f:
     cfg = yaml.load(f)
+
+# Load the modules config file
+with open(os.path.join(sys.path[0], 'config/modules.yaml'), "r") as f:
+    cfg_modules = yaml.load(f)
+
+# Load the integrations config file
+with open(os.path.join(sys.path[0], 'config/integrations.yaml'), "r") as f:
+    cfg_apis = yaml.load(f)
 
 ignore_list = cfg['twitch']['ignore_list']
 
@@ -37,8 +45,49 @@ streamer = cfg['twitch']['streamer']
 
 streamelements_id = cfg['streamelements']['account_id']
 streamelements_auth = f"Bearer {cfg['streamelements']['jwt_token']}"
-
 debug = cfg['bot']['debug']
+
+strike_timeout = [cfg['moderation']['strike_1_timeout'], cfg['moderation']['strike_2_timeout']]
+
+modules = {
+    "faq" : cfg_modules['modules']['faq'],
+    "lists" : cfg_modules['modules']['lists'],
+    "sfx" : cfg_modules['modules']['sfx'],
+    "games" : cfg_modules['modules']['games'],
+    "moderation" : cfg_modules['modules']['moderation'],
+    "economy" : cfg_modules['modules']['economy'],
+    "obs_ctrl" : cfg_modules['modules']['obs_ctrl']
+}
+
+lists = {
+    "movienight" : cfg_modules['lists']['movienight'],
+    "task" : cfg_modules['lists']['task'],
+    "bands" : cfg_modules['lists']['bands'],
+    "comments" : cfg_modules['lists']['comments']
+}
+
+sfx = {
+    "hooks_timeout" : cfg_modules['sfx']['hooks_timeout'],
+    "random_timeout" : cfg_modules['sfx']['random_timeout']
+}
+
+games = {
+    "raid" : cfg_modules['games']['raid'],
+    "earworm_roulette" : cfg_modules['games']['earworm_roulette'],
+    "cah" : cfg_modules['games']['cah']
+}
+
+moderation = {
+    "strike_system" : cfg_modules['moderation']['strike_system'],
+    "strike_timeout" : cfg_modules['moderation']['strike_timeout'],
+    "reward_system" : cfg_modules['moderation']['reward_system']
+}
+
+economy = {
+    "streamelements_points" : cfg_modules['economy']['streamelements_points'],
+    "points_gifting" : cfg_modules['economy']['points_gifting']
+}
+
 
 def get_twitch_config():
     bot_config = asynctwitch.CommandBot(
@@ -78,10 +127,6 @@ def twitch_channel():
 
 def bot_name():
     return str(cfg['twitch']['bot_account'])
-
-
-def streamer():
-    return cfg['twitch']['streamer']
 
 
 def welcome_msg():
