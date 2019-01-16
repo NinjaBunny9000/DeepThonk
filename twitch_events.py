@@ -153,11 +153,11 @@ async def event_message(message):
     ###########################################################################
 
     # mock links that people send
-    if re.match(r'(http(s)?://|www.)', message.content, re.IGNORECASE) and not mod:
+    if re.search(r'(http(s)?://|www.)', message.content, re.IGNORECASE) and not mod:
         await twitch_bot.say(message.channel, custom_settings['link_msg'])
 
     # respond if sentient
-    if re.match(r'sentient', message.content, re.IGNORECASE):
+    if re.search(r'\bsentient', message.content, re.IGNORECASE):
         await twitch_bot.say(message.channel, content.sentient(message))
 
     ###########################################################################
@@ -167,7 +167,7 @@ async def event_message(message):
     # REVIEW This is a mess, and I hate it.
 
     # cuz your bot is from Texas
-    elif re.match(r'howdy', message_parts[0], re.IGNORECASE):
+    elif re.search(r'\bhowdy\b', message_parts[0], re.IGNORECASE):
         await twitch_bot.say(message.channel, f'Howdy, @{message.author.name}!')
 
     # REVIEW Convert to dictionary/key-function refs
@@ -208,11 +208,11 @@ async def event_message(message):
         multi_msg.append(msg)
 
     # who said robit?
-    if re.match(r'(robot|robit|bot)', message.content, re.IGNORECASE):
+    if re.search(r'(robot|robit|bot)', message.content, re.IGNORECASE):
         multi_msg.append(content.someone_sed_robit())
 
     # for use by Robosexuals™ only!
-    if re.match(r'love (you|u|me)', message.content, re.IGNORECASE) and bot:
+    if re.search(r'love (you|u|me)', message.content, re.IGNORECASE) and bot:
         play_sfx('sfx/hooks/norobo.mp3')
         multi_msg.append(content.love_or_nah())
 
@@ -224,12 +224,12 @@ async def event_message(message):
 
     # sum1 sed fortnite
     # Matches with message content that contains the words 'fortnite' and 'play' in any order
-    if re.match(r'^(?=.*\bfortnite.*\b)(?=.*\bplay.*\b).*$', message.content, re.IGNORECASE):
+    if re.search(r'^(?=.*\bfortnite.*\b)(?=.*\bplay.*\b).*$', message.content, re.IGNORECASE):
         msg = 'y would u even think that, @{message.author.name}??'
         await twitch_bot.say(message.channel, msg)
         await twitch_bot.say(message.channel, f'/timeout {message.author.name} 30')
 
-    elif re.match(r'fortnite', message.content, re.IGNORECASE):
+    elif re.search(r'\bfortnite\b', message.content, re.IGNORECASE):
         msg = 'who sed fortnite!?!!??...'
         await twitch_bot.say(message.channel, msg)
         await twitch_bot.say(message.channel, f'/timeout {message.author.name} 15')
