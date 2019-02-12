@@ -6,6 +6,7 @@ import integrations.streamelements.api_wrapper
 import asyncio
 import games.raid
 import data_tools
+import content
 
 # config ze bot!
 twitch_bot = conf.twitch_instance
@@ -88,6 +89,19 @@ async def swapteams(message):
     msg = f'@{chatter}, you\'re now on {teams}'
     await twitch_bot.say(message.channel, msg)
 
+
+@twitch_bot.command('faq')
+async def faq(message):
+    faq_commands = data_tools.stringify_list(content.faq(message, commands=True))
+    print(faq_commands)
+    token = data_tools.tokenize(message, 2)
+    try: 
+        if token[1]:
+            user = data_tools.ats_or_nah(token[1])
+    except IndexError:
+        user = message.author.name
+    msg = f'@{user} {faq_commands}'
+    await twitch_bot.say(message.channel, msg)
 
 @twitch_bot.command('bigups')
 async def bigups(message):

@@ -4,8 +4,8 @@ from integrations.obs.ctrl import change_scene
 
 
 def help_menu(message):
-    return f"""Howdy, @{message.author.name}! I'm a robit. Beep boop. Here's some ways we can interact: !task, 
-    !cah, !hye, !bands, !bet, !duel, or simply have a chat with me. ;D
+    return f"""Howdy, @{message.author.name}! I'm a robit. Beep boop. Here's some ways we can interact: !faq, !task, 
+    !smrt, !cah, !earworm, !bands, !bet, !duel, or simply have a chat with me. ;D
     """
 
 
@@ -39,29 +39,31 @@ def get_response_to_call(message):
 
 
 # TODO Move to db ASAP!
-def faq(message):
+def faq(message, commands=False):
     faq_info = {
         "!editor" : "The editor Bun uses is VSCode: https://code.visualstudio.com/",
-        "!ide" : "The editor Bun uses is VSCode: https://code.visualstudio.com/",
         "!theme" : "The theme Bun uses is Material Ocean High Contrast, with some modifications: https://imgur.com/a/ivJByy2",
-        "!github" : "Bun's github is: https://github.com/NinjaBunny9000",
-        "!toolset" : "Bun's using VSCode on Windows right now. !theme !git !branch !font for more info.",
+        "!lang" : "Bun's probably coding in Pythong.",
         "!font" : "Bun uses Fira Code with font ligatures. https://github.com/tonsky/FiraCode",
-        "!steam" : "Add Bun on Steam! https://steamcommunity.com/id/ninjabunny9000/",
-        "!kanban" : "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs",
-        # "!portfolio" : "Bun's portfolio is online @ www.ninjabunny9000.com (under construction)",
-        "!bmo" : "https://imgur.com/gallery/LhPlY",
-        "!docs" : "You can find the most (poorly) up-to-date docs here: https://github.com/NinjaBunny9000/DeepThonk/blob/doc-updates/README.md",
-        "!gitgud" : "Check out Corey Schafer on YT for some great Python tuturials! :D https://www.youtube.com/watch?v=YYXdXT2l-Gg&list=PL-osiE80TeTt2d9bfVyTiXJA-UTHn6WwU",
+        "!console" : "Bun's using CMDER console emulator.",
+        "!github" : "Bun's github is: https://github.com/NinjaBunny9000",
+        "!toolset" : "Bun's using VSCode on Windows right now. !theme !github !repo !font for more info.",
         "!info" : "https://github.com/NinjaBunny9000/stream-stuff",
+        "!kanban" : "https://trello.com/b/Fm4Q3mBx/ninjabunny9000-stream-stuffs",
+        "!docs" : "You can find the most (poorly) up-to-date docs here: https://github.com/NinjaBunny9000/DeepThonk/blob/doc-updates/README.md",
         "!keyboard" : "Bun uses MX Brown switches on a POS keyboard that's falling apart.",
-        "!kb" : "Bun uses MX Brown switches on a POS keyboard that's falling apart."
-        # "!bigups" : "HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent "
+        "!gitgud" : "Check out Corey Schafer on YT for some great Python tuturials! :D https://www.youtube.com/watch?v=YYXdXT2l-Gg&list=PL-osiE80TeTt2d9bfVyTiXJA-UTHn6WwU",
+        "!bmo" : "https://imgur.com/gallery/LhPlY",
+        "!asl" : "18/f/cali"
     }
 
-    for key in faq_info:
-        if key.lower() in message.content.lower():
-            return faq_info.get(key)
+    if commands == True:
+        return list(faq_info.keys())
+
+    else:
+        for key in faq_info:
+            if key.lower() in message.content.lower():
+                return faq_info.get(key)
 
 
 def generic_responses(message):

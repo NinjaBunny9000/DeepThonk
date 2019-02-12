@@ -3,7 +3,7 @@ shortcut.lnk
 .pyc
 __pycache__/
 *.sqlite
-tmp/**
+temp/**
 notes/**
 config/config.yaml
 config/integrations.yaml
