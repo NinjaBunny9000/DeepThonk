@@ -1,34 +1,22 @@
 bot:
     debug: False  # don't change this unless you have a good reason pls <3
-
-twitch:
-    streamer: "streamer_twitch_username"
-    bot_account: "bot_twitch_username"
-    oauth: "oauth:paste_token_here"
-    channel: "twitch_user_name"
-    client-id: "client_id"
-    prefix: "!"  # defaults to !
-    bots:
-        - "streamelements"
-    help_cmds: # !help already included
-        - "commands"
+    help_cmds: 
+        - "help"
         - "cmds"
-    bot_admins: # unused atm
-        - "username_1"
-        - "username_2"
-        - "username_..."
-        - "username_n"
-    ignore_list: # blacklisted users
-        - "username_1"
-        - "username_2"
-        - "username_..."
-        - "username_n"
+        - "commands"
 
 bot_ctrl:
-    off_cmd: "stahp"
+    off_cmd: "quit"
 
 custom_responses:
-    welcome_msg: "Howdy, chat!!"
+    welcome_msg: "I'm back, baby!"
     no_privilege: "I can't do that, @{}"
-    raid_over: "Raid over!"
     link_msg: "NSFW!!"
+
+moderation:
+    strike_1_timeout: 60
+    strike_2_timeout: 600
+
+sfx:
+    hooks_timeout: 10 # Timeout period (seconds) between basic hooks cmds
+    random_timeout: 0 # Same but for random sfx/folders

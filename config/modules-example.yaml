@@ -5,15 +5,18 @@ modules:
     games: True
     moderation: True
     economy: True
-    obs_ctrl: True
+    obs: True
 
 lists:
   movienight: True
   task: True
   bands: True
+  comments: True # List of silly code comments & typos
 
 sfx:
-  hooks_timeout: 10 # Timeout period (seconds) between basic hooks cmds
+  hooks: True
+  hooks_timeout: 5 # Timeout period (seconds) between basic hooks cmds
+  randoms: True
   random_timeout: 0 # Same but for random sfx/folders
 
 games:
@@ -23,21 +26,35 @@ games:
   
 moderation:
   strike_system: True
+  probation_period: 10 # minutes
+  strike_timeout: 1 # minutes
   reward_system: True
+  strike_1_message: "You're on a 10m probationary period. Another strike during this period will result in an immediate and irreversable ban."
+  strike_2_message: "Your next strike will result in a ban."
+  strike_3_message: "Hasta la vista, chump."
 
 economy:
   streamelements_points: True
   points_gifting: True
 
-obs_ctrl: # You need to install Advanced Scene Switcher OBS Plug-in to use! (refer to docs)
-    raid_scene: False # Switch to True if you want a custom raid scene!
-    raid_timer: 10 # Delay (seconds) after raid before scene is switched
-    victory_scene: False # Separate scene after raids? 
-    victory_timer: 0 # Delay (seconds) after victory b4 scene switched to victory_scene
-    intro: "scene name"
-    main: "scene name"
-    talk: "scene name"
-    brb: "scene name"
-    outro: "scene name"
-    raid: "scene name"
-    victory: "scene name" # Can be same scene as Talk or completely different
+obs: # Requires Advanced Scene Switcher OBS Plug-in to work! (refer to docs)
+    intro: "MAIN"
+    main: "MAIN"
+    talk: "MAIN"
+    brb: "BRB"
+    outro: "MAIN"
+
+raid:
+  away_team_name: 'Raiders' # Defaults to "Away"
+  home_team_name: 'Defenders' # Defaults to "Home"
+  max_hp: 500
+  raid_delay: 7 # Delay (seconds) after raid event until scene switched
+  rules_scene: "scene name" # A scene before raid begins that outlines the game rules (helps with newbie raiders!)
+  raid_scene: "scene name" # This scene is where the scoring/action happens
+  victory_scene: "scene name" # Can be same scene as Talk or completely different
+  rules_timer: 10 # Time (seconds) for rules to be displayed
+  victory_timer: 3 # Delay (seconds) after victory b4 scene switched to victory_scene
+  raid_over: "Raid over!"
+  custom_rules_scene: True
+  custom_raid_scene: True # Switch to True if you want a custom raid scene!
+  custom_victory_scene: True # Separate scene after raids? 
