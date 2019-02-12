@@ -1,6 +1,6 @@
 import random
 import conf
-from obs_ctrl import change_scene
+from integrations.obs.ctrl import change_scene
 
 
 def help_menu(message):
@@ -53,7 +53,10 @@ def faq(message):
         "!bmo" : "https://imgur.com/gallery/LhPlY",
         "!docs" : "You can find the most (poorly) up-to-date docs here: https://github.com/NinjaBunny9000/DeepThonk/blob/doc-updates/README.md",
         "!gitgud" : "Check out Corey Schafer on YT for some great Python tuturials! :D https://www.youtube.com/watch?v=YYXdXT2l-Gg&list=PL-osiE80TeTt2d9bfVyTiXJA-UTHn6WwU",
-        "!info" : "https://github.com/NinjaBunny9000/stream-stuff"
+        "!info" : "https://github.com/NinjaBunny9000/stream-stuff",
+        "!keyboard" : "Bun uses MX Brown switches on a POS keyboard that's falling apart.",
+        "!kb" : "Bun uses MX Brown switches on a POS keyboard that's falling apart."
+        # "!bigups" : "HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent HolidayPresent "
     }
 
     for key in faq_info:

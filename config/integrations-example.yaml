@@ -1,3 +1,23 @@
+twitch:
+    streamer: 'streamername'
+    bot_account: 'botname'
+    oauth: 'oauth:tokenstring'
+    channel: 'channelname'
+    client-id: 'client-id'
+    prefix: "!"
+    bots:
+        - "bot1"
+        - "bot2"
+    ignore_list: # blacklisted users
+        - "username_1"
+        - "username_2"
+        - "username_..."
+        - "username_n"
+
+discord:
+    token: superlongtokenstring
+    server_id: '6666666666666'
+
 streamelements:
     account_id: "paste_id"
     jwt_token: "paste_token"
