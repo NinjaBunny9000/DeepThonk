@@ -9,10 +9,13 @@ discord/**
 tmp/**
 data/**
 sfx/**
+discord_related/**
+arduino_wip/**
 
 config_backup\.yaml
 
 db_test\.py
+debug.py
 
 notes\.md
 
@@ -24,3 +27,13 @@ scene_current\.txt
 
 
 notes/
+
+wip_temp/
+
+config/integrations\.yaml
+
+config/modules\.yaml
+
+integrations\.yaml
+
+modules\.yaml

@@ -56,11 +56,11 @@ def is_bot_mod_twitch(name):
 def set_bot_mod_twitch(name, value):
     twitch_user = session.query(Twitch).filter_by(username=name).first()
     if twitch_user is None:
-        return '{} must register first!'.format(name)
+        return f'{name} must register first!'
     twitch_user.user.bot_mod = value
     session.commit() 
     if value:
-        return '{} is now a Bot Mod.'.format(name)
+        return f'{name} is now a Bot Mod.'
     else:
-        return '{} is no longer a Bot Mod.'.format(name)
+        return f'{name} is no longer a Bot Mod.'
         

@@ -1,32 +1,37 @@
 import asynctwitch
 import conf
-import twitch_chat
-import cmd
-import serial_conf
-import reacts
-import games
-import moderation
-import sfx
-import signal
 import sys
 import os
 
-"""
-DEBUG/DEV/WIP NOTES:
 
-Currently the Discord module is *not* being called right now. You can still run it separately
-by just doing "python discord_chat.py" or whatever. WIP <3
-"""
+'Import all the bot Modules'
+import twitch_events
+if conf.modules['faq']:
+    import faq
+if conf.modules['lists']:
+    import lists
+if conf.modules['games']:
+    import games
+if conf.modules['moderation']:
+    import moderation
+if conf.modules['sfx']:
+    key = conf.modules['sfx']
+    print(f'importing sfx: {key}')
+    import sfx
+if conf.modules['economy']:
+    import economy
+if conf.debug:
+    import debug
 
 twitch_bot = conf.twitch_instance
+
 
 def start_twitch():
     # pull in the config var for ze bot!
     print('Starting the Twitch bot...')
     twitch_bot.start()
-    # twitch_bot.loop.run_until_complete(twitch_bot._tcp_echo_client())
-    
-    
+
+
 def main():
     start_twitch()
 

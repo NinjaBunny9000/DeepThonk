@@ -9,6 +9,7 @@ from datetime import datetime
 
 Base = declarative_base()
 
+
 class Twitch(Base):
     __tablename__ = 'twitch'
 
@@ -28,6 +29,7 @@ class Discord(Base):
     # username = Column(String(16), nullable=False)
     user = relationship("Users", back_populates="discord")
 
+
 class Task(Base):
     __tablename__ = 'task'
 
@@ -36,7 +38,8 @@ class Task(Base):
     date_registered = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     def __str__(self):
-        return "{} - {}/{}/{}".format(self.description, self.date_registered.month, self.date_registered.day, self.date_registered.year)
+        return f"{self.description} - {self.date_registered.month}/{self.date_registered.day}/{self.date_registered.year}"
+
 
 class HaveYouEver(Base):
     __tablename__ = 'have_you_ever'
