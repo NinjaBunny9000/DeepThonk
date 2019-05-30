@@ -1,6 +1,7 @@
 from conf import bot
 from utils.logger import loggyballs as log
 
+import sfx
 
 @bot.event
 async def event_ready():

@@ -3,3 +3,5 @@
 config/integrations\.yaml
 config/settings\.yaml
 error_log\.txt
+
+sfx/hooks/
