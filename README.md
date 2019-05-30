@@ -2,7 +2,7 @@
 
 >**This README is a wip!**
 
-Deepthonk is a Twitch chat bot, written in Python, that provides supplementary features such as sound effects, unique moderation tools, OBS scene & source control, Philips HUE integration, & stream-event reactions.
+Deepthonk is a Twitch chat bot, written in Python, that provides supplementary features such as sound effects, unique moderation tools, OBS scene & source **control**, Philips HUE integration, & stream-event reactions.
 
 _** Now with added sass! **_
 
@@ -40,6 +40,9 @@ In development, the bot's currently integrating with both streamelabs and stream
 Raids trigger a sequences of timed-responses from DeepThonk and challenges the raiding and defending "teams" to spam emotes in order to "deal damage" to the other team. Emotes drain "hp".
 
 The raid game is still very much a work in progress and I'm very frequently working on & improving the RAID system during Twitch streams. It's definitely one of the more unique features of the bot.. But more of that soon!! :3 (it's a surprise.. sorta???)
+
+### Sound Effects
+To create and use sound effects in your stream, drop `.ogg` files into the `/hooks/` dir. Any `.ogg` files in this directory will be initialized as commands when you start the bot.
 
 ### Integrations
 Deepthonk's integrates with Philips HUE, Strawpoll, & OBS (via websockets) in its' development branch. We're slowly porting those features over and updating the documentation as it happens. _Keep posted here for more info._
