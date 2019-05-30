@@ -9,6 +9,7 @@ pylama = "*"
 [packages]
 twitchio = "*"
 pyaml = "*"
+pygame = "*"
 
 [requires]
 python_version = "3.6"
