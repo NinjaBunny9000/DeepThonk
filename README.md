@@ -11,7 +11,7 @@ _** Now with added sass! **_
 Right now the Master branch only contains the basic template for starting a Twitch chat bot in Python, but some still might find it useful if they want to follow along. :D
 
 ### Prerequisites
-- Python 3.6
+- [Python 3.6](https://www.python.org/downloads/release/python-368/)
 - PIPENV -> `python -m pip install pipenv`
 - oauth token & client-id for a Twitch account for your bot
 
@@ -72,3 +72,4 @@ If you have any questions or just wanna brainstorm some neat ideas, [live-stream
 [NinjaBunny9000](https://github.com/NinjaBunny9000) - _Author, Project Manager_ - [Twitch](https://twitch.tv/ninjabunny9000) //  [Twitter](https://twitter.com/ninjabunny9000)
 
 ### Special Thanks
+Literally everyone that's helped even the smallest bit during streams. Thank you so much, y'all!
