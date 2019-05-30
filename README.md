@@ -1,94 +1,74 @@
 # DeepThonk
 
-**README Coming Soon!!**  
+>**This README is a wip!**
 
-A Python bot and web interface for Streamers using Discord, Twitch, & StreamElements. (Now with added sass!)
+Deepthonk is a Twitch chat bot, written in Python, that provides supplementary features such as sound effects, unique moderation tools, OBS scene & source control, Philips HUE integration, & stream-event reactions.
 
+_** Now with added sass! **_
 
-## Development Branch
-Current development branch is `dev`. All feature branches extend from here.
+## Getting Started
+
+Right now the Master branch only contains the basic template for starting a Twitch chat bot in Python, but some still might find it useful if they want to follow along. :D
+
+### Prerequisites
+- Python 3.6
+- PIPENV -> `python -m pip install pipenv`
+- oauth token & client-id for a Twitch account for your bot
+
+### Installing
+1. Clone the repo, unzip it somewhere
+2. Open up a console window and navigate to the directory you unzipped it in
+3. Install requirements with `pipenv install`
+4. Copy & rename `integrations-example.yaml` to `integrations.yaml`
+5. Pop in all your secrets into the respective areas in `integrations.yaml`
+6. Back to the console, `pipenv run python deepthonk.py` to start the bot
+7. Type `!test` in the chatroom to test the bot's working
+
+**You just installed a basic chat bot for Twitch!** Have fun expanding the bot with more commands!! :D
 
 ## Bot Interaction
-- getting help
-- directly adressing the bot
-- asking it a question
-- yelling at it
-- maybe it needs to take a nap
+We're still porting over functions from the rewrite, so this section will be fairly under-developed for a while. There will be functionality you see on stream that isn't part of this rewrite, but it will be soon - promise! Let Bun know if you have any questions about those.
 
-## Bot reactions & automation
-
-- Raid game
+### Getting Help
+*help command documentation coming soon*
 
 
-## Commands
+### Stream-event Reactions
+In development, the bot's currently integrating with both streamelabs and streamelements for event reacts, altho streamlabs' websockets were better documented, so there's a bit more functionality with that service. These integrations will be ported over to the rewrite very soon.
 
-### Command Types
-
-- Control
-  - `stahp` or `!quit` Stops the bot.
-
-- FAQ
-  - `!theme` `!editor` `git` `toolset` `steam` `font` `branch` `repo` `kanban` `portfolio` `bmo`
-
-- Dynamically generated responses
-  - `!cah`
-- Sound Effects
-  - Basic SFX
-  - Random SFX
-  - LED/Light-Reactive SFX
-- Quotes & Lists
-  - Totally awesome band names
-- Silly stuff & keywords
-  - Sentient. sentient? sentient! sentient
-  - Links (NSFW!)
-  - `i have a question`
-  - `oi`
-  - `howdy`
-  - `love me` `love you` `love u`
-  - `guy` `buddy` `friend` circular argument
-  - `say goodnight <deepthonk> `
-
-
-!task
-!randomtask
-!cah
-!hye
-!reward
-!shoutout
-
-
-## Games
-
-### RAIDs *[WIP]*
-
+#### Raid Battle [WIP]
 Raids trigger a sequences of timed-responses from DeepThonk and challenges the raiding and defending "teams" to spam emotes in order to "deal damage" to the other team. Emotes drain "hp".
 
-None of this is displayed on screen right now, just in chat. Still very much a work in progress and I will be very frequently working on & improving the RAID system during Twitch streams.
+The raid game is still very much a work in progress and I'm very frequently working on & improving the RAID system during Twitch streams. It's definitely one of the more unique features of the bot.. But more of that soon!! :3 (it's a surprise.. sorta???)
+
+### Integrations
+Deepthonk's integrates with Philips HUE, Strawpoll, & OBS (via websockets) in its' development branch. We're slowly porting those features over and updating the documentation as it happens. _Keep posted here for more info._
+
+### Lists & Counters
+_Coming soon!_
 
 
-### EarWorm Roulette *[WIP]*
+### Having a conversation with Deepthonk
+_More info coming soon! eeeeeep!_
 
 
+## Progress & Development Info
 
-## OBS Scene Control
+### The Master (release™) Branch
+The master branch includes the latest functional(?) release of Deepthonk. Future features will be rolled into this branch once they're cleaned up and tested.
 
-Changing scenes in OBS works by writing the name of a scene to a file.. (`data/scene_next.txt` and OBS uses the plugin "Advanced Scene Switcher" to read from a file (`data/scene_current.txt`) to get the scene it should switch to.
+If you see a feature on stream that you'd love to see in the Master, mention it! It helps to know what features people are looking forward to next. ^_^
 
-You'll need to download and install the plugin, tick `Enable switching of scenes based on the file input` under the `Write To File / Read From File` tab in the plugin settings popup window. Point the fields above and below the tick-box to the proper files (listed above) then use any of the `obs<scene>` commands with the bot.
+### Rewrite Branch
+Current development branch is `rewrite`. Deepthonk was originally written around a twitch irc lib that was pretty jank, so we're rewriting it in a way that's more friendly for folks to follow along with, use themselves, or even contribute.
 
-`obsscene` returns the current scene.
+### Follow Along & Contribute!
+Watch & help develop the bot during live streams on [Twitch](https://twitch.tv/ninjabunny9000)! PR's are welcome, but you're encouraged to at least spend a little time on stream to get an idea about Deepthonk's "personality" and the direction we're taking the bot, to make sure you're not providing features that clash with it (or worse, are already features in other prominant and readily-avilable bots - meaning you spent precious dev time on potentially redundant functionality).
 
-You can modify scene names in `obs_ctrl.py`. Scene names are case-sensitive.
+If you have any questions or just wanna brainstorm some neat ideas, [live-streams](https://twitch.tv/ninjabunny9000) are the best time for that!
 
-## Response features
+## Contributors & Licenses
 
-DeepThonk combines & randomly orders a lot of it's responses. For instance, if a message triggered multiple keyword responses, and any of them were random or static, it would compile the static and a random choice response in a list and then randomly order those responses in a single-message response.
+[NinjaBunny9000](https://github.com/NinjaBunny9000) - _Author, Project Manager_ - [Twitch](https://twitch.tv/ninjabunny9000) //  [Twitter](https://twitter.com/ninjabunny9000)
 
-## Integrations
-
-So far, I've only been able to implement minimal integrations between just Twitch and StreamElements (since they are what I use the most of). Integrations will definitely get expanded after a refactor.
-
-
-### Twitch
-
-### StreamElements
+### Special Thanks

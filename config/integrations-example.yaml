@@ -1,0 +1,6 @@
+twitch:
+    bot_nick: "username"
+    token: "oauth:yadayada"
+    channel: "channelname"
+    client-id: "pasteidhere"
+    prefix: "!"
