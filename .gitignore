@@ -1,6 +1,4 @@
 
+\.vscode/
 config/integrations\.yaml
-
-config/config\.yaml
-
-config/modules\.yaml
+config/settings\.yaml
