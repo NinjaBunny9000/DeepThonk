@@ -8,3 +8,4 @@ sfx/hooks/
 kube-config.yaml
 sfx/ledcmds/
 secrets.txt
+debug\.py
