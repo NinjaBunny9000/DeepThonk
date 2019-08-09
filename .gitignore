@@ -5,3 +5,6 @@ config/integrations.yaml
 config/settings.yaml
 error_log.txt
 sfx/hooks/
+kube-config.yaml
+sfx/ledcmds/
+secrets.txt
