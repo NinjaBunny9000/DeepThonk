@@ -10,7 +10,7 @@ async def event_ready():
 @bot.event
 async def event_message(message):
 # import sfx
-
+import commands
 @bot.command(name='test', aliases=['t'])
 async def test_command(ctx):
     log.info("test") # test for logging to work
