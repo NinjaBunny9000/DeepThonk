@@ -1,7 +1,7 @@
 from conf import bot
 from utils.logger import loggyballs as log
 
-import sfx
+This is the file you run to start the bot. Loads all of the integrations below.
 
 @bot.event
 async def event_ready():
@@ -9,7 +9,7 @@ async def event_ready():
 
 @bot.event
 async def event_message(message):
-    await bot.handle_commands(message)
+# import sfx
 
 @bot.command(name='test', aliases=['t'])
 async def test_command(ctx):
