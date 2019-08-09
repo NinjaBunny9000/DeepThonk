@@ -5,11 +5,14 @@ verify_ssl = true
 
 [dev-packages]
 pylama = "*"
+rope = "*"
 
 [packages]
 twitchio = "*"
-pyaml = "*"
 pygame = "*"
+python-socketio = "*"
+phue = "*"
+rgbxy = "*"
 
 [requires]
 python_version = "3.6"
