@@ -6,7 +6,7 @@ and your channel-unique stuff.
 """
 
 from config.importer import bot
-from robo_interface import sio
+from server_interface import sio
 from utils.logger import loggymclogger as log
 
 log.debug(f"{__name__} loaded")
