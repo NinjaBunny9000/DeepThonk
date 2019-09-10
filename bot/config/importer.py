@@ -31,7 +31,7 @@ twitch_channel = os.environ['TWITCH_CHANNEL']
 
 # Instantiate a bot with teh settings & secrets
 bot = commands.Bot(
-        irc_token=twitch_token, 
+        irc_token=twitch_token,
         client_id=twitch_client_id, 
         nick=twitch_bot_nick, 
         prefix=twitch_cmd_prefix,
