@@ -1,5 +1,6 @@
 \.vscode/
 __pycache__/
+__containerBackup__/
 notes/
 config/integrations.yaml
 config/settings.yaml
@@ -8,4 +9,9 @@ sfx/hooks/
 kube-config.yaml
 sfx/ledcmds/
 secrets.txt
-debug\.py
+robot/examples/
+robot/lib/
+server/static/node_modules/
+server/static/sfx/hooks/*.mp3
+server/static/sfx/hooks/*.ogg
+*.env
