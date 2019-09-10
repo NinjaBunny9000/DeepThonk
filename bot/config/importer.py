@@ -14,22 +14,29 @@ import logging
 log = logging.getLogger('deepthonk')
 log.debug(f"{__name__} loaded")
 
-# # TODO find a cleaner way to do this that doesn't involve changing var in both here and the obj def
-# if all(var in os.environ for var in ("TWITCH_BOT_NICK","TWITCH_TOKEN","TWITCH_CLIENT_ID","TWITCH_PREFIX","TWITCH_CHANNEL","BOT_SERVER_KEY","STREAMLABS_KEY")):
-#     continue
-# else:
-#     print("Hey mate, gotta give me them vars!")
+# Verify the .env file has been configured
+if all(var in os.environ for var in (
+        "TWITCH_BOT_NICK",
+        "TWITCH_TOKEN",
+        "TWITCH_CLIENT_ID",
+        "TWITCH_PREFIX",
+        "TWITCH_CHANNEL",
+        "BOT_SERVER_KEY",
+        "STREAMLABS_KEY"
+        )):
+    pass
+else:
+    print("You need to add your secrets to the .env-example file. Be sure to rename to \".env\".")
 
 from twitchio.ext import commands
 
-# Load settings from the config obj
 twitch_bot_nick = os.environ['TWITCH_BOT_NICK']
 twitch_token = os.environ['TWITCH_TOKEN']
 twitch_client_id = os.environ['TWITCH_CLIENT_ID']
 twitch_cmd_prefix = os.environ['TWITCH_PREFIX']
 twitch_channel = os.environ['TWITCH_CHANNEL']
 
-# Instantiate a bot with teh settings & secrets
+# Instantiate a bot with teh settings & secrets.
 bot = commands.Bot(
         irc_token=twitch_token,
         client_id=twitch_client_id, 
@@ -38,7 +45,9 @@ bot = commands.Bot(
         initial_channels=[twitch_channel]
         )
 
+# Other secrets we needs
 webserver_key = os.environ['BOT_SERVER_KEY']
 streamlabs_key = os.environ['STREAMLABS_KEY']
 
+# Feel free to customize this string!
 sign_on_msg = "I'm back, baby!"
