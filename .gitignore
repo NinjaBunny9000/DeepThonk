@@ -15,3 +15,4 @@ server/static/node_modules/
 server/static/sfx/hooks/*.mp3
 server/static/sfx/hooks/*.ogg
 *.env
+bot/debug.py
