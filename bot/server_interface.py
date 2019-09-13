@@ -23,7 +23,7 @@ logger.setLevel(level=logging.WARNING)
 
 @sio.on('connect')
 async def on_connect():
-    import tts
+    import tts  # only import this if the websocket connection is made
     log.debug(f"{__name__}.... CONNECTERD!")
     await sio.emit('connect',{'data':'CONNECTERD!'})
     await sio.emit('get_sfx')
@@ -44,11 +44,12 @@ async def on_send_sfx(data):
     for sfx_cmd in list_of_sfx_files:
         print(f"trying to create {sfx_cmd}")
         SoundEffect(sfx_cmd)
+    SoundEffect.generate_sfx_list()
 
 
 async def listen_socketio_server():
     try:
-        await sio.connect('http://localhost:6969')
+        await sio.connect('http://0.0.0.0:6969')
         await sio.wait()
     except:
         log.warning("Server OFFLINE. Bot functionality reduced.")

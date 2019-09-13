@@ -14,5 +14,6 @@ robot/lib/
 server/static/node_modules/
 server/static/sfx/hooks/*.mp3
 server/static/sfx/hooks/*.ogg
+server/static/sfx/other/
 *.env
 bot/debug.py
