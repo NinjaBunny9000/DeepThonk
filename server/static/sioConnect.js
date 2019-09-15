@@ -2,6 +2,6 @@
 var socket = io.connect();
     socket.on( 'connect', function() {
         socket.emit( 'my event', {
-            data: 'User DERP DERP Connected'
+            data: 'BROWSER SOURCE connection detected.'
         })
-    })
+    });
