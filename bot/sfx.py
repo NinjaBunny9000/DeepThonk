@@ -78,7 +78,7 @@ class SoundEffect:
 
     def __init__(self, cmd_name):
         SoundEffect.commands.append(cmd_name) # list of sfx cmds
-        log.debug(f"SFX {cmd_name} created.")
+        # log.debug(f"SFX {cmd_name} created.")
         
         # create/register file as command in event-loop
         @bot.command(name=cmd_name)
@@ -103,11 +103,12 @@ class SoundEffect:
         async def sfx(ctx):
             msg = str()
 
+            await emit_sfx('murderbot')
+
             for cmd in SoundEffect.commands:
-                if (len(msg) + len(cmd) + 1) < 500:
+                if (len(msg) + len(cmd) + 3) < 500:
                     msg = msg + f"!{cmd}, "
                 else:
-                    msg = msg + f"!{cmd}"
                     await ctx.send(msg)
                     msg = ""
             if len(msg):

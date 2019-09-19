@@ -42,7 +42,6 @@ async def on_send_sfx(data):
     global list_of_sfx_files
     list_of_sfx_files = data  # i think this will fail
     for sfx_cmd in list_of_sfx_files:
-        print(f"trying to create {sfx_cmd}")
         SoundEffect(sfx_cmd)
     SoundEffect.generate_sfx_list()
 
