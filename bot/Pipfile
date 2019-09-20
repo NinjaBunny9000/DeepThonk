@@ -13,6 +13,7 @@ pygame = "*"
 python-socketio = "*"
 phue = "*"
 rgbxy = "*"
+requests = "*"
 
 [requires]
 python_version = "3.6"
