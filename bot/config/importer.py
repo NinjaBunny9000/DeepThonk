@@ -21,6 +21,7 @@ if all(var in os.environ for var in (
         "TWITCH_CLIENT_ID",
         "TWITCH_PREFIX",
         "TWITCH_CHANNEL",
+        "TWITCH_TEAM",
         "BOT_SERVER_KEY",
         "STREAMLABS_KEY"
         )):
@@ -35,6 +36,7 @@ twitch_token = os.environ['TWITCH_TOKEN']
 twitch_client_id = os.environ['TWITCH_CLIENT_ID']
 twitch_cmd_prefix = os.environ['TWITCH_PREFIX']
 twitch_channel = os.environ['TWITCH_CHANNEL']
+twitch_team = os.environ['TWITCH_TEAM']
 
 # Instantiate a bot with teh settings & secrets.
 bot = commands.Bot(

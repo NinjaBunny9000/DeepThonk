@@ -38,7 +38,7 @@ async def on_repsponse(data):
 async def on_send_sfx(data):
     from sfx import SoundEffect
     print(f"SFX RCVD:")
-    print(data)
+    # print(data)
     global list_of_sfx_files
     list_of_sfx_files = data  # i think this will fail
     for sfx_cmd in list_of_sfx_files:

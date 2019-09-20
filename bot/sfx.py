@@ -3,6 +3,7 @@
 from config.importer import bot
 from server_interface import emit_sfx
 from utils.logger import loggymclogger as log
+from utils.tools import list_commands
 
 log.debug(f"{__name__} loaded")
 
@@ -101,16 +102,14 @@ class SoundEffect:
 
         @bot.command(name='sfx')
         async def sfx(ctx):
-            msg = str()
 
             await emit_sfx('murderbot')
 
-            for cmd in SoundEffect.commands:
-                if (len(msg) + len(cmd) + 3) < 500:
-                    msg = msg + f"!{cmd}, "
-                else:
-                    await ctx.send(msg)
-                    msg = ""
-            if len(msg):
-                msg = msg[:-2]
+            commands = list_commands(SoundEffect.commands)
+
+            for msg in commands:
                 await ctx.send(msg)
+
+           
+
+

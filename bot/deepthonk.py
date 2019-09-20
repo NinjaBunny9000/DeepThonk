@@ -5,15 +5,15 @@ If you add integrations, just put them under the # bot modules section
 """
 
 import time
-import config
+import config.importer
 
 # bot modules
 import utils
 # import sfx
+import integrations
 import commands
 import events
 import server_interface
-import integrations
 
 from utils.logger import loggymclogger as log
 
