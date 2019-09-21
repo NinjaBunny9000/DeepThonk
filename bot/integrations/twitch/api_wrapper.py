@@ -26,7 +26,7 @@ class Interface():
             return r.json()
 
     def _get_team_members(self):
-        data = self.request('GET', f"teams/{twitch_team}")
+        data = self.request('GET', f"teams/{twitch_team.lower()}")
         members = list()
         for user in data['users']:
             members.append(user['name'])
