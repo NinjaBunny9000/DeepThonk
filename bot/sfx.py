@@ -77,12 +77,13 @@ class SoundEffect:
 
     commands = []
 
-    def __init__(self, cmd_name):
-        SoundEffect.commands.append(cmd_name) # list of sfx cmds
-        # log.debug(f"SFX {cmd_name} created.")
+    def __init__(self, cmd_name_with_extenion):
+        cmd_no_extension = cmd_name_with_extenion[:-4] 
+        SoundEffect.commands.append(cmd_no_extension) # list of sfx cmds
+        log.debug(f"SFX {cmd_no_extension} created.")
         
         # create/register file as command in event-loop
-        @bot.command(name=cmd_name)
+        @bot.command(name=cmd_no_extension)
         async def sfx_func(ctx):
             
             if sfx_state is False:
@@ -93,9 +94,9 @@ class SoundEffect:
                 await ctx.send(f'@{ctx.author.name} => SFX are sub-only at the moment.')
                 return
 
-            await emit_sfx(cmd_name)  # send the command to the server
+            await emit_sfx(cmd_name_with_extenion)  # send the command to the server
 
-            log.debug(f'SFX request detected in chat: {cmd_name}')
+            log.debug(f'SFX request detected in chat: {cmd_no_extension}')
 
     def generate_sfx_list():
         'generates a list of sfx commands once the websocket is recieved and commands are generated'

@@ -12,7 +12,7 @@ import logging
 
 log.debug(f"{__name__} loaded")
 
-list_of_sfx_files = []
+sfx_files_with_extension = []
 
 sio = socketio.AsyncClient(logger=log)
 
@@ -37,11 +37,12 @@ async def on_repsponse(data):
 @sio.on('send_sfx')
 async def on_send_sfx(data):
     from sfx import SoundEffect
-    print(f"SFX RCVD:")
+    # print(f"SFX RCVD:")
     # print(data)
-    global list_of_sfx_files
-    list_of_sfx_files = data  # i think this will fail
-    for sfx_cmd in list_of_sfx_files:
+    global sfx_files_with_extension
+    sfx_files_with_extension = data  # i think this will fail
+    for sfx_cmd in sfx_files_with_extension:
+        # print(f"passing in {sfx_cmd}")
         SoundEffect(sfx_cmd)
     SoundEffect.generate_sfx_list()
 

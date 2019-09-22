@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from conf import secret_key
-from sfx import list_of_sfx_files
+from sfx import list_of_sfx_files, sfx_with_extentions
 from utils.logger import loggymclogger as log
 
 
@@ -54,7 +54,8 @@ def sfx_event(command, methods=['GET', 'POST']):
 def get_sfx_event(methods=['GET', 'POST']):
     'Sends list of SFX files so the bot can generate chat commands/objects.'
     log.debug(f"Bot application requested SFX files to generate commands.")
-    socketio.emit('send_sfx', list_of_sfx_files) # <- list serialized as json
+    # socketio.emit('send_sfx', list_of_sfx_files) # <- list serialized as json
+    socketio.emit('send_sfx', sfx_with_extentions) # <- list serialized as json
 
 
 if __name__ == "__main__":
