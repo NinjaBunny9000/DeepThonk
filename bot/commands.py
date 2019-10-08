@@ -36,7 +36,7 @@ class CommandGenerator:
         async def call_and_response(ctx):
             await ctx.send(response)
 
-        log.debug(f"!{name} registered as a command!")
+        # log.debug(f"!{name} registered as a command!")
 
 # generate the call / response commands
 for cmd, response in faq_info.items():

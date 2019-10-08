@@ -8,7 +8,7 @@ obs.connect({
 })
 .then(() => {
     console.log('logged in to obs');
-    playTTS('Logged in to OBS');
+    // playTTS('Logged in to OBS');
 })
 .catch((err) => {
     console.log(err);

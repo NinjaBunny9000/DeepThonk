@@ -30,6 +30,7 @@ faq_info = {
         # "!cam" : "Bun's using a Canon 70D w/ Rokinon Cine 35mm prime 1.4",
         "heresyourproblem" : "https://clips.twitch.tv/EndearingCleverRadishWTRuck",
         "minecraftmode" : "https://clips.twitch.tv/RenownedFantasticLeopardPeoplesChamp",
+        "hype" : "HYYYYYYPPPPPE! ninjab1Slay ninjab1Bigups ninjab1Orly ninjab1Bigups ninjab1Slay ninjab1Bigups ninjab1Orly ninjab1Bigups ninjab1Slay ninjab1Bigups ninjab1Orly ninjab1Bigups ninjab1Slay ninjab1Bigups ninjab1Orly ninjab1Bigups ninjab1Slay ninjab1Bigups ninjab1Orly ninjab1Bigups ninjab1Slay ninjab1Bigups ninjab1Orly ninjab1Bigups ninjab1Slay ninjab1Bigups ninjab1Orly ninjab1Bigups",
         "botme" : "intrested in starting your own bot from scratch with Python? Check out this repo for a bare-brones starter-kit. http://bit.ly/barebonespybottwitch"
 
     }

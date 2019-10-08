@@ -80,7 +80,7 @@ class SoundEffect:
     def __init__(self, cmd_name_with_extenion):
         cmd_no_extension = cmd_name_with_extenion[:-4] 
         SoundEffect.commands.append(cmd_no_extension) # list of sfx cmds
-        log.debug(f"SFX {cmd_no_extension} created.")
+        # log.debug(f"SFX {cmd_no_extension} created.")
         
         # create/register file as command in event-loop
         @bot.command(name=cmd_no_extension)
