@@ -18,7 +18,6 @@ socketio = SocketIO(app)
 def home():
     return render_template('home.html')
 
-
 @app.route('/obs-source/')
 def obs_source():
     return render_template('obs-source.html')
@@ -27,7 +26,6 @@ def obs_source():
 def messageReceived(methods=['GET', 'POST']):
     # print('message was received!!!') 
     pass
-
 
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
@@ -57,7 +55,13 @@ def get_sfx_event(methods=['GET', 'POST']):
     # socketio.emit('send_sfx', list_of_sfx_files) # <- list serialized as json
     socketio.emit('send_sfx', sfx_with_extentions) # <- list serialized as json
 
+@socketio.on('raid')
+def raid_event(methods=['GET', 'POST']):
+    log.debug(f"RAID OCCURRRRRED")
+    socketio.emit('raid triggered')
+
 
 if __name__ == "__main__":
     # socketio.run(app, debug=  True, port='6969') # run w/socketio
-    socketio.run(app,host='0.0.0.0', debug=True, port='6969') # run w/socketio
+    #socketio.run(app, debug=True, port='6969') # run w/socketio
+    socketio.run(app, host='0.0.0.0', debug=True, port='6969') # run w/socketio

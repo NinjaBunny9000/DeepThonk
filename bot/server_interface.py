@@ -49,6 +49,7 @@ async def on_send_sfx(data):
 
 async def listen_socketio_server():
     try:
+        # await sio.connect('http://localhost:6969')
         await sio.connect('http://0.0.0.0:6969')
         await sio.wait()
     except:
@@ -64,7 +65,9 @@ async def emit_sfx(command):
 
 
 async def emit_stream_event(event):
-    await sio.emit(event='stream event', data=event)
+    # await sio.emit(event='stream event', data=event)
+    log.debug(f"emitting {event} event")
+    await sio.emit(event=event)
 
 
 def create_task():

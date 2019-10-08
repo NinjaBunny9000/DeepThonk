@@ -8,6 +8,7 @@ from config.importer import bot, streamlabs_key
 import logging
 import asyncio
 import socketio
+from server_interface import emit_stream_event
 
 loop = asyncio.get_event_loop()
 sio = socketio.AsyncClient()
@@ -52,8 +53,9 @@ async def on_event(event):
         pass
 
     if event['type'] == 'raid':
-        # bot.loop.create_task(hue.flash('red', times=10))
-        pass
+        # emit raid event to flask server
+        print('raid detected via streamlabs')
+        await emit_stream_event('raid')
 
 
 @sio.on('disconnect')
