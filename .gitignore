@@ -17,3 +17,5 @@ server/static/sfx/hooks/*.ogg
 server/static/sfx/other/
 *.env
 bot/debug.py
+
+README(OLD).md
