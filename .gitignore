@@ -1,0 +1,5 @@
+.vscode/
+*.env
+*secret*.*
+**/node_modules/**
+server/static/sfx/hooks/**
