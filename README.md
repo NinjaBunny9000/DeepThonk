@@ -1,4 +1,3 @@
-[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y013678)
 
 # DeepThonk: A Python bot for Twitch
 
@@ -214,6 +213,8 @@ I'm still working on building out this section of the docs. If you have any ques
 ## Contributors & Licenses
 
 [NinjaBunny9000](https://github.com/NinjaBunny9000) - _Author, Project Manager_ - [Twitch](https://twitch.tv/ninjabunny9000) //  [Twitter](https://twitter.com/ninjabunny9000)
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y013678)
 
 ### Special Thanks
 Literally everyone that's helped even the smallest bit during streams. Thank you so much, y'all!
