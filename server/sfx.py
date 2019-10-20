@@ -10,7 +10,7 @@ path = 'static/sfx/hooks/'
 for file in os.listdir(path):
     # create instance with attributes
     if file.endswith('.ogg') or file.endswith('.mp3') or file.endswith('.wav'):
-        
+
         # add the file name to a list (including the extension)
         sfx_with_extentions.append(file)
         file = file[:-4]  # removes the sextension

@@ -28,7 +28,7 @@ async def event_ready():
     team_members = interface.team_members
     # print(twitch_channel) # DEBUG correct
     # print(team_members) # DEBUG correct
-    
+
 
 @bot.event
 async def event_raw_data(data):
@@ -41,7 +41,7 @@ async def event_message(ctx):
     global greeted_subscribers
     'Called every message sent in chat. Keep it simple, pls. <3'
     author = ctx.author.name.lower()
-    
+
     # make sure the bot ignores itself
     if author == twitch_bot_nick.lower():
         return

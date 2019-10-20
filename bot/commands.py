@@ -14,6 +14,11 @@ from integrations.twitch.api_wrapper import interface
 
 log.debug(f"{__name__} loaded")
 
+
+############################### CUSTOM COMMANDS ###############################
+
+""" Put your custom commands below!"""
+
 @bot.command(name='test', aliases=['t'])
 async def test_command(ctx):
     'example command'
@@ -21,28 +26,27 @@ async def test_command(ctx):
     await ctx.send(f'Test passed, @{ctx.author.name}!') # tests chat
 
 
+####################### CALL/RESPONSE COMMAND GENERATOR #######################
 
 class CommandGenerator:
+    'Generates commands based on key-value pairs in dict object in content.py'
 
-    # listyboi
-    commands = list()
+    commands = list()  # listyboi
 
     def __init__(self, name, response):
         # add the command to the list
         CommandGenerator.commands.append(name)
-        
+
         # generate the bot.command
         @bot.command(name=name)
         async def call_and_response(ctx):
             await ctx.send(response)
 
-        # log.debug(f"!{name} registered as a command!")
-
-# generate the call / response commands
+# generate the commands
 for cmd, response in faq_info.items():
     CommandGenerator(cmd, response)
 
-log.info(f"Generated these commands: {CommandGenerator.commands}")
+# log.debug(f"Generated these commands: {CommandGenerator.commands}")
 
 # generate the faq help command
 @bot.command(name='faq', aliases=['help'])
@@ -53,10 +57,12 @@ async def faq(ctx):
         await ctx.send(msg)
 
 
-# OTHER COMMANDS
+############################# OTHER MISC COMMANDS #############################
 
 @bot.command(name='peckrank')
 async def peckrank(ctx):
+    'Checks rank of current stream vs 24/7 chicken stream in S&T cat on Twitch'
+
     rank = interface._get_game_rank()
     rank_stream = rank.index(twitch_channel) + 1
     rank_opponent = rank.index('ourchickenlife') + 1 # TODO this is hardcoded #_# rip
