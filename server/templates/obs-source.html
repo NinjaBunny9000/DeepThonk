@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>TTS, SFX, & Alert Support for OBS (flask)</title>
+  </head>
+  <body>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='node_modules/eventemitter3/umd/eventemitter3.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='vendor/events.once.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/obs-websocket-js/dist/obs-websocket.js')}}"></script>
+    <script src="{{ url_for('static', filename='sioConnect.js') }}"></script>
+    <script src="{{ url_for('static', filename='sfx/audioPlayer.js') }}"></script>
+    <script src="{{ url_for('static', filename='sfx/tts.js') }}"></script>
+    <script src="{{ url_for('static', filename='sfx/sfx.js') }}"></script>
+    <script src="{{ url_for('static', filename='sfx/obsNotifications.js') }}"></script>
+
+  </body>
+  </html>
