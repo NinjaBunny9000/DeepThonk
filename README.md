@@ -3,7 +3,7 @@
 
 An open-source Python bot framework for Twitch - *currently in development*. In it's current version, it's a rewrite of the "OG" version we build on-stream in 2018. Some features are missing until we can port them over to the rewrite.
 
-Deepthonk was Live Coded almost entirely on Twitch, with the help of an amazing community!
+Deepthonk was [Live Coded on Twitch](http://bit.ly/nb9kTwitch), with the help of an amazing community!
 
 ## Feature Overview
 
