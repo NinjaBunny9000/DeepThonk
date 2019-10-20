@@ -62,6 +62,5 @@ def raid_event(methods=['GET', 'POST']):
 
 
 if __name__ == "__main__":
-    # socketio.run(app, debug=  True, port='6969') # run w/socketio
-    #socketio.run(app, debug=True, port='6969') # run w/socketio
-    socketio.run(app, host='0.0.0.0', debug=True, port='6969') # run w/socketio
+    socketio.run(app, debug=True, port='6969') # run w/socketio # running locally
+    # socketio.run(app, host='0.0.0.0', debug=True, port='6969') # running remotely
