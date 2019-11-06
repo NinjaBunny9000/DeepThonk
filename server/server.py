@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from conf import secret_key
-from sfx import list_of_sfx_files, sfx_with_extentions
+from sfx import list_of_sfx_files, sfx_with_extentions, rando_sfx_listyboi
 from utils.logger import loggymclogger as log
 
 
@@ -55,10 +55,20 @@ def get_sfx_event(methods=['GET', 'POST']):
     # socketio.emit('send_sfx', list_of_sfx_files) # <- list serialized as json
     socketio.emit('send_sfx', sfx_with_extentions) # <- list serialized as json
 
+# TODO: get randos
+@socketio.on('get_randos')
+def get_randos(methods=['GET', 'POST']):
+    # send over a list of the random sfx generated from the folders
+    socketio.emit('heres_yo_randos', rando_sfx_listyboi)
+
+# TODO: play sfx command
+# on event 'rando command requested'
+    # emit play rando sfx to the webpage thingy
+
 @socketio.on('raid')
 def raid_event(methods=['GET', 'POST']):
     log.debug(f"RAID OCCURRRRRED")
-    socketio.emit('raid triggered')
+    # socketio.emit('raid triggered') # raid temporarily disbabled
 
 
 if __name__ == "__main__":

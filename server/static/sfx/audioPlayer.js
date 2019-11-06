@@ -13,7 +13,7 @@ const events = new EventEmitter3();
 
 /**
  * Cache sound effects that will be re-used.
- * 
+ *
  * @type {Map<String, AudioBuffer>}
  * @see http://mdn.io/Map
  */
@@ -22,7 +22,7 @@ const soundCache = new Map();
 /**
  * Load a sound file from a URL and create an AudioBuffer instance that can be
  * played to an AudioContext object.
- * 
+ *
  * @param {string} location The URL location of the sound to load.
  * @returns {Promise<AudioBuffer>}
  */
@@ -59,7 +59,7 @@ function loadSound(location, skipCache=false) {
  * Play a sound. Either pass the URL of the location and it will be loaded or an
  * AudioBuffer instance. This will immediately play the audio directly into the
  * speakers.
- * 
+ *
  * @param {string|AudioBuffer} audioBuf The audio URL or AudioBuffer to play.
  * @returns {Promise}
  */
@@ -85,7 +85,7 @@ function playSound(audioBuf, skipCache) {
  */
 
 async function cueQueue() {
-   
+
     if (!Queue.list.length) {  // handle list being empty
         return;
     } else if (Queue.isPlaying) { // handle if it's playing, then play next
@@ -108,9 +108,9 @@ async function cueQueue() {
 
 /**
  * Loads audios into a queue.
- * 
- * @param  {...any} items 
- * 
+ *
+ * @param  {...any} items
+ *
  */
 
 async function addToQueue(...items) {
@@ -124,12 +124,12 @@ async function addToQueue(...items) {
     cueQueue();
 }
 
-function playTTS(text, voice = 'Salli') {
+function playTTS(text, voice = 'Brian') {
     /**
      * object with methods endcodes data structures as URL search param
      * @see https://mdn.io/URLSearchParams
      */
-    const chirp = "/static/sfx/other/tng_chirp.mp3"
+    const chirp = "/static/sfx/other/chirp.mp3"
     const qs = new URLSearchParams({ voice, text });
     const url = 'https://api.streamelements.com/kappa/v2/speech?' + qs;
     addToQueue(chirp, url);

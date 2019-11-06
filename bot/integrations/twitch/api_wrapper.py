@@ -1,12 +1,11 @@
 import requests
-from config.importer import bot, twitch_client_id, twitch_channel, twitch_team
+from config.importer import twitch_client_id, twitch_channel, twitch_team
 from utils.logger import loggymclogger as log
 
 log.debug(f"{__name__} loaded")
 
 class Interface():
-
-    # TODO use @property and @x.getter tags
+    """interfaces with the twitch api (stuff that the bot lib doens't cover"""
 
     def __init__(self, base, accept, streamer, client_id):
         self.base = base
@@ -43,8 +42,9 @@ class Interface():
         else:
             return True
 
+    # TODO: make this work with any game/cat
     def _get_game_rank(self):
-        # request data from api
+        """Gets game rank in Science & Tech category - for use with !peckrank"""
         listyboi = list()
         data = self.request('GET', f"streams?game_id=509670", version='helix') # TODO pull game/category
         for stream in data['data']:
@@ -53,13 +53,11 @@ class Interface():
 
         return listyboi
 
-        # iterate through data and make list of channels
-        # compare rank?
-
+    # TODO: still not working, needs... work??
     def monitor_broadcast_state(self):
+        'detects if stream started or stopped'
         self.broadcasting = self._get_channel_status()
-        # track if stream started or stopped
-        # mark if new stream or nah
+        # TODO: mark if new stream or nah
 
 
 base = "https://api.twitch.tv"

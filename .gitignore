@@ -3,3 +3,6 @@
 *secret*.*
 **/node_modules/**
 server/static/sfx/hooks/**
+server/error_log.txt
+
+bot/error_log.txt

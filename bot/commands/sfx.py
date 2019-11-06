@@ -30,7 +30,7 @@ async def sfxoff(ctx):
     if ctx.author.is_mod is False:
         return
     global sfx_state
-    
+
     if not sfx_state:
         await ctx.send(f"@{ctx.author.name} => SFX are already off.")
     else:
@@ -73,19 +73,24 @@ async def sfxmode(ctx):
 
 
 class SoundEffect:
-    'Instangenitals all the SFX commands, based on files on the server.'
+    'Instantiatinates all the SFX commands, based on files on the server.'
 
     commands = []
 
     def __init__(self, cmd_name_with_extenion):
-        cmd_no_extension = cmd_name_with_extenion[:-4] 
+        cmd_no_extension = cmd_name_with_extenion[:-4]
         SoundEffect.commands.append(cmd_no_extension) # list of sfx cmds
-        # log.debug(f"SFX {cmd_no_extension} created.")
-        
+
         # create/register file as command in event-loop
         @bot.command(name=cmd_no_extension)
         async def sfx_func(ctx):
-            
+
+            if ctx.author.is_mod:
+                ctx.author.subscriber = 1
+
+            if 'founder' in ctx.author.badges.keys():
+                ctx.author.subscriber = 1
+
             if sfx_state is False:
                 await ctx.send(f"@{ctx.author.name} => SFX are temporarily disabled.")
                 return
@@ -110,7 +115,3 @@ class SoundEffect:
 
             for msg in commands:
                 await ctx.send(msg)
-
-           
-
-

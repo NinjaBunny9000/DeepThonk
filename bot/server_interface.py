@@ -5,13 +5,12 @@ emits socketio events to the microcontroller (SAMD/CircuitPython + ESP32)
 """
 
 import socketio
-from config.importer import bot
+from config.importer import bot, data
 from utils.logger import loggymclogger as log
 import logging
 
 
 log.debug(f"{__name__} loaded")
-
 sfx_files_with_extension = []
 
 sio = socketio.AsyncClient(logger=log)
@@ -23,10 +22,11 @@ logger.setLevel(level=logging.WARNING)
 
 @sio.on('connect')
 async def on_connect():
-    import tts  # only import this if the websocket connection is made
+    import commands.tts  # only import this if the websocket connection is made
     log.debug(f"{__name__}.... CONNECTERD!")
     await sio.emit('connect',{'data':'CONNECTERD!'})
     await sio.emit('get_sfx')
+    await sio.emit('get_randos') # TODO get a list of folders (random sfx) from the server via ws
 
 
 @sio.on('response')
@@ -34,9 +34,13 @@ async def on_repsponse(data):
     log.debug(f"[MSG RCVD] {data}")
 
 
+@sio.on('heres_yo_randos')
+async def heres_yo_randos(data):
+    log.debug(f"RANDO EFFECTS RECIEVED: {data}")
+
 @sio.on('send_sfx')
 async def on_send_sfx(data):
-    from sfx import SoundEffect
+    from commands.sfx import SoundEffect
     # print(f"SFX RCVD:")
     # print(data)
     global sfx_files_with_extension
@@ -49,15 +53,16 @@ async def on_send_sfx(data):
 
 async def listen_socketio_server():
     try:
-        # await sio.connect('http://localhost:6969')
-        await sio.connect('http://0.0.0.0:6969')
+        await sio.connect('http://localhost:6969')  # uncomment for local hosting
+        # await sio.connect('http://0.0.0.0:6969')  # uncomment remote hosting
         await sio.wait()
     except:
         log.warning("Server OFFLINE. Bot functionality reduced.")
 
 
 async def emit_tts(text):
-    await sio.emit(event='tts', data=text)
+    if data.get_setting('tts'):
+        await sio.emit(event='tts', data=text)
 
 
 async def emit_sfx(command):

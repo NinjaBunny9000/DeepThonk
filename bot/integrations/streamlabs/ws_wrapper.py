@@ -34,7 +34,7 @@ async def on_event(event):
         # sender = event['message'][0]['name']
         pass
         # bot.loop.create_task(hardmode_task(sender, seconds))
-    
+
     if event['type'] == 'follow':
         log.debug('follow was detected')
         # bot.loop.create_task(hue.flash('purple', times=4))
