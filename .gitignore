@@ -6,3 +6,9 @@ server/static/sfx/hooks/**
 server/error_log.txt
 
 bot/error_log.txt
+
+bot/__pycache__/
+
+.idea/
+
+*.lock

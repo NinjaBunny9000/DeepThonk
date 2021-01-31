@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+twitchio = "*"
+pygame = "*"
+python-socketio = "*"
+phue = "*"
+rgbxy = "*"
+requests = "*"
+flask = "*"
+pyaml = "*"
+flask-socketio = "*"
+
+[dev-packages]
+pylama = "*"
+rope = "*"
+
+[requires]
+python_version = "3.6"
