@@ -6,11 +6,12 @@
 # import events
 # import server_interface
 
-# from utils.logger import loggymclogger as log
-
-from initializer import Initializer
-from commands import Commanderator
 from twitchio.ext import commands
+
+# local modules
+from initializer import Initializer
+from commands import CommandManager
+from logger import log
 
 init = Initializer()
 bot = commands.Bot(
@@ -22,7 +23,11 @@ bot = commands.Bot(
 )
 
 # generate and register all the commands from the json file
-cmd = Commanderator(bot)
-cmd.generateCmds()
-
+cmd = CommandManager(bot)
+cmd.importCommands('data/commands.json')
+cmd.importFAQ('data/faq.json')
+log.debug('Starting the bot..')
 bot.run()
+
+
+

@@ -1,18 +1,8 @@
-""" Master logger for the app
-
-Import to use in any of the other apps with:
-from utils.logger import loggymclogger as log
-
-Then use like..
-
-log.debug("log message")
-"""
-
 import logging
 
 # create logger objectw
-loggymclogger = logging.getLogger('deepthonk')
-loggymclogger.setLevel(logging.DEBUG)
+log = logging.getLogger('deepthonk')
+log.setLevel(logging.DEBUG)
 
 # create file handler
 fh = logging.FileHandler('error_log.txt')
@@ -29,5 +19,5 @@ fh.setFormatter(fh_formatter)
 ch.setFormatter(ch_formatter)
 
 # add/register them with the logger obj
-loggymclogger.addHandler(fh)
-loggymclogger.addHandler(ch)
+log.addHandler(fh)
+log.addHandler(ch)

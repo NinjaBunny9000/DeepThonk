@@ -12,3 +12,15 @@ bot/__pycache__/
 .idea/
 
 *.lock
+
+bot/OLDBOTSTUFF/
+
+serverOLD/
+
+bot/data/commands.json
+
+bot/data/faq.json
+
+bot/data/project.txt
+
+bot/data/quotes.json
