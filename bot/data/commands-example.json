@@ -1,0 +1,18 @@
+[
+    {
+        "name": "command1",
+        "level": 0,
+        "aliases": [
+            "cmd1"
+        ],
+        "response": "cmd 1 test passed!"
+    },
+    {
+        "name": "command2",
+        "level": 0,
+        "aliases": [
+            "cmd2"
+        ],
+        "response": "cmd 2 test passed!"
+    }
+]
